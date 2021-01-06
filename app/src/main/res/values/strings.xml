@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">Easy Trip Planner</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="sign_up">Signup</string>
+    <string name="app_logo">App Logo</string>
+
+
+    <string name="validation_name">Please enter name.</string>
+    <string name="validation_email">Please enter email.</string>
+    <string name="validation_password">Please enter password.</string>
+    <string name="validation_old_password">Please enter old password.</string>
+    <string name="validation_current_password">Please enter confirm password.</string>
+    <string name="validation_valid_email">Please enter valid email.</string>
+    <string name="validation_valid_current_password">Password and confirm password must be same.</string>
+    <string name="validation_valid_password">Please enter must be minimum eight character.</string>
+    <string name="validation_mobile">Please enter mobile no.</string>
+    <string name="validation_valid_mobile">Please enter valid mobile no.</string>
+    <string name="validation_comment">Please enter Comment</string>
+    <string name="validation_address">Please enter Address</string>
+    <string name="delivery_address">Delivery Address</string>
+    <string name="network_info">Network Info</string>
+    <string name="no_internet">No internet connection\nGo to setting and connect to network.</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="full_name">Full Name</string>
+    <string name="mobileno">MobileNo</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_up_space">Sign up</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="registeration_failed">Registration Failed</string>
 </resources>
