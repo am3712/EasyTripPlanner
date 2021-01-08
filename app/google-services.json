@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "458252898278",
-    "firebase_url": "https://easy-trip-planner-3b322-default-rtdb.firebaseio.com",
-    "project_id": "easy-trip-planner-3b322",
-    "storage_bucket": "easy-trip-planner-3b322.appspot.com"
+    "project_number": "357928690447",
+    "firebase_url": "https://easy-trip-planner-3e08f-default-rtdb.firebaseio.com",
+    "project_id": "easy-trip-planner-3e08f",
+    "storage_bucket": "easy-trip-planner-3e08f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:458252898278:android:536b991cb572cbc872d027",
+        "mobilesdk_app_id": "1:357928690447:android:728459b7cd44805862947a",
         "android_client_info": {
           "package_name": "com.example.easytripplanner"
         }
       },
       "oauth_client": [
         {
-          "client_id": "458252898278-0pmipeahv7lgtvckbih9edp6h7l6mdi6.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.easytripplanner",
-            "certificate_hash": "cfcf71f7771ff69a1b3285164992aa1ffd5a1d78"
-          }
-        },
-        {
-          "client_id": "458252898278-j1tgsl407li4etqij5f8a9l0arkgnu0g.apps.googleusercontent.com",
+          "client_id": "357928690447-7je79c9sl0ijntsiqdq3chfcdss838eo.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD65c2sDBps5dE7iZ3vqJUlw317kbCOiJo"
+          "current_key": "AIzaSyCt171cyQghPi_BrU0kJx0YZFn4AnS-OAs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "458252898278-j1tgsl407li4etqij5f8a9l0arkgnu0g.apps.googleusercontent.com",
+              "client_id": "357928690447-7je79c9sl0ijntsiqdq3chfcdss838eo.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

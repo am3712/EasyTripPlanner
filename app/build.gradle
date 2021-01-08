@@ -37,10 +37,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
@@ -50,14 +50,18 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
 
 
+    // Declare the dependency for the Realtime Database library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-database'
+
+
     // Required only if Facebook login support is required
     // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
-    implementation 'com.facebook.android:facebook-android-sdk:4.26.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
+
 
     //Size layout (SDP - a scalable size unit)
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
     implementation 'com.intuit.ssp:ssp-android:1.0.6'
-
-    implementation 'com.google.android.material:material:1.2.1'
 
 }
