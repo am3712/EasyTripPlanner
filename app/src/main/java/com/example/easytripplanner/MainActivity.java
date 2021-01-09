@@ -1,5 +1,6 @@
 package com.example.easytripplanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,5 +25,10 @@ public class MainActivity extends AppCompatActivity {
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        findViewById(R.id.add_button).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, NewTripActivity.class);
+            startActivity(intent);
+        });
     }
 }
