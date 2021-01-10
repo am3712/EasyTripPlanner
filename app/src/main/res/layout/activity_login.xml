@@ -14,11 +14,12 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="@dimen/_150sdp"
-            android:layout_height="@dimen/_150sdp"
+            android:layout_width="229dp"
+            android:layout_height="184dp"
             android:layout_marginVertical="@dimen/_16sdp"
+            android:background="@drawable/log"
             android:contentDescription="@string/app_logo"
-            android:src="@drawable/logo" />
+            />
 
         <LinearLayout
             android:id="@+id/rlLoginDetail"
@@ -35,8 +36,9 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:text="@string/login"
-                android:textColor="@color/light_orange"
-                android:textSize="@dimen/_15ssp"
+                android:textColor="#F9690E"
+                android:textSize="24sp"
+                android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
             <EditText
@@ -49,7 +51,7 @@
                 android:imeOptions="actionNext"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:singleLine="true"
-                android:textSize="@dimen/_10ssp"
+                android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
 
             <EditText
@@ -63,7 +65,7 @@
                 android:imeOptions="actionGo"
                 android:inputType="textPassword"
                 android:paddingHorizontal="@dimen/_10sdp"
-                android:textSize="@dimen/_10ssp"
+                android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
 
             <TextView
@@ -77,13 +79,14 @@
                 android:text="@string/forgot_password"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
+                android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
             <Button
                 android:id="@+id/logLoginBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_edit_field"
+                android:background="@drawable/btnsignin"
                 android:backgroundTint="@color/light_orange"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:text="@string/login"
@@ -105,7 +108,8 @@
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/don_t_have_an_account"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_11ssp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     tools:ignore="MissingPrefix" />
 
                 <TextView
@@ -116,8 +120,9 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/sign_up"
-                    android:textColor="@color/light_orange"
-                    android:textSize="@dimen/_11ssp"
+                    android:textColor="#F9690E"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     tools:ignore="MissingPrefix" />
             </LinearLayout>
         </LinearLayout>

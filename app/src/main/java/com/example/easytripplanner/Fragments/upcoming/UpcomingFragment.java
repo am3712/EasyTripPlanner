@@ -94,6 +94,9 @@ public class UpcomingFragment extends Fragment {
         tripArrayList.add(new Trip("ITI trip", "cairo", "mansoura"));
         tripArrayList.add(new Trip("pyramids trip", "fayoum", "giza"));
         tripArrayList.add(new Trip("Alex trip", "fayoum", "Alex"));
+        tripArrayList.add(new Trip("ITI trip", "cairo", "mansoura"));
+        tripArrayList.add(new Trip("pyramids trip", "fayoum", "giza"));
+        tripArrayList.add(new Trip("Alex trip", "fayoum", "Alex"));
         return tripArrayList;
     }
 }

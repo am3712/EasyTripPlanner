@@ -13,12 +13,13 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="@dimen/_80sdp"
-            android:layout_height="@dimen/_80sdp"
-            android:layout_marginTop="@dimen/_32sdp"
+            android:layout_width="184dp"
+            android:layout_height="160dp"
+            android:layout_marginTop="16dp"
             android:contentDescription="@string/app_logo"
-            android:src="@drawable/logo"
+            android:src="@drawable/log"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,8 +43,9 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:text="@string/sign_up_space"
-                android:textColor="@color/light_orange"
-                android:textSize="@dimen/_15ssp"
+                android:textColor="#F9690E"
+                android:textSize="24sp"
+                android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
             <EditText
@@ -58,7 +60,7 @@
                 android:inputType="textPersonName|textCapWords"
                 android:paddingLeft="@dimen/_10sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/edEmail"
@@ -73,7 +75,7 @@
                 android:inputType="textEmailAddress"
                 android:paddingLeft="@dimen/_10sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/edPassword"
@@ -88,7 +90,7 @@
                 android:inputType="textPassword"
                 android:paddingLeft="@dimen/_10sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/edCPassword"
@@ -103,19 +105,21 @@
                 android:inputType="textPassword"
                 android:paddingLeft="@dimen/_10sdp"
                 android:paddingRight="@dimen/_10sdp"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/regSignUpBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:backgroundTint="@color/light_orange"
+                android:background="@drawable/btnsignin"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:gravity="center_horizontal"
                 android:padding="@dimen/_10sdp"
                 android:text="@string/sign_up_space"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
             <LinearLayout
@@ -131,7 +135,8 @@
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/already_have_an_account"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_11ssp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     tools:ignore="MissingPrefix" />
 
                 <TextView
@@ -142,8 +147,9 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/login"
-                    android:textColor="@color/light_orange"
-                    android:textSize="@dimen/_11ssp"
+                    android:textColor="#F9690E"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     tools:ignore="MissingPrefix" />
             </LinearLayout>
         </LinearLayout>
