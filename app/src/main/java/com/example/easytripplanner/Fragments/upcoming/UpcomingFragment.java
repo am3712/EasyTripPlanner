@@ -90,13 +90,13 @@ public class UpcomingFragment extends Fragment {
 
 
     private ArrayList<Trip> getStaticData() {
-        ArrayList<Trip> tripArrayList = new ArrayList<>();
+        /*ArrayList<Trip> tripArrayList = new ArrayList<>();
         tripArrayList.add(new Trip("ITI trip", "cairo", "mansoura"));
         tripArrayList.add(new Trip("pyramids trip", "fayoum", "giza"));
         tripArrayList.add(new Trip("Alex trip", "fayoum", "Alex"));
         tripArrayList.add(new Trip("ITI trip", "cairo", "mansoura"));
         tripArrayList.add(new Trip("pyramids trip", "fayoum", "giza"));
-        tripArrayList.add(new Trip("Alex trip", "fayoum", "Alex"));
-        return tripArrayList;
+        tripArrayList.add(new Trip("Alex trip", "fayoum", "Alex"));*/
+        return new ArrayList<>();
     }
 }
