@@ -1,7 +1,9 @@
 package com.example.easytripplanner;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -10,6 +12,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
 public class NewTripActivity extends AppCompatActivity {
 
@@ -17,11 +23,22 @@ public class NewTripActivity extends AppCompatActivity {
     ImageButton timeButton;
     Button addTripButton;
     EditText tripName;
+    EditText startPointSearchView;
+    EditText endPointSearchView;
+
+
+    private static final int REQUEST_CODE_AUTOCOMPLETE_START_POINT = 1;
+    private static final int REQUEST_CODE_AUTOCOMPLETE_END_POINT = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_trip);
+
+        // Mapbox access token is configured here. This needs to be called either in your application
+        // object or in the same activity which contains the mapview.
+        Mapbox.getInstance(this, getString(R.string.access_token));
 
         init();
 
@@ -31,55 +48,66 @@ public class NewTripActivity extends AppCompatActivity {
         mPickDateButton = findViewById(R.id.calender_btn);
         timeButton = findViewById(R.id.timeBtn);
         addTripButton = findViewById(R.id.add_trip_btn);
+        startPointSearchView = findViewById(R.id.startPointSearchView);
+        endPointSearchView = findViewById(R.id.endPointSearchView);
 
-
-        initDateButton();
+        initClick();
     }
 
-    private void initDateButton() {
-        // now create instance of the material date picker 
-        // builder make sure to add the "datePicker" which 
-        // is normal material date picker which is the first 
-        // type of the date picker in material design date 
-        // picker 
-        MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.datePicker();
+    private void initClick() {
 
-        // now define the properties of the 
-        // materialDateBuilder that is title text as SELECT A DATE 
+        //date click
+        MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.datePicker();
         materialDateBuilder.setTitleText("SELECT A DATE");
 
-        // now create the instance of the material date 
-        // picker 
         final MaterialDatePicker materialDatePicker = materialDateBuilder.build();
 
-        // handle select date button which opens the 
-        // material design date picker 
         mPickDateButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // getSupportFragmentManager() to 
-                        // interact with the fragments 
-                        // associated with the material design 
-                        // date picker tag is to get any error 
-                        // in logcat 
-                        materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
-                    }
-                });
+                v -> materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER"));
 
-        // now handle the positive button click from the 
-        // material design date picker 
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
-
-                    // if the user clicks on the positive 
-                    // button that is ok button update the 
-                    // selected date 
-                    //mShowSelectedDateText.setText("Selected Date is : " + materialDatePicker.getHeaderText());
                     Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
-                    // in the above statement, getHeaderText 
-                    // is the selected date preview from the 
-                    // dialog 
                 });
+
+
+        //search view click (Start Point)
+        startPointSearchView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) firePlaceAutocomplete(REQUEST_CODE_AUTOCOMPLETE_START_POINT);
+        });
+        endPointSearchView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) firePlaceAutocomplete(REQUEST_CODE_AUTOCOMPLETE_END_POINT);
+        });
+
+
     }
+
+
+    private void firePlaceAutocomplete(int requestCode) {
+        Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.access_token))
+                .placeOptions(PlaceOptions.builder()
+                        .backgroundColor(Color.parseColor("#EEEEEE"))
+                        .limit(10)
+                        .build(PlaceOptions.MODE_CARDS))
+                .build(NewTripActivity.this);
+        startActivityForResult(intent, requestCode);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_START_POINT) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            startPointSearchView.setText(feature.text());
+            startPointSearchView.clearFocus();
+        } else if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_END_POINT) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            endPointSearchView.setText(feature.text());
+            endPointSearchView.clearFocus();
+        }
+    }
+
+
 }
