@@ -33,4 +33,19 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_16sdp"
+        android:backgroundTint="@color/gray_orange"
+        android:clickable="true"
+        android:contentDescription="@string/add_new_trip_button"
+        android:focusable="true"
+        android:src="@android:drawable/ic_input_add"
+        app:borderWidth="0dp"
+        app:fabSize="normal" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
