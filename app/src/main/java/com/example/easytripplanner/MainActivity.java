@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
     ViewPager viewPager;
+    SectionsPagerAdapter mAdapter;
 
 
     @Override
@@ -31,11 +32,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),
+                MainActivity.this);
+
+
         //tabs
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(),
-                MainActivity.this));
+        viewPager.setOffscreenPageLimit(2);
+
+        viewPager.setAdapter(mAdapter);
 
         // Give the TabLayout the ViewPager
         tabLayout = findViewById(R.id.tabs);
