@@ -140,11 +140,14 @@ public class TripsViewFragment extends Fragment {
         listState = mLayoutManager.onSaveInstanceState();
         outState.putParcelable(LIST_STATE_KEY, listState);
         outState.putInt(LIST_VIEW_TYPE, listType);
+        queryReference.removeEventListener(listener);
+        trips.clear();
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        queryReference.addChildEventListener(listener);
         // Retrieve list state and list/item positions
         if (savedInstanceState != null) {
             listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
@@ -168,20 +171,4 @@ public class TripsViewFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        queryReference.addChildEventListener(listener);
-    }
-
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        queryReference.removeEventListener(listener);
-        trips.clear();
-    }
-
-
 }
