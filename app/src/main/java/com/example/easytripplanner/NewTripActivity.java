@@ -1,10 +1,10 @@
 package com.example.easytripplanner;
 
-import android.content.DialogInterface;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -19,8 +20,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -50,7 +51,7 @@ public class NewTripActivity extends AppCompatActivity {
 
     ImageButton mPickDateButton;
     ImageButton timeButton;
-    Button addTripButton,addTripNote;
+    Button addTripButton, addTripNote;
     EditText tripName;
     ImageButton mPickTimeButton;
     Button mAddTripButton;
@@ -102,7 +103,7 @@ public class NewTripActivity extends AppCompatActivity {
         mPickDateButton = findViewById(R.id.calender_btn);
         timeButton = findViewById(R.id.timeBtn);
         addTripButton = findViewById(R.id.add_trip_btn);
-        addTripNote=findViewById(R.id.btnAddNote);
+        addTripNote = findViewById(R.id.btnAddNote);
         mPickTimeButton = findViewById(R.id.timeBtn);
         mAddTripButton = findViewById(R.id.add_trip_btn);
         startPointSearchView = findViewById(R.id.startPointSearchView);
@@ -168,19 +169,17 @@ public class NewTripActivity extends AppCompatActivity {
             //TODO show progress Dialog here
 
 
-        addTripNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder=new AlertDialog.Builder(NewTripActivity.this);
-                final View noteDialog=getLayoutInflater().inflate(R.layout.note_dialog,null);
+            addTripNote.setOnClickListener(v1 -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(NewTripActivity.this);
+                final View noteDialog = getLayoutInflater().inflate(R.layout.note_dialog, null);
                 builder.setView(noteDialog);
-               // builder.setIcon(R.drawable.ic_baseline_note_add_24);
+                // builder.setIcon(R.drawable.ic_baseline_note_add_24);
                 builder.setTitle("Add Note");
 
                 builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        EditText editText=noteDialog.findViewById(R.id.editNote);
+                        EditText editText = noteDialog.findViewById(R.id.editNote);
                         Toast.makeText(NewTripActivity.this, "Done", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -191,14 +190,13 @@ public class NewTripActivity extends AppCompatActivity {
                     }
                 });
 
-                AlertDialog dialog=builder.create();
+                AlertDialog dialog = builder.create();
                 dialog.show();
-            }
-        });
+            });
 
 
-        // now handle the positive button click from the 
-        // material design date picker 
+            // now handle the positive button click from the
+            // material design date picker
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
             mCurrentTrip.type = (String) mTripTypeSpinner.getSelectedItem();
             mCurrentTrip.repeating = (String) mRepeatingSpinner.getSelectedItem();
