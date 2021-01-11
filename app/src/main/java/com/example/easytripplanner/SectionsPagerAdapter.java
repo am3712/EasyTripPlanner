@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.example.easytripplanner.Fragments.upcoming.TripsViewFragment;
+import com.example.easytripplanner.Fragments.TripsViewFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 2;

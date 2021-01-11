@@ -1,4 +1,4 @@
-package com.example.easytripplanner.Fragments.upcoming;
+package com.example.easytripplanner.Fragments;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -12,16 +12,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.easytripplanner.Fragments.TripRecyclerViewAdapter;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -32,22 +31,21 @@ public class TripsViewFragment extends Fragment {
 
     private static final String LIST_VIEW_TYPE = "LIST_TYPE";
     private int listType;
-
     private static final String TAG = "TripsViewFragment";
+    public final static String LIST_STATE_KEY = "recycler_list_state";
 
     private TripRecyclerViewAdapter viewAdapter;
+    private ArrayList<Trip> trips;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView recyclerView;
+    private ChildEventListener listener;
+    private Query queryReference;
 
+    Parcelable listState;
 
     public TripsViewFragment() {
 
     }
-
-
-    ArrayList<Trip> trips;
-    RecyclerView.LayoutManager mLayoutManager;
-    RecyclerView recyclerView;
-    public final static String LIST_STATE_KEY = "recycler_list_state";
-    Parcelable listState;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,13 +77,11 @@ public class TripsViewFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mLayoutManager = recyclerView.getLayoutManager();
-        setData();
+        initQueryAndListener();
     }
 
-    private void setData() {
+    private void initQueryAndListener() {
         String userId = FirebaseAuth.getInstance().getUid();
-
-        Log.i(TAG, "setData: user id: " + userId);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -93,10 +89,8 @@ public class TripsViewFragment extends Fragment {
         if (userId != null) {
             currentUserRef = database.getReference("Users").child(userId);
             currentUserRef.keepSynced(true);
-            Log.i(TAG, "setData: currentUserRef: " + currentUserRef);
         }
 
-        Query queryReference;
 
         if (listType == 0) {
             //get upcoming trips
@@ -110,25 +104,33 @@ public class TripsViewFragment extends Fragment {
                     .endAt("DONE");
         }
 
-        Log.i(TAG, "setData: queryReference: " + queryReference);
-
-        queryReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        listener = new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.i(TAG, "onDataChange: snapshot: " + snapshot);
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    trips.add(dataSnapshot.getValue(Trip.class));
-                    viewAdapter.notifyDataSetChanged();
-                }
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                trips.add(snapshot.getValue(Trip.class));
+                viewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-        Log.i(TAG, "setData: trips of type: " + listType + ": " + trips);
-
+        };
     }
 
     @Override
@@ -165,6 +167,20 @@ public class TripsViewFragment extends Fragment {
         TripsViewFragment fragment = new TripsViewFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        queryReference.addChildEventListener(listener);
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        queryReference.removeEventListener(listener);
+        trips.clear();
     }
 
 

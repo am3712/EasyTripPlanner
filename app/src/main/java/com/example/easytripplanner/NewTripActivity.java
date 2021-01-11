@@ -210,7 +210,7 @@ public class NewTripActivity extends AppCompatActivity {
                     Toast.makeText(NewTripActivity.this, "Trip Added Successfully", Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "initAddTrip: Trip Added Successfully");
                     //finish activity
-                    finish();
+                    finishAndRemoveTask();
 
                 } else {
                     //Todo show message error
