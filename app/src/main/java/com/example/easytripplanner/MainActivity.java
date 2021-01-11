@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     TabLayout tabLayout;
-    ViewPager viewPager;
+    ViewPager pager;
     SectionsPagerAdapter mAdapter;
 
 
@@ -38,14 +39,23 @@ public class MainActivity extends AppCompatActivity {
 
         //tabs
         // Get the ViewPager and set it's PagerAdapter so that it can display items
-        viewPager = findViewById(R.id.view_pager);
-        viewPager.setOffscreenPageLimit(2);
+        pager = findViewById(R.id.view_pager);
+        pager.setOffscreenPageLimit(2);
 
-        viewPager.setAdapter(mAdapter);
+        pager.setAdapter(mAdapter);
+
+        pager.setPageTransformer(true, new RotateUpTransformer());
+        //pager.setPageTransformer(true, new AccordionTransformer());
+        //pager.setPageTransformer(true, new BackgroundToForegroundTransformer());
+        //pager.setPageTransformer(true, new ZoomInTransformer());
+        //pager.setPageTransformer(true, new CubeInTransformer());
+        //pager.setPageTransformer(true, new DepthPageTransformer());
+        //pager.setPageTransformer(true, new TabletTransformer());
+        //pager.setPageTransformer(true, new FlipHorizontalTransformer());
 
         // Give the TabLayout the ViewPager
         tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(pager);
 
         findViewById(R.id.add_button).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, NewTripActivity.class);
@@ -67,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        viewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
+        pager.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 
 }
