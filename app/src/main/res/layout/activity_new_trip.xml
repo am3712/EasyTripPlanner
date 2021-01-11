@@ -17,14 +17,16 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_18sdp"
+            android:layout_marginTop="16dp"
             android:text="@string/new_trip"
             android:textColor="@color/light_orange"
             android:textSize="@dimen/_15ssp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingPrefix" />
+
 
         <EditText
             android:id="@+id/tripNameInput"
@@ -40,10 +42,10 @@
             android:inputType="textPersonName"
             android:paddingStart="@dimen/_8sdp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             tools:targetApi="o" />
-
 
         <TextView
             android:id="@+id/textView2"
@@ -67,6 +69,7 @@
             app:layout_constraintStart_toStartOf="@+id/startPointSearchView"
             app:layout_constraintTop_toBottomOf="@+id/startPointSearchView" />
 
+
         <SearchView
             android:id="@+id/startPointSearchView"
             android:layout_width="0dp"
@@ -74,9 +77,9 @@
             android:layout_marginTop="@dimen/_4sdp"
             android:background="@drawable/bg_edit_field"
             app:layout_constraintEnd_toEndOf="@+id/tripNameInput"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/textView2"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
 
         <SearchView
             android:id="@+id/endPointSearchView"
@@ -103,12 +106,11 @@
             android:id="@+id/calender_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="36dp"
             android:background="@color/white"
             android:contentDescription="@string/calender_image"
             android:src="@drawable/twotone_calendar_today_black_48"
-            app:layout_constraintEnd_toStartOf="@+id/timeBtn"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -120,7 +122,7 @@
             android:contentDescription="@string/time_image"
             android:src="@drawable/twotone_more_time_black_48"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.239"
             app:layout_constraintStart_toEndOf="@+id/calender_btn"
             app:layout_constraintTop_toTopOf="@+id/calender_btn" />
 
@@ -168,13 +170,41 @@
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <Button
+            android:id="@+id/btnAddNote"
+            android:layout_width="65dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="36dp"
+            android:background="@drawable/ic_baseline_note_add_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.478"
+            app:layout_constraintStart_toEndOf="@+id/timeBtn"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <Button
             android:id="@+id/add_trip_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="136dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="21dp"
+            android:background="@drawable/btnsignin"
             android:text="@string/add_new_trip_button"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/repeating_spinner"
-            android:layout_marginTop="@dimen/_24sdp"/>
+            app:layout_constraintTop_toBottomOf="@+id/trip_type"
+            app:layout_constraintVertical_bias="0.285" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/Add_Note"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.689"
+            app:layout_constraintStart_toEndOf="@+id/textView3"
+            app:layout_constraintTop_toBottomOf="@+id/endPointSearchView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

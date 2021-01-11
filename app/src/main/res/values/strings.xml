@@ -47,6 +47,8 @@
     <string name="time_image">Time Image</string>
     <string name="repeating">Repeating :</string>
     <string name="trip_type">Trip Type :</string>
+    <string name="Add_Note">Add Note :</string>
+    <string name="edit_note">Add Note</string>
 
 
     <string-array name="repeating_options">

@@ -1,5 +1,6 @@
 package com.example.easytripplanner;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,6 +8,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -15,7 +17,7 @@ public class NewTripActivity extends AppCompatActivity {
 
     ImageButton mPickDateButton;
     ImageButton timeButton;
-    Button addTripButton;
+    Button addTripButton,addTripNote;
     EditText tripName;
 
     @Override
@@ -31,6 +33,7 @@ public class NewTripActivity extends AppCompatActivity {
         mPickDateButton = findViewById(R.id.calender_btn);
         timeButton = findViewById(R.id.timeBtn);
         addTripButton = findViewById(R.id.add_trip_btn);
+        addTripNote=findViewById(R.id.btnAddNote);
 
 
         initDateButton();
@@ -66,6 +69,35 @@ public class NewTripActivity extends AppCompatActivity {
                         materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
                     }
                 });
+
+        addTripNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder=new AlertDialog.Builder(NewTripActivity.this);
+                final View noteDialog=getLayoutInflater().inflate(R.layout.note_dialog,null);
+                builder.setView(noteDialog);
+               // builder.setIcon(R.drawable.ic_baseline_note_add_24);
+                builder.setTitle("Add Note");
+
+                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText editText=noteDialog.findViewById(R.id.editNote);
+                        Toast.makeText(NewTripActivity.this, "Done", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(NewTripActivity.this, "you cancelled", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                AlertDialog dialog=builder.create();
+                dialog.show();
+            }
+        });
+
 
         // now handle the positive button click from the 
         // material design date picker 
