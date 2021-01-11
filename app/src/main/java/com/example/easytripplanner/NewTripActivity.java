@@ -50,9 +50,7 @@ public class NewTripActivity extends AppCompatActivity {
 
 
     ImageButton mPickDateButton;
-    ImageButton timeButton;
-    Button addTripButton, addTripNote;
-    EditText tripName;
+    Button addTripNote;
     ImageButton mPickTimeButton;
     Button mAddTripButton;
     EditText mTripName;
@@ -101,8 +99,6 @@ public class NewTripActivity extends AppCompatActivity {
     private void init() {
         mTripName = findViewById(R.id.tripNameInput);
         mPickDateButton = findViewById(R.id.calender_btn);
-        timeButton = findViewById(R.id.timeBtn);
-        addTripButton = findViewById(R.id.add_trip_btn);
         addTripNote = findViewById(R.id.btnAddNote);
         mPickTimeButton = findViewById(R.id.timeBtn);
         mAddTripButton = findViewById(R.id.add_trip_btn);
@@ -122,6 +118,7 @@ public class NewTripActivity extends AppCompatActivity {
         initDatePicker();
         initTimePicker();
         initAddTrip();
+        initAddNote();
 
         //search view click (Start Point)
         startPointSearchView.setOnFocusChangeListener((v, hasFocus) -> {
@@ -138,6 +135,33 @@ public class NewTripActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void initAddNote() {
+        addTripNote.setOnClickListener(v1 -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(NewTripActivity.this);
+            final View noteDialog = getLayoutInflater().inflate(R.layout.note_dialog, null);
+            builder.setView(noteDialog);
+            // builder.setIcon(R.drawable.ic_baseline_note_add_24);
+            builder.setTitle("Add Note");
+
+            builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    EditText editText = noteDialog.findViewById(R.id.editNote);
+                    Toast.makeText(NewTripActivity.this, "Done", Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(NewTripActivity.this, "you cancelled", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        });
     }
 
     private void initTripName() {
@@ -167,32 +191,6 @@ public class NewTripActivity extends AppCompatActivity {
                 return;
             }
             //TODO show progress Dialog here
-
-
-            addTripNote.setOnClickListener(v1 -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(NewTripActivity.this);
-                final View noteDialog = getLayoutInflater().inflate(R.layout.note_dialog, null);
-                builder.setView(noteDialog);
-                // builder.setIcon(R.drawable.ic_baseline_note_add_24);
-                builder.setTitle("Add Note");
-
-                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditText editText = noteDialog.findViewById(R.id.editNote);
-                        Toast.makeText(NewTripActivity.this, "Done", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(NewTripActivity.this, "you cancelled", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            });
 
 
             // now handle the positive button click from the
