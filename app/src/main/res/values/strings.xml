@@ -63,4 +63,7 @@
         <item>Rounded Trip</item>
     </string-array>
 
+
+    <string name="access_token">sk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranJhMHkzMjF0aGwzMGw5cDJpZHdxeWMifQ.RKjlilDvlReJneIUICI8iw</string>
+
 </resources>

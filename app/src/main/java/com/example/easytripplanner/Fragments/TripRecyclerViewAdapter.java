@@ -33,8 +33,8 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.textViewTripName.setText(trips.get(position).name);
-        holder.textViewStartPoint.setText(trips.get(position).locationFrom);
-        holder.textViewEndPoint.setText(trips.get(position).locationTo);
+        //holder.textViewStartPoint.setText(trips.get(position).locationFrom.Address);
+        //holder.textViewEndPoint.setText(trips.get(position).locationTo.Address);
     }
 
     @Override
