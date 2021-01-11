@@ -57,7 +57,7 @@ dependencies {
 
     // Required only if Facebook login support is required
     // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
-    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
+//    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
 
 
     //Size layout (SDP - a scalable size unit)

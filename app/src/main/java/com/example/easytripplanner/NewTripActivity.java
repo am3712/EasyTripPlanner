@@ -1,19 +1,27 @@
 package com.example.easytripplanner;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.models.TripLocation;
@@ -37,6 +45,7 @@ import java.util.Date;
 
 public class NewTripActivity extends AppCompatActivity {
 
+
     ImageButton mPickDateButton;
     ImageButton mPickTimeButton;
     Button mAddTripButton;
@@ -45,16 +54,18 @@ public class NewTripActivity extends AppCompatActivity {
     EditText endPointSearchView;
     Spinner mRepeatingSpinner;
     Spinner mTripTypeSpinner;
+    ConstraintLayout myLayout;
+    TextView dateView;
+    TextView timeView;
 
 
     FirebaseUser firebaseUser;
 
     Trip mCurrentTrip;
 
-
+    private static final int LOCATION_REQUEST_CODE = 0;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private static final String DATE_PICKER_TAG = "MATERIAL_DATE_PICKER";
-    private static final String TIME_PICKER_TAG = "MATERIAL_TIME_PICKER";
     private static final String TAG = "NewTripActivity";
 
     boolean startPointClicked;
@@ -90,16 +101,18 @@ public class NewTripActivity extends AppCompatActivity {
         endPointSearchView = findViewById(R.id.endPointSearchView);
         mRepeatingSpinner = findViewById(R.id.repeating_spinner);
         mTripTypeSpinner = findViewById(R.id.trip_type);
+        myLayout = findViewById(R.id.my_layout);
+        dateView = findViewById(R.id.dateTextView);
+        timeView = findViewById(R.id.timeTextView);
 
         initComponent();
     }
 
     private void initComponent() {
-
+        initTripName();
         initDatePicker();
         initTimePicker();
         initAddTrip();
-
 
         //search view click (Start Point)
         startPointSearchView.setOnFocusChangeListener((v, hasFocus) -> {
@@ -118,15 +131,36 @@ public class NewTripActivity extends AppCompatActivity {
 
     }
 
+    private void initTripName() {
+        mTripName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mCurrentTrip.name = s.toString();
+            }
+        });
+    }
+
     private void initAddTrip() {
         mAddTripButton.setOnClickListener(v -> {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
             //TODO validate trip attributes (make sure no empty cells)
+            if (!validateInput()) {
+                return;
+            }
+            //TODO show progress Dialog here
 
 
-            mCurrentTrip.name = mTripName.getText().toString().trim();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
             mCurrentTrip.type = (String) mTripTypeSpinner.getSelectedItem();
             mCurrentTrip.repeating = (String) mRepeatingSpinner.getSelectedItem();
             mCurrentTrip.status = "UPCOMING";
@@ -134,9 +168,18 @@ public class NewTripActivity extends AppCompatActivity {
 
             //insert trip to specific user
             mCurrentTrip.pushId = userRef.push().getKey();
-            userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnSuccessListener(aVoid -> {
-                Toast.makeText(NewTripActivity.this, "Trip Added Successfully", Toast.LENGTH_SHORT).show();
-                Log.i(TAG, "initAddTrip: Trip Added Successfully");
+            userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnCompleteListener(task -> {
+                //Todo --> hide progress Dialog
+
+                if (task.isSuccessful()) {
+                    Toast.makeText(NewTripActivity.this, "Trip Added Successfully", Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "initAddTrip: Trip Added Successfully");
+                    //finish activity
+                    finish();
+
+                } else {
+                    //Todo show message error
+                }
             });
             Log.i(TAG, "initAddTrip: " + mCurrentTrip.toString());
 
@@ -158,7 +201,7 @@ public class NewTripActivity extends AppCompatActivity {
                         }
                         if (date != null) {
                             mCurrentTrip.time = new SimpleDateFormat("hh:mm aa").format(date);
-                            Log.i(TAG, "initTimePicker: time: " + mCurrentTrip.time);
+                            timeView.setText(mCurrentTrip.time);
                         }
                     },
                     now.get(Calendar.HOUR_OF_DAY),
@@ -180,11 +223,18 @@ public class NewTripActivity extends AppCompatActivity {
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
                     mCurrentTrip.date = materialDatePicker.getHeaderText();
+                    dateView.setText(mCurrentTrip.date);
                 });
     }
 
 
     private void firePlaceAutocomplete() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+            ActivityCompat.requestPermissions(NewTripActivity.this, permissions, LOCATION_REQUEST_CODE);
+            return;
+        }
         Intent intent = new PlaceAutocomplete.IntentBuilder()
                 .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.access_token))
                 .placeOptions(PlaceOptions.builder()
@@ -199,28 +249,60 @@ public class NewTripActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE) {
-            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
-            Point point = (Point) feature.geometry();
-            TripLocation locationSrc = null;
-            if (point != null) {
-                locationSrc = new TripLocation(
-                        feature.text(),
-                        point.latitude(),
-                        point.longitude());
-                if (startPointClicked) {
-                    mCurrentTrip.locationFrom = locationSrc;
-                    startPointSearchView.setText(feature.text());
-                } else {
-                    mCurrentTrip.locationTo = locationSrc;
-                    endPointSearchView.setText(feature.text());
+        if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
+            if (resultCode == Activity.RESULT_OK) {
+                CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+                Point point = (Point) feature.geometry();
+                TripLocation locationSrc = null;
+                if (point != null) {
+                    locationSrc = new TripLocation(
+                            feature.text(),
+                            point.latitude(),
+                            point.longitude());
+                    if (startPointClicked) {
+                        mCurrentTrip.locationFrom = locationSrc;
+                        startPointSearchView.setText(feature.text());
+                    } else {
+                        mCurrentTrip.locationTo = locationSrc;
+                        endPointSearchView.setText(feature.text());
+                    }
+                    Log.i(TAG, "onActivityResult: Location: " + locationSrc);
+                    Log.i(TAG, "onActivityResult: mCurrentTrip.locationFrom: " + mCurrentTrip.locationFrom);
+                    Log.i(TAG, "onActivityResult: mCurrentTrip.locationTo: " + mCurrentTrip.locationTo);
                 }
-                Log.i(TAG, "onActivityResult: Location: " + locationSrc);
-                Log.i(TAG, "onActivityResult: mCurrentTrip.locationFrom: " + mCurrentTrip.locationFrom);
-                Log.i(TAG, "onActivityResult: mCurrentTrip.locationTo: " + mCurrentTrip.locationTo);
+            }
+            myLayout.requestFocus();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
+            Log.i(TAG, "onActivityResult: LOCATION_REQUEST_CODE : " + LOCATION_REQUEST_CODE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "onActivityResult: LOCATION_REQUEST_CODE : PERMISSION_GRANTED");
+                firePlaceAutocomplete();
             }
         }
     }
 
+
+    private boolean validateInput() {
+        if (mCurrentTrip.name == null || mCurrentTrip.name.isEmpty())
+            Toast.makeText(this, "Trip Name Is Empty!!", Toast.LENGTH_SHORT).show();
+        else if (mCurrentTrip.locationFrom == null)
+            Toast.makeText(this, "Start Point Not Specified!!", Toast.LENGTH_SHORT).show();
+        else if (mCurrentTrip.locationTo == null)
+            Toast.makeText(this, "end Point Not Specified!!", Toast.LENGTH_SHORT).show();
+        else if (mCurrentTrip.time == null || mCurrentTrip.time.isEmpty())
+            Toast.makeText(this, "Time Not Specified!!", Toast.LENGTH_SHORT).show();
+        else if (mCurrentTrip.date == null || mCurrentTrip.date.isEmpty())
+            Toast.makeText(this, "Date Not Specified!!", Toast.LENGTH_SHORT).show();
+        else
+            return true;
+
+        return false;
+    }
 
 }

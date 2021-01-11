@@ -11,7 +11,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/_16sdp">
+        android:paddingBottom="@dimen/_16sdp"
+        android:id="@+id/my_layout"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
 
         <TextView
             android:id="@+id/tvTitle"
@@ -39,6 +42,7 @@
             android:hint="@string/trip_name"
             android:inputType="textPersonName"
             android:paddingStart="@dimen/_8sdp"
+            android:textSize="@dimen/_13ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
@@ -63,8 +67,9 @@
             android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_4sdp"
             android:background="@drawable/bg_edit_field"
-            android:drawableStart="@drawable/baseline_location_on_black_24"
+            android:drawableStart="@drawable/baseline_location_on_black_18"
             android:paddingStart="@dimen/_5sdp"
+            android:textSize="@dimen/_13ssp"
             app:layout_constraintEnd_toEndOf="@+id/tripNameInput"
             app:layout_constraintStart_toStartOf="@+id/textView2"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -86,8 +91,9 @@
             android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_4sdp"
             android:background="@drawable/bg_edit_field"
-            android:drawableStart="@drawable/baseline_location_on_black_24"
+            android:drawableStart="@drawable/baseline_location_on_black_18"
             android:paddingStart="@dimen/_5sdp"
+            android:textSize="@dimen/_13ssp"
             app:layout_constraintEnd_toEndOf="@+id/startPointSearchView"
             app:layout_constraintStart_toStartOf="@+id/textView4"
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -107,12 +113,22 @@
             android:id="@+id/calender_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_4sdp"
             android:background="@color/white"
             android:contentDescription="@string/calender_image"
-            android:src="@drawable/twotone_calendar_today_black_36"
+            android:src="@drawable/twotone_calendar_today_black_24"
             app:layout_constraintStart_toStartOf="@+id/textView5"
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_12ssp"
+            android:layout_marginStart="@dimen/_4sdp"
+            app:layout_constraintBottom_toBottomOf="@+id/calender_btn"
+            app:layout_constraintStart_toEndOf="@+id/calender_btn"
+            app:layout_constraintTop_toTopOf="@+id/calender_btn" />
 
         <ImageButton
             android:id="@+id/timeBtn"
@@ -120,7 +136,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:contentDescription="@string/time_image"
-            android:src="@drawable/twotone_more_time_black_36"
+            android:src="@drawable/twotone_more_time_black_24"
             app:layout_constraintStart_toStartOf="@+id/textView6"
             app:layout_constraintTop_toTopOf="@+id/calender_btn" />
 
@@ -128,9 +144,9 @@
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/repeating"
-            android:textSize="@dimen/_14sdp"
+            android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/endPointSearchView"
             app:layout_constraintTop_toBottomOf="@+id/calender_btn" />
@@ -151,7 +167,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/trip_type"
-            android:textSize="@dimen/_14sdp"
+            android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/tvTitle"
             app:layout_constraintTop_toTopOf="@+id/textView5" />
@@ -176,5 +192,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/repeating_spinner" />
+
+        <TextView
+            android:id="@+id/timeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_12ssp"
+            android:layout_marginStart="@dimen/_4sdp"
+            app:layout_constraintBottom_toBottomOf="@+id/timeBtn"
+            app:layout_constraintStart_toEndOf="@+id/timeBtn"
+            app:layout_constraintTop_toTopOf="@+id/timeBtn" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

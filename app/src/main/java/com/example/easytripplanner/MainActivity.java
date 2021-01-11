@@ -7,14 +7,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //tabs
         // Get the ViewPager and set it's PagerAdapter so that it can display items
@@ -31,4 +33,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+
+
+
 }
