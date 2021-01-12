@@ -66,6 +66,8 @@ public class NewTripActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
 
     Trip mCurrentTrip;
+    private long dateInMilliseconds;
+    private long timeInMilliseconds;
 
     private static final int LOCATION_REQUEST_CODE = 0;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -199,6 +201,7 @@ public class NewTripActivity extends AppCompatActivity {
             mCurrentTrip.type = (String) mTripTypeSpinner.getSelectedItem();
             mCurrentTrip.repeating = (String) mRepeatingSpinner.getSelectedItem();
             mCurrentTrip.status = "UPCOMING";
+            mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
 
 
             //insert trip to specific user
@@ -235,8 +238,8 @@ public class NewTripActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         if (date != null) {
-                            mCurrentTrip.time = new SimpleDateFormat("hh:mm aa").format(date);
-                            timeView.setText(mCurrentTrip.time);
+                            timeView.setText(new SimpleDateFormat("hh:mm aa").format(date));
+                            timeInMilliseconds = date.getTime();
                         }
                     },
                     now.get(Calendar.HOUR_OF_DAY),
@@ -249,7 +252,7 @@ public class NewTripActivity extends AppCompatActivity {
     private void initDatePicker() {
 
         //range of date
-        CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from(System.currentTimeMillis());
+        CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from((long) (System.currentTimeMillis() - 8.64e+7));
         final MaterialDatePicker materialDatePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("SELECT TRIP DATE")
                 .setCalendarConstraints(new CalendarConstraints.Builder().setValidator(dateValidator).build())
@@ -257,8 +260,8 @@ public class NewTripActivity extends AppCompatActivity {
         mPickDateButton.setOnClickListener(v -> materialDatePicker.show(getSupportFragmentManager(), DATE_PICKER_TAG));
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
-                    mCurrentTrip.date = materialDatePicker.getHeaderText();
-                    dateView.setText(mCurrentTrip.date);
+                    dateInMilliseconds = (long) materialDatePicker.getSelection();
+                    dateView.setText(materialDatePicker.getHeaderText());
                 });
     }
 
@@ -330,9 +333,9 @@ public class NewTripActivity extends AppCompatActivity {
             Toast.makeText(this, "Start Point Not Specified!!", Toast.LENGTH_SHORT).show();
         else if (mCurrentTrip.locationTo == null)
             Toast.makeText(this, "end Point Not Specified!!", Toast.LENGTH_SHORT).show();
-        else if (mCurrentTrip.time == null || mCurrentTrip.time.isEmpty())
+        else if (timeView.getText().toString().isEmpty())
             Toast.makeText(this, "Time Not Specified!!", Toast.LENGTH_SHORT).show();
-        else if (mCurrentTrip.date == null || mCurrentTrip.date.isEmpty())
+        else if (dateView.getText().toString().isEmpty())
             Toast.makeText(this, "Date Not Specified!!", Toast.LENGTH_SHORT).show();
         else
             return true;
