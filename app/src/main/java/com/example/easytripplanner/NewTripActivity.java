@@ -27,6 +27,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.models.Note;
 import com.example.easytripplanner.models.TripLocation;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
@@ -63,11 +64,13 @@ public class NewTripActivity extends AppCompatActivity {
     ConstraintLayout myLayout;
     TextView dateView;
     TextView timeView;
+    TextView editNote;
 
 
     FirebaseUser firebaseUser;
 
     Trip mCurrentTrip;
+    Note mNote;
 
     private static final int LOCATION_REQUEST_CODE = 0;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -93,6 +96,9 @@ public class NewTripActivity extends AppCompatActivity {
         //Trip Object
         mCurrentTrip = new Trip();
 
+        //Note Object
+        mNote=new Note();
+
 
         init();
 
@@ -113,6 +119,7 @@ public class NewTripActivity extends AppCompatActivity {
         myLayout = findViewById(R.id.my_layout);
         dateView = findViewById(R.id.dateTextView);
         timeView = findViewById(R.id.timeTextView);
+        editNote=findViewById(R.id.editNote);
 
         initComponent();
     }

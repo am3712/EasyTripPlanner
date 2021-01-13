@@ -1,31 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FBFAFB"
     tools:context=".LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/gray_orange"
+        android:background="#FBFAFB"
         android:gravity="center_horizontal"
         android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="229dp"
-            android:layout_height="184dp"
-            android:layout_marginVertical="@dimen/_16sdp"
-            android:background="@drawable/log"
-            android:contentDescription="@string/app_logo"
-            />
 
         <LinearLayout
             android:id="@+id/rlLoginDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_top_shap_10"
+            android:backgroundTint="#FBFAFB"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -35,9 +30,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
-                android:text="@string/login"
-                android:textColor="#F9690E"
-                android:textSize="24sp"
+                android:fontFamily="@font/adamina"
+                android:paddingTop="20dp"
+                android:paddingBottom="130dp"
+                android:text="Login Form"
+                android:textColor="#212121"
+                android:textSize="36sp"
                 android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
@@ -46,11 +44,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_35sdp"
                 android:layout_marginHorizontal="@dimen/_10sdp"
-                android:background="@drawable/bg_edit_field"
+                android:background="@drawable/btnframe"
                 android:hint="@string/email"
                 android:imeOptions="actionNext"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:singleLine="true"
+                android:textColor="#0C0C0C"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
 
@@ -60,11 +59,12 @@
                 android:layout_height="@dimen/_35sdp"
                 android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:background="@drawable/bg_edit_field"
+                android:background="@drawable/btnframe"
                 android:hint="@string/password"
                 android:imeOptions="actionGo"
                 android:inputType="textPassword"
                 android:paddingHorizontal="@dimen/_10sdp"
+                android:textColor="#0B0B0B"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
 
@@ -77,26 +77,34 @@
                 android:layout_marginEnd="@dimen/_12sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:text="@string/forgot_password"
-                android:textColor="@color/black"
+                android:textColor="#3B5998"
                 android:textSize="@dimen/_12ssp"
                 android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
-            <Button
+            <com.spark.submitbutton.SubmitButton
                 android:id="@+id/logLoginBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btnsignin"
-                android:backgroundTint="@color/light_orange"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:text="@string/login"
+                android:layout_width="@dimen/_147sdp"
+                android:layout_height="@dimen/_64sdp"
+
+                android:gravity="center"
+                android:text="Login"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_12ssp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:sub_btn_background="@color/colorPrimary"
+                app:sub_btn_duration="3000"
+                app:sub_btn_line_color="@color/colorPrimaryDark"
+                app:sub_btn_ripple_color="@color/colorPrimaryDark"
+                app:sub_btn_tick_color="@color/white"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="16dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
+                android:background="#FBF9FB"
                 android:gravity="center_horizontal"
                 android:paddingTop="@dimen/_8sdp">
 
@@ -107,7 +115,7 @@
                     android:layout_marginEnd="@dimen/_2sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/don_t_have_an_account"
-                    android:textColor="@color/black"
+                    android:textColor="#3B5998"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     tools:ignore="MissingPrefix" />
@@ -120,7 +128,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/sign_up"
-                    android:textColor="#F9690E"
+                    android:textColor="#212121"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     tools:ignore="MissingPrefix" />

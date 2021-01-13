@@ -64,6 +64,7 @@
     </string-array>
 
 
-    <string name="access_token">sk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranJhMHkzMjF0aGwzMGw5cDJpZHdxeWMifQ.RKjlilDvlReJneIUICI8iw</string>
+    <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranQxZzV6ODA5Ym8yeXFza2twcHk2c3gifQ.iBGtCdrUO8X3QufPn3C1Pg
+</string>
 
 </resources>

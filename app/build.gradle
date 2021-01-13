@@ -31,6 +31,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+//buttons
+repositories {
+    maven {
+        url 'https://dl.bintray.com/spark/maven'
+    }
+}
 
 dependencies {
 
@@ -67,5 +73,7 @@ dependencies {
 
     //mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v9:0.12.0'
+    //buttons
+    implementation 'me.spark:submitbutton:1.0.1'
 
 }
