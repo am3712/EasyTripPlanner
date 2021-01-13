@@ -17,34 +17,16 @@
         android:focusableInTouchMode="true"
         android:paddingBottom="@dimen/_16sdp">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/new_trip"
-            android:textColor="#FD5488"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="MissingPrefix" />
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:paddingBottom="@dimen/_16sdp">
-
 
         <EditText
             android:id="@+id/tripNameInput"
             android:layout_width="0dp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginStart="@dimen/_16sdp"
-            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="@dimen/_16sdp"
             android:autofillHints=""
-            android:background="@drawable/bg_top_shap_10"
+            android:background="@drawable/btnframe"
             android:ems="10"
             android:hint="@string/trip_name"
             android:inputType="textPersonName"
@@ -52,9 +34,8 @@
             android:textColor="#0E0E0E"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             app:layout_constraintTop_toTopOf="parent"
             tools:targetApi="o" />
 
@@ -76,10 +57,8 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/bg_top_shap_10"
+            android:background="@drawable/btnframe"
             android:drawableStart="@drawable/ic_baseline_add_location_alt_24"
-            android:background="@drawable/bg_edit_field"
-            android:drawableStart="@drawable/baseline_location_on_24"
             android:paddingStart="@dimen/_5sdp"
             android:textColor="#0B0A0A"
             android:textSize="@dimen/_13ssp"
@@ -104,10 +83,8 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/bg_top_shap_10"
+            android:background="@drawable/btnframe"
             android:drawableStart="@drawable/ic_baseline_add_location_alt_24"
-            android:background="@drawable/bg_edit_field"
-            android:drawableStart="@drawable/baseline_location_on_24"
             android:paddingStart="@dimen/_5sdp"
             android:textColor="#121212"
             android:textSize="@dimen/_13ssp"
@@ -185,12 +162,12 @@
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="120dp"
             android:text="@string/trip_type"
             android:textColor="#3B5998"
             android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@+id/tvTitle"
-            app:layout_constraintStart_toStartOf="@+id/trip_type"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
             app:layout_constraintTop_toTopOf="@+id/textView5" />
 
         <Spinner
@@ -221,7 +198,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
             android:layout_marginBottom="21dp"
-            android:background="@drawable/btnsignin"
+            android:background="@drawable/btnframe"
             android:text="@string/add_new_trip_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -92,7 +92,9 @@ public class TripsViewFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips);
+            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, item -> {
+                
+            });
             recyclerView.setAdapter(viewAdapter);
             //recyclerView.setAdapter(new TripRecyclerViewAdapter(games, item -> ((Communicator) getActivity()).openGame(item)));
         }

@@ -3,42 +3,27 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/CardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/_10sdp"
-    android:layout_marginTop="@dimen/_2sdp"
-    android:layout_marginRight="@dimen/_10sdp"
-    android:layout_marginBottom="10dp"
-    android:background="@color/white"
+    android:layout_marginHorizontal="@dimen/_10sdp"
+    android:layout_marginTop="@dimen/_4sdp"
+    android:background="@color/gray_orange"
     card_view:cardCornerRadius="@dimen/_8sdp">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/images"
-        android:weightSum="6">
+        android:background="@drawable/images">
 
 
         <Button
             android:id="@+id/btnMore"
-            android:layout_width="32dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="24dp"
-            android:layout_weight="1"
-            android:onClick="ShowPopup"
-            android:background="@drawable/ic_baseline_more_vert_24"
-            card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent" />
-
-            android:id="@+id/button2"
             android:layout_width="@dimen/_25sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_8sdp"
             android:layout_marginEnd="@dimen/_8sdp"
-            android:background="@drawable/ic_baseline_add_box_24"
+            android:background="@drawable/ic_baseline_more_vert_24"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintTop_toTopOf="parent" />
 
@@ -47,26 +32,6 @@
             android:id="@+id/tripName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="4dp"
-            android:textColor="#0C0C0C"
-            android:textSize="@dimen/_20sdp"
-            android:textStyle="bold"
-            card_view:layout_constraintEnd_toStartOf="@+id/btnMore"
-            card_view:layout_constraintHorizontal_bias="0.017"
-            card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="26dp"
-            android:layout_height="54dp"
-            android:layout_marginStart="4dp"
-
-            android:layout_marginTop="32dp"
-            android:layout_weight="1"
-            card_view:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="@dimen/_16sdp"
             android:textColor="#0C0C0C"
             android:textSize="@dimen/_16ssp"
@@ -88,29 +53,6 @@
 
         <TextView
             android:id="@+id/startPoint"
-            android:layout_width="92dp"
-            android:layout_height="40dp"
-
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="36dp"
-            android:textColor="#090909"
-            android:textSize="@dimen/_16sdp"
-            android:textStyle="bold"
-            card_view:layout_constraintStart_toEndOf="@+id/imageView2"
-            card_view:layout_constraintTop_toBottomOf="@+id/tripName" />
-
-        <TextView
-            android:id="@+id/endPoint"
-            android:layout_width="91dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="20dp"
-            android:padding="10dp"
-            android:textColor="#0E0E0E"
-            android:textSize="@dimen/_16sdp"
-            android:textStyle="bold"
-            card_view:layout_constraintStart_toEndOf="@+id/startPoint"
-            card_view:layout_constraintTop_toBottomOf="@+id/btnMore" />
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -139,21 +81,6 @@
             android:id="@+id/imageView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="28dp"
-            card_view:layout_constraintEnd_toEndOf="@+id/imageView2"
-            card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/imageView2"
-            card_view:srcCompat="@drawable/ic_baseline_access_time_24" />
-
-        <TextView
-            android:id="@+id/textViewtime"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            card_view:layout_constraintStart_toEndOf="@+id/imageView3"
-            card_view:layout_constraintTop_toBottomOf="@+id/startPoint" />
             android:layout_marginTop="@dimen/_12sdp"
             card_view:layout_constraintStart_toStartOf="@+id/btnStart"
             card_view:layout_constraintTop_toBottomOf="@+id/endPoint"
@@ -164,34 +91,6 @@
             android:id="@+id/imageView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="52dp"
-            android:layout_marginBottom="8dp"
-            card_view:layout_constraintBottom_toTopOf="@+id/btnStart"
-            card_view:layout_constraintEnd_toEndOf="@+id/startPoint"
-            card_view:layout_constraintHorizontal_bias="1.0"
-            card_view:layout_constraintStart_toEndOf="@+id/textViewtime"
-            card_view:srcCompat="@drawable/ic_baseline_date_range_24" />
-
-        <TextView
-            android:id="@+id/textViewdate"
-            android:layout_width="43dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginBottom="12dp"
-            android:layout_weight="1"
-            card_view:layout_constraintBottom_toTopOf="@+id/btnStart"
-            card_view:layout_constraintStart_toEndOf="@+id/imageView4" />
-
-        <Button
-            android:id="@+id/btn_Note"
-            android:layout_width="46dp"
-            android:layout_height="37dp"
-
-            android:layout_marginEnd="36dp"
-            android:layout_weight="1"
-            android:background="@drawable/ic_baseline_notes_24"
-            android:backgroundTint="@color/gray_orange"
-            card_view:layout_constraintBottom_toBottomOf="@+id/textViewdate"
             android:layout_marginTop="@dimen/_12sdp"
             card_view:layout_constraintStart_toStartOf="@+id/btnStart"
             card_view:layout_constraintTop_toBottomOf="@+id/imageView3"
@@ -201,6 +100,7 @@
             android:id="@+id/dateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#101010"
             card_view:layout_constraintBottom_toBottomOf="@+id/imageView3"
             card_view:layout_constraintStart_toStartOf="@+id/endPoint"
             card_view:layout_constraintTop_toTopOf="@+id/imageView3"
@@ -218,39 +118,30 @@
             card_view:layout_constraintBottom_toTopOf="@+id/btnStart"
             card_view:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
-            android:id="@+id/btnStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="#D202AC"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_12sdp"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_8sdp"
-            android:backgroundTint="#F9690E"
-            android:text="@string/btn_Start"
-            android:textColor="#F6F4FA"
-            card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintHorizontal_bias="0.545"
-            card_view:layout_constraintStart_toStartOf="parent" />
-
-
-
-            card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/imageView4" />
-
         <TextView
             android:id="@+id/statusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#101010"
             card_view:layout_constraintBottom_toBottomOf="@+id/imageView4"
             card_view:layout_constraintStart_toStartOf="@+id/dateTextView"
             card_view:layout_constraintTop_toTopOf="@+id/imageView4"
             tools:text="upcoming or forgotten" />
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:background="@drawable/btnframe"
+            android:backgroundTint="#00BCD4"
+            android:text="@string/btn_Start"
+            android:textColor="#F6F4FA"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

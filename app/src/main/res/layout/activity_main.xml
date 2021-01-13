@@ -41,7 +41,7 @@
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/_16sdp"
         android:layout_marginBottom="@dimen/_16sdp"
-        android:backgroundTint="@color/gray_orange"
+        android:backgroundTint="#FFFB4C40"
         android:clickable="true"
         android:contentDescription="@string/add_new_trip_button"
         android:focusable="true"

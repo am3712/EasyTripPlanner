@@ -30,11 +30,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
-                android:fontFamily="@font/adamina"
+                android:fontFamily="@font/candal"
                 android:paddingTop="20dp"
                 android:paddingBottom="130dp"
                 android:text="Login Form"
-                android:textColor="#212121"
+                android:textColor="#FB4C40"
                 android:textSize="36sp"
                 android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
@@ -128,7 +128,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/sign_up"
-                    android:textColor="#212121"
+                    android:textColor="#FB4C40"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     tools:ignore="MissingPrefix" />

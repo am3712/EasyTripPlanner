@@ -29,11 +29,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
+                android:fontFamily="@font/candal"
                 android:paddingTop="20dp"
                 android:paddingBottom="100dp"
-                android:text="Registration Form"
-                android:textColor="#212121"
-                android:textSize="36sp"
+                android:text="Registration "
+                android:textColor="#FB4C40"
+                android:textSize="30sp"
                 android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
@@ -143,7 +144,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/login"
-                    android:textColor="#212121"
+                    android:textColor="#FB4C40"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     tools:ignore="MissingPrefix" />
