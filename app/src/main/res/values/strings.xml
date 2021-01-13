@@ -37,4 +37,34 @@
     <string name="past_list_of_trips">Past List of Trips</string>
     <string name="past_trips">past trips</string>
     <string name="upcoming_trips">upcoming trips</string>
+    <string name="add_new_trip_button">Add Trip</string>
+    <string name="trip_name">Trip Name</string>
+    <string name="start_point">Start Point :</string>
+    <string name="new_trip">New Trip</string>
+    <string name="end_point">End Point :</string>
+    <string name="start_details">Start Details :</string>
+    <string name="calender_image">Calender Image</string>
+    <string name="time_image">Time Image</string>
+    <string name="repeating">Repeating :</string>
+    <string name="trip_type">Trip Type :</string>
+    <string name="Add_Note">Add Note :</string>
+    <string name="edit_note">Add Note</string>
+
+
+    <string-array name="repeating_options">
+        <item>No Repeated</item>
+        <item>Repeated Daily</item>
+        <item>Repeated weekly</item>
+        <item>Repeated Monthly</item>
+    </string-array>
+
+    <string-array name="trip_options">
+        <item>One Way Trip</item>
+        <item>Rounded Trip</item>
+    </string-array>
+
+
+    <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranQxZzV6ODA5Ym8yeXFza2twcHk2c3gifQ.iBGtCdrUO8X3QufPn3C1Pg</string>
+    <string name="save_edit_btn_txt">Save Edit</string>
+
 </resources>

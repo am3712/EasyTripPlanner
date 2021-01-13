@@ -11,17 +11,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.utility.OnItemClickListener;
 
 import java.util.ArrayList;
 
 public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerViewAdapter.MyViewHolder> {
+
+
     Context context;
     ArrayList<Trip> trips;
+    private final OnItemClickListener listener;
 
-    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t) {
+
+    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t, OnItemClickListener listener) {
         context = c;
         trips = t;
-
+        this.listener = listener;
     }
 
     @NonNull
@@ -32,9 +37,14 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.textViewTripName.setText(trips.get(position).name);
-        holder.textViewStartPoint.setText(trips.get(position).locationFrom);
-        holder.textViewEndPoint.setText(trips.get(position).locationTo);
+        holder.tripNameView.setText(trips.get(position).name);
+        holder.startPointView.setText(trips.get(position).locationFrom.Address);
+        holder.endPointView.setText(trips.get(position).locationTo.Address);
+        holder.endPointView.setText(trips.get(position).locationTo.Address);
+        holder.dateView.setText(trips.get(position).getDate());
+        holder.statusView.setText(trips.get(position).status);
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(trips.get(position)));
+
     }
 
     @Override
@@ -43,17 +53,21 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        public final TextView textViewTripName;
-        public final TextView textViewStartPoint;
-        public final TextView textViewEndPoint;
-        public final View mView;
+        public final TextView tripNameView;
+        public final TextView startPointView;
+        public final TextView endPointView;
+        public final TextView statusView;
+        public final TextView dateView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            mView = itemView;
-            textViewTripName = itemView.findViewById(R.id.tripName);
-            textViewStartPoint = itemView.findViewById(R.id.startPoint);
-            textViewEndPoint = itemView.findViewById(R.id.endPoint);
+            tripNameView = itemView.findViewById(R.id.tripName);
+            startPointView = itemView.findViewById(R.id.startPoint);
+            endPointView = itemView.findViewById(R.id.endPoint);
+            statusView = itemView.findViewById(R.id.statusView);
+            dateView = itemView.findViewById(R.id.dateTextView);
         }
     }
+
+
 }

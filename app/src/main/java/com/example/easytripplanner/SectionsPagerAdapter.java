@@ -7,17 +7,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.example.easytripplanner.Fragments.past.PastFragment;
-import com.example.easytripplanner.Fragments.upcoming.UpcomingFragment;
+import com.example.easytripplanner.Fragments.TripsViewFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 2;
     private final String[] tabTitles;
-    private Context context;
 
     public SectionsPagerAdapter(FragmentManager fm, Context context) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        this.context = context;
         tabTitles = new String[]{context.getResources().getString(R.string.upcoming_trips), context.getResources().getString(R.string.past_trips)};
     }
 
@@ -29,7 +26,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        return (position == 0) ? new UpcomingFragment() : new PastFragment();
+        return (position == 0) ? TripsViewFragment.newInstance(0) : TripsViewFragment.newInstance(1);
     }
 
     @Override
