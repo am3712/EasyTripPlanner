@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -41,23 +40,26 @@ public class AlarmReceiver extends BroadcastReceiver {
     private int tripHashCode;
     private String tripID;
     private Context context;
-    private Intent intent;
+    private Intent receiverIntent;
+    private NotificationManager mNotificationManager;
     private static final String TAG = "AlarmReceiver";
+    String GROUP_KEY = "com.android.example.EasyTripPlanner";
+
+
+    private boolean isNotificationFired;
+    public static String NOTIFICATION_STATUS = "Notification Status";
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        mNotificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
         this.context = context;
-        this.intent = intent;
+        this.receiverIntent = intent;
         tripName = intent.getStringExtra(TRIP_NAME);
         tripLocAddress = intent.getStringExtra(TRIP_LOCATION_NAME);
 
         tripLocLat = intent.getDoubleExtra(TRIP_LOC_LATITUDE, 0);
         tripLocLong = intent.getDoubleExtra(TRIP_LOC_LONGITUDE, 0);
-
-
-        Log.i(TAG, "onReceive: TRIP_LOC_LATITUDE: " + tripLocLat);
-        Log.i(TAG, "onReceive: TRIP_LOC_LONGITUDE: " + tripLocLong);
-
 
         tripHashCode = intent.getIntExtra(TRIP_HASH_CODE, 0);
         tripID = intent.getStringExtra(TRIP_ID);
@@ -73,14 +75,21 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setMessage(("to : " + tripLocAddress))
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     changeTripStatus(TripsViewFragment.TRIP_STATUS.CANCELED.name());
+                    mNotificationManager.cancel(tripHashCode);
                     dialog.dismiss();
                 })
                 .setPositiveButton("OK", (dialog, which) -> {
                     changeTripStatus(TripsViewFragment.TRIP_STATUS.DONE.name());
                     startNavigation();
+                    mNotificationManager.cancel(tripHashCode);
                     dialog.dismiss();
                 }).setNeutralButton("Snooze", (dialog, which) -> {
-            deliverNotification();
+
+            isNotificationFired = receiverIntent.getBooleanExtra(NOTIFICATION_STATUS, false);
+            if (!isNotificationFired) {
+                receiverIntent.putExtra(NOTIFICATION_STATUS, true);
+                deliverNotification();
+            }
         });
 
 
@@ -123,24 +132,21 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private void deliverNotification() {
 
-        NotificationManager mNotificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Create the content intent for the notification, which launches
         // this activity
 
         PendingIntent contentPendingIntent = PendingIntent.getBroadcast
-                (context, tripHashCode, intent, PendingIntent
+                (context, tripHashCode, receiverIntent, PendingIntent
                         .FLAG_UPDATE_CURRENT);
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder
                 (context, PRIMARY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stand_up)
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(tripName)
+                .setContentText(tripName + " !!!")
                 .setContentIntent(contentPendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setOngoing(true);
 
@@ -154,8 +160,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         Uri uri = Uri.parse("google.navigation:q=" + tripLocLat + "," + tripLocLong);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, uri);
         mapIntent.setPackage("com.google.android.apps.maps");
-        if (intent.resolveActivity(context.getPackageManager()) != null) {
-            mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (receiverIntent.resolveActivity(context.getPackageManager()) != null) {
+            mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             context.startActivity(mapIntent);
         } else {
             Toast.makeText(context, "please install google maps!!!", Toast.LENGTH_SHORT).show();
