@@ -31,6 +31,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingPrefix" />
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:paddingBottom="@dimen/_16sdp">
 
 
         <EditText
@@ -52,6 +55,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+            app:layout_constraintTop_toTopOf="parent"
             tools:targetApi="o" />
 
         <TextView
@@ -74,6 +78,8 @@
             android:layout_marginTop="@dimen/_4sdp"
             android:background="@drawable/bg_top_shap_10"
             android:drawableStart="@drawable/ic_baseline_add_location_alt_24"
+            android:background="@drawable/bg_edit_field"
+            android:drawableStart="@drawable/baseline_location_on_24"
             android:paddingStart="@dimen/_5sdp"
             android:textColor="#0B0A0A"
             android:textSize="@dimen/_13ssp"
@@ -100,6 +106,8 @@
             android:layout_marginTop="@dimen/_4sdp"
             android:background="@drawable/bg_top_shap_10"
             android:drawableStart="@drawable/ic_baseline_add_location_alt_24"
+            android:background="@drawable/bg_edit_field"
+            android:drawableStart="@drawable/baseline_location_on_24"
             android:paddingStart="@dimen/_5sdp"
             android:textColor="#121212"
             android:textSize="@dimen/_13ssp"
@@ -182,6 +190,7 @@
             android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/tvTitle"
+            app:layout_constraintStart_toStartOf="@+id/trip_type"
             app:layout_constraintTop_toTopOf="@+id/textView5" />
 
         <Spinner
@@ -189,10 +198,12 @@
             style="@android:style/Widget.Holo.Light.Spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginTop="4dp"
             android:backgroundTint="@color/black"
             android:entries="@array/trip_options"
-            app:layout_constraintStart_toStartOf="@+id/textView6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/repeating_spinner"
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <Button
@@ -206,17 +217,18 @@
 
         <Button
             android:id="@+id/add_trip_btn"
-            android:layout_width="136dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
             android:layout_marginBottom="21dp"
             android:background="@drawable/btnsignin"
             android:text="@string/add_new_trip_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.452"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnAddNote"
-            app:layout_constraintVertical_bias="0.285" />
+            app:layout_constraintVertical_bias="0.19" />
 
         <TextView
             android:id="@+id/textView"

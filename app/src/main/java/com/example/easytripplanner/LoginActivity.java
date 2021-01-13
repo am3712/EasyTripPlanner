@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                         LoginActivity.this
                         , getResources().getString(R.string.login_failed)
                         , getResources().getString(R.string.validation_email));
-            } else if (!Common.isValidEmail(binding.usrEmail.getText().toString())) {
+            } else if (!Common.isValidEmail(binding.usrEmail.getText().toString().trim())) {
                 Common.alertErrorOrValidationDialog(
                         LoginActivity.this
                         , getResources().getString(R.string.login_failed)
@@ -80,8 +80,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        String email = binding.usrEmail.getText().toString();
-        String password = binding.usrPassword.getText().toString();
+        String email = binding.usrEmail.getText().toString().trim();
+        String password = binding.usrPassword.getText().toString().trim();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override

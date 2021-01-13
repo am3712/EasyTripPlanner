@@ -3,13 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.easytripplanner">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- To request foreground location access, declare one of these permissions. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- To request foreground location access, declare one of these permissions. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <queries>
+        <!-- show maps -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo:latitude,longitude" />
+        </intent>
+    </queries>
 
     <application
         android:name=".firebase.MyFirebaseApp"
@@ -21,6 +28,15 @@
         android:theme="@style/Theme.EasyTripPlanner"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <receiver
+            android:name=".broadcastreceiver.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <activity android:name=".NewTripActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".LoginActivity">

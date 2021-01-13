@@ -64,7 +64,7 @@
     </string-array>
 
 
-    <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranQxZzV6ODA5Ym8yeXFza2twcHk2c3gifQ.iBGtCdrUO8X3QufPn3C1Pg
-</string>
+    <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranQxZzV6ODA5Ym8yeXFza2twcHk2c3gifQ.iBGtCdrUO8X3QufPn3C1Pg</string>
+    <string name="save_edit_btn_txt">Save Edit</string>
 
 </resources>

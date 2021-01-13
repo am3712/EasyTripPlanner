@@ -76,4 +76,6 @@ dependencies {
     //buttons
     implementation 'me.spark:submitbutton:1.0.1'
 
+    implementation 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:2.0.24'
+
 }
