@@ -32,7 +32,7 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:fontFamily="@font/candal"
                 android:paddingTop="20dp"
-                android:paddingBottom="130dp"
+                android:paddingVertical="@dimen/_42sdp"
                 android:text="Login Form"
                 android:textColor="#FB4C40"
                 android:textSize="36sp"
@@ -84,11 +84,10 @@
 
             <com.spark.submitbutton.SubmitButton
                 android:id="@+id/logLoginBtn"
-                android:layout_width="@dimen/_147sdp"
-                android:layout_height="@dimen/_64sdp"
-
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="@dimen/_60sdp"
                 android:gravity="center"
-                android:text="Login"
+                android:text="@string/login"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"

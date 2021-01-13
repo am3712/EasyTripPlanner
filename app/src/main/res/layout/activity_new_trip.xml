@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/white"
     tools:context=".NewTripActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -109,7 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_4sdp"
-            android:background="@color/white"
+            android:background="#FBFAFB"
             android:contentDescription="@string/calender_image"
             android:src="@drawable/ic_baseline_calendar_today_24"
             app:layout_constraintStart_toStartOf="@+id/textView5"
@@ -129,7 +128,7 @@
             android:id="@+id/timeBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="#FBFAFB"
             android:contentDescription="@string/time_image"
             android:src="@drawable/ic_baseline_more_time_24"
             app:layout_constraintStart_toStartOf="@+id/textView6"
