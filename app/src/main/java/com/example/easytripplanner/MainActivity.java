@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
-import com.ToxicBakery.viewpager.transforms.ZoomInTransformer;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jetbrains.annotations.NotNull;
@@ -52,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
         pager.setAdapter(mAdapter);
 
-        //pager.setPageTransformer(true, new RotateUpTransformer());
+        pager.setPageTransformer(true, new RotateUpTransformer());
         //pager.setPageTransformer(true, new AccordionTransformer());
         //pager.setPageTransformer(true, new BackgroundToForegroundTransformer());
-        pager.setPageTransformer(true, new ZoomInTransformer());
+        //pager.setPageTransformer(true, new ZoomInTransformer());
         //pager.setPageTransformer(true, new CubeInTransformer());
         //pager.setPageTransformer(true, new DepthPageTransformer());
         //pager.setPageTransformer(true, new TabletTransformer());

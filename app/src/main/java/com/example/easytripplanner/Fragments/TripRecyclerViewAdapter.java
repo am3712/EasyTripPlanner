@@ -11,20 +11,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.utility.OnItemClickListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerViewAdapter.MyViewHolder> {
 
 
     Context context;
     ArrayList<Trip> trips;
+    private final OnItemClickListener listener;
 
-    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t) {
+
+    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t, OnItemClickListener listener) {
         context = c;
         trips = t;
+        this.listener = listener;
     }
 
     @NonNull
@@ -41,6 +43,8 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         holder.endPointView.setText(trips.get(position).locationTo.Address);
         holder.dateView.setText(trips.get(position).getDate());
         holder.statusView.setText(trips.get(position).status);
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(trips.get(position)));
+
     }
 
     @Override

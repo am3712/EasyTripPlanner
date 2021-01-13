@@ -18,12 +18,12 @@
 
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/btnMore"
             android:layout_width="@dimen/_25sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_8sdp"
             android:layout_marginEnd="@dimen/_8sdp"
-            android:background="@drawable/ic_baseline_add_box_24"
+            android:background="@drawable/ic_baseline_more_vert_24"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintTop_toTopOf="parent" />
 
@@ -100,6 +100,7 @@
             android:id="@+id/dateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#101010"
             card_view:layout_constraintBottom_toBottomOf="@+id/imageView3"
             card_view:layout_constraintStart_toStartOf="@+id/endPoint"
             card_view:layout_constraintTop_toTopOf="@+id/imageView3"
@@ -121,6 +122,7 @@
             android:id="@+id/statusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#101010"
             card_view:layout_constraintBottom_toBottomOf="@+id/imageView4"
             card_view:layout_constraintStart_toStartOf="@+id/dateTextView"
             card_view:layout_constraintTop_toTopOf="@+id/imageView4"
@@ -132,7 +134,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_8sdp"
             android:layout_marginTop="@dimen/_12sdp"
-            android:backgroundTint="#F9690E"
+            android:background="@drawable/btnframe"
+            android:backgroundTint="#00BCD4"
             android:text="@string/btn_Start"
             android:textColor="#F6F4FA"
             card_view:layout_constraintBottom_toBottomOf="parent"

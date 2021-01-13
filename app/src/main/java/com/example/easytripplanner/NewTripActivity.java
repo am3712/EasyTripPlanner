@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,15 +25,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
+import com.example.easytripplanner.databinding.ActivityNewTripBinding;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.models.Note;
 import com.example.easytripplanner.models.TripLocation;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -46,28 +50,34 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
+
 public class NewTripActivity extends AppCompatActivity {
 
 
-    ImageButton mPickDateButton;
-    Button addTripNote;
-    ImageButton mPickTimeButton;
-    Button mAddTripButton;
-    EditText mTripName;
-    EditText startPointSearchView;
-    EditText endPointSearchView;
-    Spinner mRepeatingSpinner;
-    Spinner mTripTypeSpinner;
-    ConstraintLayout myLayout;
-    TextView dateView;
-    TextView timeView;
+    private ImageButton mPickDateButton;
+    private Button mAddTripNote;
+    private ImageButton mPickTimeButton;
+    private Button mAddTripButton;
+    private EditText mTripName;
+    private EditText mStartPointEditText;
+    private EditText mEndPointEditText;
+    private Spinner mRepeatingSpinner;
+    private Spinner mTripTypeSpinner;
+    private ConstraintLayout myLayout;
+    private TextView mDateTextView;
+    private TextView mTimeTextView;
+    private TextView editNote;
 
+    private String tripId;
+    ActivityNewTripBinding binding;
 
-    FirebaseUser firebaseUser;
 
     Trip mCurrentTrip;
+    Note mNote;
     private long dateInMilliseconds;
     private long timeInMilliseconds;
+    private DatabaseReference userRef;
 
     private static final int LOCATION_REQUEST_CODE = 0;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -80,42 +90,87 @@ public class NewTripActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_trip);
+        binding = ActivityNewTripBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
         Mapbox.getInstance(this, getString(R.string.access_token));
 
         //firebase
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        //reference to user trips
+        assert firebaseUser != null;
+        userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
         //Trip Object
         mCurrentTrip = new Trip();
 
+        //Note Object
+        mNote=new Note();
 
-        init();
+
+        initComponents();
+
+
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(TRIP_ID)) {
+            tripId = getIntent().getExtras().getString(TRIP_ID);
+            enableEditMode();
+        }
 
     }
 
-    private void init() {
-        mTripName = findViewById(R.id.tripNameInput);
-        mPickDateButton = findViewById(R.id.calender_btn);
-        addTripNote = findViewById(R.id.btnAddNote);
-        mPickTimeButton = findViewById(R.id.timeBtn);
-        mAddTripButton = findViewById(R.id.add_trip_btn);
-        startPointSearchView = findViewById(R.id.startPointSearchView);
-        endPointSearchView = findViewById(R.id.endPointSearchView);
-        mRepeatingSpinner = findViewById(R.id.repeating_spinner);
-        mTripTypeSpinner = findViewById(R.id.trip_type);
-        myLayout = findViewById(R.id.my_layout);
-        dateView = findViewById(R.id.dateTextView);
-        timeView = findViewById(R.id.timeTextView);
-
-        initComponent();
+    private void initComponents() {
+        mTripName = binding.tripNameInput;
+        mPickDateButton = binding.calenderBtn;
+        mAddTripNote = binding.btnAddNote;
+        mPickTimeButton = binding.timeBtn;
+        mAddTripButton = binding.addTripBtn;
+        mStartPointEditText = binding.startPointSearchView;
+        mEndPointEditText = binding.endPointSearchView;
+        mRepeatingSpinner = binding.repeatingSpinner;
+        mTripTypeSpinner = binding.tripType;
+        myLayout = binding.myLayout;
+        mDateTextView = binding.dateTextView;
+        mTimeTextView = binding.timeTextView;
+        editNote=findViewById(R.id.editNote);
+        setComponentsAction();
     }
 
-    private void initComponent() {
+    private void enableEditMode() {
+        userRef.child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mCurrentTrip = snapshot.getValue(Trip.class);
+                fillData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        mAddTripButton.setText(R.string.save_edit_btn_txt);
+    }
+
+    private void fillData() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(mCurrentTrip.timeInMilliSeconds);
+
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+
+        mTripName.setText(mCurrentTrip.name);
+        mStartPointEditText.setText(mCurrentTrip.locationFrom.Address);
+        mEndPointEditText.setText(mCurrentTrip.locationTo.Address);
+        mDateTextView.setText(dateFormat.format(calendar.getTime()));
+        mTimeTextView.setText(timeFormat.format(calendar.getTime()));
+    }
+
+
+    private void setComponentsAction() {
         initTripName();
         initDatePicker();
         initTimePicker();
@@ -123,13 +178,13 @@ public class NewTripActivity extends AppCompatActivity {
         initAddNote();
 
         //search view click (Start Point)
-        startPointSearchView.setOnFocusChangeListener((v, hasFocus) -> {
+        mStartPointEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 startPointClicked = true;
                 firePlaceAutocomplete();
             }
         });
-        endPointSearchView.setOnFocusChangeListener((v, hasFocus) -> {
+        mEndPointEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 startPointClicked = false;
                 firePlaceAutocomplete();
@@ -140,7 +195,7 @@ public class NewTripActivity extends AppCompatActivity {
     }
 
     private void initAddNote() {
-        addTripNote.setOnClickListener(v1 -> {
+        mAddTripNote.setOnClickListener(v1 -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(NewTripActivity.this);
             final View noteDialog = getLayoutInflater().inflate(R.layout.note_dialog, null);
             builder.setView(noteDialog);
@@ -197,30 +252,31 @@ public class NewTripActivity extends AppCompatActivity {
 
             // now handle the positive button click from the
             // material design date picker
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+
             mCurrentTrip.type = (String) mTripTypeSpinner.getSelectedItem();
             mCurrentTrip.repeating = (String) mRepeatingSpinner.getSelectedItem();
             mCurrentTrip.status = "UPCOMING";
             mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
 
-
             //insert trip to specific user
-            mCurrentTrip.pushId = userRef.push().getKey();
-            userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnCompleteListener(task -> {
-                //Todo --> hide progress Dialog
+            if (tripId == null)
+                mCurrentTrip.pushId = userRef.push().getKey();
 
-                if (task.isSuccessful()) {
-                    Toast.makeText(NewTripActivity.this, "Trip Added Successfully", Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "initAddTrip: Trip Added Successfully");
-                    //finish activity
-                    finishAndRemoveTask();
+            if (mCurrentTrip.pushId != null) {
+                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnCompleteListener(task -> {
+                    //Todo --> hide progress Dialog
 
-                } else {
-                    //Todo show message error
-                }
-            });
-            Log.i(TAG, "initAddTrip: " + mCurrentTrip.toString());
+                    if (task.isSuccessful()) {
+                        String message = (tripId == null) ? "Trip Added Successfully" : "Trip Edit Success";
 
+                        Toast.makeText(NewTripActivity.this, message, Toast.LENGTH_SHORT).show();
+                        //finish activity
+                        finishAndRemoveTask();
+                    } else {
+                        //Todo show message error
+                    }
+                });
+            }
         });
     }
 
@@ -238,7 +294,7 @@ public class NewTripActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         if (date != null) {
-                            timeView.setText(new SimpleDateFormat("hh:mm aa").format(date));
+                            mTimeTextView.setText(new SimpleDateFormat("hh:mm aa").format(date));
                             timeInMilliseconds = date.getTime();
                         }
                     },
@@ -261,7 +317,7 @@ public class NewTripActivity extends AppCompatActivity {
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
                     dateInMilliseconds = (long) materialDatePicker.getSelection();
-                    dateView.setText(materialDatePicker.getHeaderText());
+                    mDateTextView.setText(materialDatePicker.getHeaderText());
                 });
     }
 
@@ -299,14 +355,11 @@ public class NewTripActivity extends AppCompatActivity {
                             point.longitude());
                     if (startPointClicked) {
                         mCurrentTrip.locationFrom = locationSrc;
-                        startPointSearchView.setText(feature.text());
+                        mStartPointEditText.setText(feature.text());
                     } else {
                         mCurrentTrip.locationTo = locationSrc;
-                        endPointSearchView.setText(feature.text());
+                        mEndPointEditText.setText(feature.text());
                     }
-                    Log.i(TAG, "onActivityResult: Location: " + locationSrc);
-                    Log.i(TAG, "onActivityResult: mCurrentTrip.locationFrom: " + mCurrentTrip.locationFrom);
-                    Log.i(TAG, "onActivityResult: mCurrentTrip.locationTo: " + mCurrentTrip.locationTo);
                 }
             }
             myLayout.requestFocus();
@@ -316,10 +369,8 @@ public class NewTripActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_REQUEST_CODE) {
-            Log.i(TAG, "onActivityResult: LOCATION_REQUEST_CODE : " + LOCATION_REQUEST_CODE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG, "onActivityResult: LOCATION_REQUEST_CODE : PERMISSION_GRANTED");
                 firePlaceAutocomplete();
             }
         }
@@ -333,9 +384,9 @@ public class NewTripActivity extends AppCompatActivity {
             Toast.makeText(this, "Start Point Not Specified!!", Toast.LENGTH_SHORT).show();
         else if (mCurrentTrip.locationTo == null)
             Toast.makeText(this, "end Point Not Specified!!", Toast.LENGTH_SHORT).show();
-        else if (timeView.getText().toString().isEmpty())
+        else if (mTimeTextView.getText().toString().isEmpty())
             Toast.makeText(this, "Time Not Specified!!", Toast.LENGTH_SHORT).show();
-        else if (dateView.getText().toString().isEmpty())
+        else if (mDateTextView.getText().toString().isEmpty())
             Toast.makeText(this, "Date Not Specified!!", Toast.LENGTH_SHORT).show();
         else
             return true;
