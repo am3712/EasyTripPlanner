@@ -28,8 +28,13 @@
         android:theme="@style/Theme.EasyTripPlanner"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <activity
+            android:name=".activities.MyDialog"
+            android:theme="@style/Theme.Transparent"
+            android:launchMode="singleInstance"/>
+
         <receiver
-            android:name=".broadcastreceiver.AlarmReceiver"
+            android:name=".services.AlarmReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -37,9 +42,9 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".NewTripActivity" />
-        <activity android:name=".RegistrationActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activities.NewTripActivity" />
+        <activity android:name=".activities.RegistrationActivity" />
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,7 +52,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@style/Theme.EasyTripPlanner.NoActionBar" />
 
         <meta-data

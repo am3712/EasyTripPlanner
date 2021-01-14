@@ -1,4 +1,4 @@
-package com.example.easytripplanner;
+package com.example.easytripplanner.activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.SectionsPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jetbrains.annotations.NotNull;
