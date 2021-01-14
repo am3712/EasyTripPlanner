@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
 import com.example.easytripplanner.models.Trip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -73,9 +74,7 @@ public class PastTripFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, item -> {
-
-            });
+            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips);
             recyclerView.setAdapter(viewAdapter);
             //recyclerView.setAdapter(new TripRecyclerViewAdapter(games, item -> ((Communicator) getActivity()).openGame(item)));
         }

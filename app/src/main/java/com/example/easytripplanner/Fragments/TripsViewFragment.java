@@ -10,8 +10,11 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,8 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
-import com.example.easytripplanner.services.AlarmReceiver;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.services.AlarmReceiver;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +47,7 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TripsViewFragment extends Fragment {
+public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapter.OnItemClickListener {
 
     private static final String LIST_VIEW_TYPE = "LIST_TYPE";
     public static final String TRIP_NAME = "Name";
@@ -93,9 +96,9 @@ public class TripsViewFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, item -> {
+            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips);
+            viewAdapter.setClick(this);
 
-            });
             recyclerView.setAdapter(viewAdapter);
             //recyclerView.setAdapter(new TripRecyclerViewAdapter(games, item -> ((Communicator) getActivity()).openGame(item)));
         }
@@ -146,15 +149,13 @@ public class TripsViewFragment extends Fragment {
                     calendar.setTimeInMillis(trip.timeInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
 
-                    if (listType == 0 && trip.timeInMilliSeconds < System.currentTimeMillis()) {
+                    if (trip.timeInMilliSeconds < System.currentTimeMillis()) {
                         finalCurrentUserRef.child(trip.pushId).child("status").setValue("FORGOTTEN");
                     }
                     trips.add(trip);
                     Collections.sort(trips);
                     viewAdapter.notifyDataSetChanged();
-                    if (listType == 0) {
-                        checkAlarm(trip);
-                    }
+                    checkAlarm(trip);
                 }
             }
 
@@ -281,19 +282,10 @@ public class TripsViewFragment extends Fragment {
     }
 
 
-    public static TripsViewFragment newInstance(int type) {
-        Bundle args = new Bundle();
-        args.putInt(LIST_VIEW_TYPE, type);
-        TripsViewFragment fragment = new TripsViewFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onStart() {
         super.onStart();
         queryReference.addChildEventListener(listener);
-
     }
 
     @Override
@@ -301,6 +293,26 @@ public class TripsViewFragment extends Fragment {
         super.onStop();
         queryReference.removeEventListener(listener);
         trips.clear();
+    }
+
+    @Override
+    public void onItemClick(int index) {
+        // Toast.makeText(getContext(), "Click", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMenuClick(int i, View v) {
+        Toast.makeText(getContext(), "I am good", Toast.LENGTH_SHORT).show();
+        PopupMenu popupMenu = new PopupMenu(getContext(), v);
+        popupMenu.getMenuInflater().inflate(R.menu.trip_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return false;
+            }
+        });
+        //popupMenu.inflate(R.menu.trip_menu);
+        popupMenu.show();
     }
 
     public enum TRIP_STATUS {

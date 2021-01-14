@@ -9,7 +9,9 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.example.easytripplanner.Fragments.PastTripFragment;
+import com.example.easytripplanner.Fragments.TripsViewFragment;
+import com.example.easytripplanner.MapFragment;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.SectionsPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
@@ -42,8 +44,78 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),
-                MainActivity.this);
+        sNavigationDrawer = findViewById(R.id.navigation_drawer);
+        List<MenuItem> itemList = new ArrayList<>();
+        //add menu item in list
+        itemList.add(new MenuItem("Upcoming", R.drawable.car));
+        itemList.add(new MenuItem("History", R.drawable.history));
+        itemList.add(new MenuItem("Maps", R.drawable.download));
+        itemList.add(new MenuItem("Logout", R.drawable.log));
+        // itemList.add(new MenuItem("About As",R.drawable.ic_baseline_info_24));
+        // itemList.add(new MenuItem("Logout",R.drawable.ic_baseline_power_settings_new_24));
+
+        //set menu item
+        sNavigationDrawer.setMenuItemList(itemList);
+        //set defualt title
+        sNavigationDrawer.setAppbarTitleTV("Upcoming");
+        //defualt fragment
+        aClass = TripsViewFragment.class;
+        //open fragment
+        openFragment();
+        sNavigationDrawer.setOnMenuItemClickListener(new SNavigationDrawer.OnMenuItemClickListener() {
+            @Override
+            public void onMenuItemClicked(int position) {
+                switch (position) {
+                    case 0:
+                        aClass = TripsViewFragment.class;
+                        break;
+                    case 1:
+                        aClass = PastTripFragment.class;
+                        break;
+                    case 2:
+                        aClass = MapFragment.class;
+                        break;
+                    case 3:
+                        FirebaseAuth.getInstance().signOut();
+
+                        //aClass=LoginActivity.class;
+
+                        // Log.i(TAG, "onMenuItemClicked: current Usr: " + FirebaseAuth.getInstance().getCurrentUser());
+                        MainActivity.this.startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        break;
+                }
+
+            }
+        });
+
+        sNavigationDrawer.setDrawerListener(new SNavigationDrawer.DrawerListener() {
+            @Override
+            public void onDrawerOpening() {
+
+            }
+
+            @Override
+            public void onDrawerClosing() {
+                openFragment();
+            }
+
+            @Override
+            public void onDrawerOpened() {
+
+            }
+
+            @Override
+            public void onDrawerClosed() {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+
+        // mAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),MainActivity.this);
 
 
         //tabs

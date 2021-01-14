@@ -61,6 +61,7 @@
         </activity>
         <activity
             android:name=".activities.MainActivity"
+            android:noHistory="true"
             android:theme="@style/Theme.EasyTripPlanner.NoActionBar" />
 
         <meta-data
