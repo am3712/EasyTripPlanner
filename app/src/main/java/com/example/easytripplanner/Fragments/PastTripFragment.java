@@ -3,7 +3,6 @@ package com.example.easytripplanner.Fragments;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import static com.example.easytripplanner.Fragments.TripsViewFragment.LIST_STATE_KEY;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -37,9 +38,8 @@ public class PastTripFragment extends Fragment {
 
 
     private static final String TAG = "PastTripFragment";
-    public final static String LIST_STATE_KEY = "recycler_list_state";
     @SuppressLint("SimpleDateFormat")
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
+    public static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
 
     private TripRecyclerViewAdapter viewAdapter;
     private ArrayList<Trip> trips;
@@ -65,9 +65,6 @@ public class PastTripFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         initQueryAndListener();
-
-
-        Log.i(TAG, "onCreateView: Called");
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_trip, container, false);

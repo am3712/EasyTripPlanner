@@ -7,36 +7,38 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.Fragment;
 
 import com.example.easytripplanner.Fragments.PastTripFragment;
 import com.example.easytripplanner.Fragments.TripsViewFragment;
 import com.example.easytripplanner.MapFragment;
 import com.example.easytripplanner.R;
-import com.example.easytripplanner.adapters.SectionsPagerAdapter;
-import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.shrikanthravi.customnavigationdrawer2.data.MenuItem;
+import com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+
+    SNavigationDrawer sNavigationDrawer;
+    Class aClass;
 
     // configure icons
     private final int[] imageResId = {
             R.drawable.baseline_event_note_24,
             R.drawable.baseline_event_available_24};
     private static final String TAG = "MainActivity";
-    public static String POSITION = "POSITION";
 
     // Notification channel ID.
     public static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
 
 
-    TabLayout tabLayout;
-    ViewPager pager;
-    SectionsPagerAdapter mAdapter;
 
 
     @Override
@@ -115,53 +117,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // mAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),MainActivity.this);
-
-
-        //tabs
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
-        pager = findViewById(R.id.view_pager);
-        pager.setOffscreenPageLimit(2);
-
-        pager.setAdapter(mAdapter);
-
-        pager.setPageTransformer(true, new RotateUpTransformer());
-        //pager.setPageTransformer(true, new AccordionTransformer());
-        //pager.setPageTransformer(true, new BackgroundToForegroundTransformer());
-        //pager.setPageTransformer(true, new ZoomInTransformer());
-        //pager.setPageTransformer(true, new CubeInTransformer());
-        //pager.setPageTransformer(true, new DepthPageTransformer());
-        //pager.setPageTransformer(true, new TabletTransformer());
-        //pager.setPageTransformer(true, new FlipHorizontalTransformer());
-
-        // Give the TabLayout the ViewPager
-        tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(pager);
-
         findViewById(R.id.add_button).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, NewTripActivity.class);
             startActivity(intent);
         });
 
-
-        for (int i = 0; i < imageResId.length; i++) {
-            Objects.requireNonNull(tabLayout.getTabAt(i)).setIcon(imageResId[i]);
-        }
-
         // Create the notification channel.
         createNotificationChannel();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NotNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        pager.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 
 
@@ -188,6 +150,19 @@ public class MainActivity extends AppCompatActivity {
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.enableVibration(true);
             mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    private void openFragment() {
+        try {
+            Fragment fragment = (Fragment) aClass.newInstance();
+            //open fragment
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.frame_layout, fragment)
+                    .commit();
+        } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
         }
     }
 
