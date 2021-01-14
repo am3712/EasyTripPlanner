@@ -1,13 +1,16 @@
 package com.example.easytripplanner.activities;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.easytripplanner.Fragments.TripsViewFragment;
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.services.FloatingViewService;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -44,6 +48,7 @@ public class MyDialog extends AppCompatActivity {
     private Intent receiverIntent;
     private NotificationManager mNotificationManager;
     private boolean isNotificationFired;
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
 
     private static final String TAG = "MyDialog";
     private static String GROUP_KEY = "com.android.example.EasyTripPlanner";
@@ -83,13 +88,12 @@ public class MyDialog extends AppCompatActivity {
                 .setTitle("Reminder: " + tripName)
                 .setMessage(("to : " + tripLocAddress))
                 .setPositiveButton("START", (dialog, which) -> {
-                    changeTripStatus(TripsViewFragment.TRIP_STATUS.DONE.name());
-                    startNavigation();
-                    mNotificationManager.cancel(tripHashCode);
+                    checkOverlayPermissionAndStartNav();
                 })
                 .setNegativeButton("CANCEL", (dialog, which) -> {
                     changeTripStatus(TripsViewFragment.TRIP_STATUS.CANCELED.name());
                     mNotificationManager.cancel(tripHashCode);
+                    finishAndRemoveTask();
                 })
                 .setNeutralButton("SNOOZE", (dialog, which) -> {
                     isNotificationFired = receiverIntent.getBooleanExtra(NOTIFICATION_STATUS, false);
@@ -97,9 +101,6 @@ public class MyDialog extends AppCompatActivity {
                         receiverIntent.putExtra(NOTIFICATION_STATUS, true);
                         deliverNotification();
                     }
-
-                })
-                .setOnDismissListener(dialog -> {
                     finishAndRemoveTask();
                 });
         AlertDialog alertDialog = builder.create();
@@ -164,6 +165,43 @@ public class MyDialog extends AppCompatActivity {
             this.startActivity(mapIntent);
         } else {
             Toast.makeText(this, "please install google maps!!!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void checkOverlayPermissionAndStartNav() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+                return;
+            }
+        }
+        startAction();
+        startService(new Intent(MyDialog.this, FloatingViewService.class));
+        finishAndRemoveTask();
+    }
+
+    private void startAction() {
+        changeTripStatus(TripsViewFragment.TRIP_STATUS.DONE.name());
+        startNavigation();
+        mNotificationManager.cancel(tripHashCode);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
+            if (!Settings.canDrawOverlays(this)) {
+                // You don't have permission
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            } else {
+                startService(new Intent(MyDialog.this, FloatingViewService.class));
+            }
+            startAction();
+            finishAndRemoveTask();
         }
     }
 }
