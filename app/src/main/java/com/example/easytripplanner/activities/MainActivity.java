@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -53,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         sNavigationDrawer = findViewById(R.id.navigation_drawer);
-        List<MenuItem> itemList = new ArrayList<>();
+        List<com.shrikanthravi.customnavigationdrawer2.data.MenuItem> itemList = new ArrayList<>();
         //add menu item in list
-        itemList.add(new MenuItem("Upcoming", R.drawable.car));
-        itemList.add(new MenuItem("History", R.drawable.history));
-        itemList.add(new MenuItem("Maps", R.drawable.download));
-        itemList.add(new MenuItem("Logout", R.drawable.log));
+        itemList.add(new com.shrikanthravi.customnavigationdrawer2.data.MenuItem("Upcoming", R.drawable.car));
+        itemList.add(new com.shrikanthravi.customnavigationdrawer2.data.MenuItem("History", R.drawable.history));
+        itemList.add(new com.shrikanthravi.customnavigationdrawer2.data.MenuItem("Maps", R.drawable.download));
+        itemList.add(new com.shrikanthravi.customnavigationdrawer2.data.MenuItem("Logout", R.drawable.log));
         // itemList.add(new MenuItem("About As",R.drawable.ic_baseline_info_24));
         // itemList.add(new MenuItem("Logout",R.drawable.ic_baseline_power_settings_new_24));
 
