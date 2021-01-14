@@ -9,11 +9,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- To request foreground location access, declare one of these permissions. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <queries>
+
         <!-- show maps -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
+
             <data android:scheme="geo:latitude,longitude" />
         </intent>
     </queries>
@@ -28,18 +31,28 @@
         android:theme="@style/Theme.EasyTripPlanner"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <receiver
-            android:name=".broadcastreceiver.AlarmReceiver"
+        <service
+            android:name=".services.FloatingViewService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.MyDialog"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.Transparent" />
+
+        <receiver
+            android:name=".services.AlarmReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".NewTripActivity" />
-        <activity android:name=".RegistrationActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activities.NewTripActivity" />
+        <activity android:name=".activities.RegistrationActivity" />
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

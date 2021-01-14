@@ -1,4 +1,4 @@
-package com.example.easytripplanner;
+package com.example.easytripplanner.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
+import com.example.easytripplanner.R;
 import com.example.easytripplanner.databinding.ActivityNewTripBinding;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.models.Note;

@@ -1,4 +1,4 @@
-package com.example.easytripplanner;
+package com.example.easytripplanner.activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,6 +13,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.easytripplanner.Fragments.PastTripFragment;
 import com.example.easytripplanner.Fragments.TripsViewFragment;
+import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.SectionsPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.shrikanthravi.customnavigationdrawer2.data.MenuItem;

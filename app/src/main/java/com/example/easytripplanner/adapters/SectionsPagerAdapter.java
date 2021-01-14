@@ -1,4 +1,4 @@
-package com.example.easytripplanner;
+package com.example.easytripplanner.adapters;
 
 import android.content.Context;
 
@@ -6,6 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+
+import com.example.easytripplanner.Fragments.TripsViewFragment;
+import com.example.easytripplanner.R;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 2;
