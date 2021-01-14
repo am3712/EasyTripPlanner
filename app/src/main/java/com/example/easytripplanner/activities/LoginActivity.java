@@ -1,4 +1,4 @@
-package com.example.easytripplanner;
+package com.example.easytripplanner.activities;
 
 import android.content.Intent;
 import android.os.Build;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.easytripplanner.R;
 import com.example.easytripplanner.databinding.ActivityLoginBinding;
 import com.example.easytripplanner.utility.Common;
 import com.google.android.gms.tasks.OnCompleteListener;

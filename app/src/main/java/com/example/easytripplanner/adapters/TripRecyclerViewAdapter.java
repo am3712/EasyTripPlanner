@@ -1,4 +1,4 @@
-package com.example.easytripplanner.Fragments;
+package com.example.easytripplanner.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

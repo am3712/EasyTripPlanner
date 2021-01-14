@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/navigation_drawer"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
-  <!--  <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.TabActivityReview.AppBarOverlay">
@@ -28,35 +25,27 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-    </com.google.android.material.appbar.AppBarLayout>-->
+    </com.google.android.material.appbar.AppBarLayout>
 
-   <!-- <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />-->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/frame_layout">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginLeft="280dp"
-            android:layout_marginTop="530dp"
-            android:layout_marginBottom="@dimen/_16sdp"
-            android:backgroundTint="#FFC107"
-            android:clickable="true"
-            android:contentDescription="@string/add_new_trip_button"
-            android:focusable="true"
-            android:src="@android:drawable/ic_input_add"
-            app:borderWidth="0dp"
-            app:fabSize="normal" />
-
-    </FrameLayout>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-</com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_16sdp"
+        android:backgroundTint="#FFFB4C40"
+        android:clickable="true"
+        android:contentDescription="@string/add_new_trip_button"
+        android:focusable="true"
+        android:src="@android:drawable/ic_input_add"
+        app:borderWidth="0dp"
+        app:fabSize="normal" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
