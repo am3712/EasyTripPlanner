@@ -45,14 +45,12 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class TripsViewFragment extends Fragment {
 
-    private static final String LIST_VIEW_TYPE = "LIST_TYPE";
     public static final String TRIP_NAME = "Name";
     public static final String TRIP_LOCATION_NAME = "LOCATION NAME";
     public static final String TRIP_LOC_LONGITUDE = "LOCATION LONGITUDE";
     public static final String TRIP_LOC_LATITUDE = "LOCATION LATITUDE";
     public static final String TRIP_ID = "ID";
     public static final String TRIP_HASH_CODE = "HASH CODE";
-    private int listType;
     private static final String TAG = "TripsViewFragment";
     public final static String LIST_STATE_KEY = "recycler_list_state";
     @SuppressLint("SimpleDateFormat")
@@ -81,10 +79,6 @@ public class TripsViewFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if (getArguments() != null) {
-            listType = getArguments().getInt(LIST_VIEW_TYPE);
-        }
-
         initQueryAndListener();
 
         // Inflate the layout for this fragment
@@ -93,7 +87,7 @@ public class TripsViewFragment extends Fragment {
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
             viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, item -> {
-                
+
             });
             recyclerView.setAdapter(viewAdapter);
             //recyclerView.setAdapter(new TripRecyclerViewAdapter(games, item -> ((Communicator) getActivity()).openGame(item)));
@@ -110,6 +104,9 @@ public class TripsViewFragment extends Fragment {
 
     private void initQueryAndListener() {
         String userId = FirebaseAuth.getInstance().getUid();
+        if (userId == null)
+            return;
+
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -119,19 +116,11 @@ public class TripsViewFragment extends Fragment {
             currentUserRef.keepSynced(true);
         }
 
-
-        if (listType == 0) {
-            //get upcoming trips
-            queryReference = currentUserRef
-                    .orderByChild("status")
-                    .startAt(TRIP_STATUS.FORGOTTEN.name())
-                    .endAt(TRIP_STATUS.UPCOMING.name());
-        } else {
-            queryReference = currentUserRef
-                    .orderByChild("status")
-                    .startAt(TRIP_STATUS.CANCELED.name())
-                    .endAt(TRIP_STATUS.DONE.name());
-        }
+        //get upcoming trips
+        queryReference = currentUserRef
+                .orderByChild("status")
+                .startAt(TRIP_STATUS.FORGOTTEN.name())
+                .endAt(TRIP_STATUS.UPCOMING.name());
 
         DatabaseReference finalCurrentUserRef = currentUserRef;
 
@@ -146,13 +135,13 @@ public class TripsViewFragment extends Fragment {
                         calendar.setTimeInMillis(trip.timeInMilliSeconds);
                         trip.setDate(formatter.format(calendar.getTime()));
 
-                        if (listType == 0 && trip.timeInMilliSeconds < System.currentTimeMillis()) {
+                        if (trip.timeInMilliSeconds < System.currentTimeMillis())
                             finalCurrentUserRef.child(trip.pushId).child("status").setValue("FORGOTTEN");
-                        }
+
                         trips.add(trip);
                         viewAdapter.notifyDataSetChanged();
                         count++;
-                        if (count >= snapshot.getChildrenCount() && listType == 0) {
+                        if (count >= snapshot.getChildrenCount()) {
                             Collections.sort(trips);
                             viewAdapter.notifyDataSetChanged();
                             checkAlarm();
@@ -251,7 +240,6 @@ public class TripsViewFragment extends Fragment {
         // Save list state
         listState = mLayoutManager.onSaveInstanceState();
         outState.putParcelable(LIST_STATE_KEY, listState);
-        outState.putInt(LIST_VIEW_TYPE, listType);
     }
 
     @Override
@@ -260,37 +248,22 @@ public class TripsViewFragment extends Fragment {
         // Retrieve list state and list/item positions
         if (savedInstanceState != null) {
             listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
-            listType = savedInstanceState.getInt(LIST_VIEW_TYPE);
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        queryReference.addListenerForSingleValueEvent(listener);
         if (listState != null) {
             mLayoutManager.onRestoreInstanceState(listState);
         }
     }
 
 
-    public static TripsViewFragment newInstance(int type) {
-        Bundle args = new Bundle();
-        args.putInt(LIST_VIEW_TYPE, type);
-        TripsViewFragment fragment = new TripsViewFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onStart() {
-        super.onStart();
-        queryReference.addListenerForSingleValueEvent(listener);
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
         queryReference.removeEventListener(listener);
         trips.clear();
     }

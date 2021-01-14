@@ -77,5 +77,7 @@ dependencies {
     implementation 'me.spark:submitbutton:1.0.1'
 
     implementation 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:2.0.24'
+    //navigation
+    implementation 'com.github.shrikanth7698:Custom-Navigation-Drawer:0.0.1'
 
 }

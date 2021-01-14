@@ -48,7 +48,9 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.EasyTripPlanner.NoActionBar" />
+            android:theme="@style/Theme.EasyTripPlanner.NoActionBar"
+            android:noHistory="true"
+            />
 
         <meta-data
             android:name="preloaded_fonts"
