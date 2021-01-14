@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
-import com.example.easytripplanner.services.AlarmReceiver;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.services.AlarmReceiver;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -90,7 +90,7 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips) ;
+            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips);
             viewAdapter.setClick(this);
 
             recyclerView.setAdapter(viewAdapter);
@@ -138,15 +138,13 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
                     calendar.setTimeInMillis(trip.timeInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
 
-                    if ( trip.timeInMilliSeconds < System.currentTimeMillis()) {
+                    if (trip.timeInMilliSeconds < System.currentTimeMillis()) {
                         finalCurrentUserRef.child(trip.pushId).child("status").setValue("FORGOTTEN");
                     }
                     trips.add(trip);
                     Collections.sort(trips);
                     viewAdapter.notifyDataSetChanged();
-                    if (listType == 0) {
-                        checkAlarm(trip);
-                    }
+                    checkAlarm(trip);
                 }
             }
 
@@ -265,7 +263,6 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
     @Override
     public void onResume() {
         super.onResume();
-        queryReference.addListenerForSingleValueEvent(listener);
         if (listState != null) {
             mLayoutManager.onRestoreInstanceState(listState);
         }
@@ -273,22 +270,28 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
 
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStart() {
+        super.onStart();
+        queryReference.addChildEventListener(listener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         queryReference.removeEventListener(listener);
         trips.clear();
     }
 
     @Override
     public void onItemClick(int index) {
-       // Toast.makeText(getContext(), "Click", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getContext(), "Click", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onMenuClick(int i,View v) {
+    public void onMenuClick(int i, View v) {
         Toast.makeText(getContext(), "I am good", Toast.LENGTH_SHORT).show();
-        PopupMenu popupMenu =new PopupMenu(getContext(),v);
-        popupMenu.getMenuInflater().inflate(R.menu.trip_menu,popupMenu.getMenu());
+        PopupMenu popupMenu = new PopupMenu(getContext(), v);
+        popupMenu.getMenuInflater().inflate(R.menu.trip_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

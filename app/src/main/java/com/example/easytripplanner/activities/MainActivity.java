@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -13,7 +12,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.easytripplanner.Fragments.PastTripFragment;
 import com.example.easytripplanner.Fragments.TripsViewFragment;
-import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.example.easytripplanner.MapFragment;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.SectionsPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
@@ -85,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
                         //aClass=LoginActivity.class;
 
-                       // Log.i(TAG, "onMenuItemClicked: current Usr: " + FirebaseAuth.getInstance().getCurrentUser());
-                       MainActivity.this.startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        // Log.i(TAG, "onMenuItemClicked: current Usr: " + FirebaseAuth.getInstance().getCurrentUser());
+                        MainActivity.this.startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;
                 }
 

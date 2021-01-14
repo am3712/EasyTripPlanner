@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
 import com.example.easytripplanner.models.Trip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;

@@ -60,10 +60,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.EasyTripPlanner.NoActionBar"
+            android:name=".activities.MainActivity"
             android:noHistory="true"
-            />
+            android:theme="@style/Theme.EasyTripPlanner.NoActionBar" />
 
         <meta-data
             android:name="preloaded_fonts"
