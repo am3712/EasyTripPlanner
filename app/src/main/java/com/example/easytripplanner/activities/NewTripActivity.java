@@ -78,7 +78,7 @@ public class NewTripActivity extends AppCompatActivity {
     Note mNote;
     private long dateInMilliseconds;
     private long timeInMilliseconds;
-    private DatabaseReference userRef;
+    public DatabaseReference userRef;
 
     private static final int LOCATION_REQUEST_CODE = 0;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -139,7 +139,7 @@ public class NewTripActivity extends AppCompatActivity {
         setComponentsAction();
     }
 
-    private void enableEditMode() {
+    public void enableEditMode() {
         userRef.child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

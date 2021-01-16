@@ -1,7 +1,7 @@
 package com.example.easytripplanner.utility;
 
-import com.example.easytripplanner.models.Trip;
+import android.view.View;
 
 public interface OnItemClickListener {
-    void onItemClick(Trip item);
+    void onItemClick(View view, String tripId);
 }

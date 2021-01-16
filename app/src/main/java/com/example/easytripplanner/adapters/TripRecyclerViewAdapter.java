@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.utility.OnItemClickListener;
 
 import java.util.ArrayList;
 
@@ -22,20 +23,15 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     ArrayList<Trip> trips;
     private OnItemClickListener listener;
 
-    public interface OnItemClickListener {
-        void onItemClick(int index);
-
-        void onMenuClick(int i, View v);
-    }
-
-    public void setClick(OnItemClickListener obj) {
-        listener = obj;
-    }
-
-    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t) {
+    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t, OnItemClickListener listener) {
         context = c;
         trips = t;
+        this.listener = listener;
+    }
 
+    public TripRecyclerViewAdapter(Context context, ArrayList<Trip> trips) {
+        this.context = context;
+        this.trips = trips;
     }
 
     @NonNull
@@ -52,7 +48,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         holder.endPointView.setText(trips.get(position).locationTo.Address);
         holder.dateView.setText(trips.get(position).getDate());
         holder.statusView.setText(trips.get(position).status);
-        //holder.itemView.setOnClickListener(v -> listener.onItemClick(trips.get(position)));
+        holder.btnMore.setOnClickListener(v -> listener.onItemClick(holder.btnMore, trips.get(position).pushId));
 
     }
 
@@ -61,7 +57,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         return trips.size();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         public final TextView tripNameView;
         public final TextView startPointView;
         public final TextView endPointView;
@@ -77,18 +73,6 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
             statusView = itemView.findViewById(R.id.statusView);
             dateView = itemView.findViewById(R.id.dateTextView);
             btnMore = itemView.findViewById(R.id.btnMore);
-            itemView.setOnClickListener(this);
-            btnMore.setOnClickListener(this);
-
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (listener != null) {
-                listener.onItemClick(getAdapterPosition());
-                listener.onMenuClick(getAdapterPosition(), v);
-            }
         }
     }
 
