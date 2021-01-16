@@ -1,5 +1,6 @@
 package com.example.easytripplanner.Fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -7,8 +8,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -33,6 +34,7 @@ import com.google.firebase.database.Query;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -40,12 +42,11 @@ import java.util.Objects;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
-import static com.example.easytripplanner.Fragments.PastTripFragment.formatter;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapter.OnItemClickListener {
+public class TripsViewFragment extends Fragment {
 
     public static final String TRIP_NAME = "Name";
     public static final String TRIP_LOCATION_NAME = "LOCATION NAME";
@@ -53,16 +54,21 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
     public static final String TRIP_LOC_LATITUDE = "LOCATION LATITUDE";
     public static final String TRIP_ID = "ID";
     public static final String TRIP_HASH_CODE = "HASH CODE";
-    public final static String LIST_STATE_KEY = "recycler_list_state";
     private static final String TAG = "TripsViewFragment";
+    public final static String LIST_STATE_KEY = "recycler_list_state";
+    @SuppressLint("SimpleDateFormat")
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
 
-    Parcelable listState;
     private TripRecyclerViewAdapter viewAdapter;
     private ArrayList<Trip> trips;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView recyclerView;
     private ChildEventListener listener;
     private Query queryReference;
+    DatabaseReference currentUserRef;
+    private String tripId;
+
+    Parcelable listState;
 
     public TripsViewFragment() {
 
@@ -77,6 +83,7 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         initQueryAndListener();
 
         // Inflate the layout for this fragment
@@ -84,9 +91,10 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips);
-            viewAdapter.setClick(this);
-
+            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, (view1, id) -> {
+                tripId = id;
+                showMenu(view1);
+            });
             recyclerView.setAdapter(viewAdapter);
             //recyclerView.setAdapter(new TripRecyclerViewAdapter(games, item -> ((Communicator) getActivity()).openGame(item)));
         }
@@ -100,27 +108,25 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
 
     }
 
-    private void initQueryAndListener() {
+    public void initQueryAndListener() {
         String userId = FirebaseAuth.getInstance().getUid();
-
         if (userId == null)
             return;
 
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        DatabaseReference currentUserRef = null;
+        currentUserRef = null;
         if (userId != null) {
             currentUserRef = database.getReference("Users").child(userId);
             currentUserRef.keepSynced(true);
         }
-
 
         //get upcoming trips
         queryReference = currentUserRef
                 .orderByChild("status")
                 .startAt(TRIP_STATUS.FORGOTTEN.name())
                 .endAt(TRIP_STATUS.UPCOMING.name());
-
 
         DatabaseReference finalCurrentUserRef = currentUserRef;
 
@@ -129,7 +135,8 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
-                if (trip != null) {
+                Log.i(TAG, "onChildAdded: trip: " + trip);
+                if (trip != null && trip.timeInMilliSeconds != null) {
                     calendar.setTimeInMillis(trip.timeInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
 
@@ -144,13 +151,13 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String
-                    previousChildName) {
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Trip trip = snapshot.getValue(Trip.class);
 
             }
 
@@ -180,6 +187,9 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
                 sharedPref.edit().remove(t.pushId).apply();
             }
         } else if (!sharedPref.contains(t.pushId)) {
+
+            //save trips id and trigger time in sharedPreference
+            Log.i(TAG, "checkAlarm: trip name: " + t.name + ", fire alarm");
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putLong(t.pushId, t.timeInMilliSeconds);
             editor.apply();
@@ -189,6 +199,8 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
             intent.putExtra(TRIP_NAME, t.name);
             intent.putExtra(TRIP_ID, t.pushId);
             intent.putExtra(TRIP_HASH_CODE, t.pushId.hashCode());
+            Log.i(TAG, "checkAlarm: longitude: " + t.locationTo.longitude);
+            Log.i(TAG, "checkAlarm: latitude: " + t.locationTo.latitude);
             intent.putExtra(TRIP_LOCATION_NAME, t.locationTo.Address);
             intent.putExtra(TRIP_LOC_LONGITUDE, t.locationTo.longitude);
             intent.putExtra(TRIP_LOC_LATITUDE, t.locationTo.latitude);
@@ -263,36 +275,41 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
     @Override
     public void onStart() {
         super.onStart();
-        if (queryReference != null)
-            queryReference.addChildEventListener(listener);
+        queryReference.addChildEventListener(listener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (queryReference != null) {
-            queryReference.removeEventListener(listener);
-            trips.clear();
-        }
+        queryReference.removeEventListener(listener);
+        trips.clear();
     }
 
-    @Override
-    public void onItemClick(int index) {
-        // Toast.makeText(getContext(), "Click", Toast.LENGTH_SHORT).show();
-    }
+    private void showMenu(View v) {
 
-    @Override
-    public void onMenuClick(int i, View v) {
-        Toast.makeText(getContext(), "I am good", Toast.LENGTH_SHORT).show();
         PopupMenu popupMenu = new PopupMenu(getContext(), v);
         popupMenu.getMenuInflater().inflate(R.menu.trip_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return false;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.edit:
+
+                    Toast.makeText(getContext(), "edit", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.del:
+
+                    currentUserRef.child(tripId).removeValue(new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                            Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    Log.i(TAG, "onMenuItemClick: currentUserRef: " + currentUserRef);
+                    Log.i(TAG, "onMenuItemClick: tripId: " + tripId);
+                    return true;
             }
+
+            return false;
         });
-        //popupMenu.inflate(R.menu.trip_menu);
         popupMenu.show();
     }
 
