@@ -1,4 +1,4 @@
-package com.example.easytripplanner.activities;
+package com.example.easytripplanner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -25,7 +25,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
-import com.example.easytripplanner.R;
 import com.example.easytripplanner.databinding.ActivityNewTripBinding;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.models.Note;
@@ -78,7 +77,7 @@ public class NewTripActivity extends AppCompatActivity {
     Note mNote;
     private long dateInMilliseconds;
     private long timeInMilliseconds;
-    public DatabaseReference userRef;
+    private DatabaseReference userRef;
 
     private static final int LOCATION_REQUEST_CODE = 0;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -139,7 +138,7 @@ public class NewTripActivity extends AppCompatActivity {
         setComponentsAction();
     }
 
-    public void enableEditMode() {
+    private void enableEditMode() {
         userRef.child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

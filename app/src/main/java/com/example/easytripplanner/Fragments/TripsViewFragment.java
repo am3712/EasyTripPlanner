@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -47,7 +46,7 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapter.OnItemClickListener {
+public class TripsViewFragment extends Fragment {
 
     public static final String TRIP_NAME = "Name";
     public static final String TRIP_LOCATION_NAME = "LOCATION NAME";
@@ -66,6 +65,8 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
     private RecyclerView recyclerView;
     private ChildEventListener listener;
     private Query queryReference;
+    DatabaseReference currentUserRef;
+    private String tripId;
 
     Parcelable listState;
 
@@ -90,9 +91,10 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips);
-            viewAdapter.setClick(this);
-
+            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, (view1, id) -> {
+                tripId = id;
+                showMenu(view1);
+            });
             recyclerView.setAdapter(viewAdapter);
             //recyclerView.setAdapter(new TripRecyclerViewAdapter(games, item -> ((Communicator) getActivity()).openGame(item)));
         }
@@ -106,7 +108,7 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
 
     }
 
-    private void initQueryAndListener() {
+    public void initQueryAndListener() {
         String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null)
             return;
@@ -114,7 +116,7 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        DatabaseReference currentUserRef = null;
+        currentUserRef = null;
         if (userId != null) {
             currentUserRef = database.getReference("Users").child(userId);
             currentUserRef.keepSynced(true);
@@ -155,6 +157,7 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Trip trip = snapshot.getValue(Trip.class);
 
             }
 
@@ -282,23 +285,31 @@ public class TripsViewFragment extends Fragment implements TripRecyclerViewAdapt
         trips.clear();
     }
 
-    @Override
-    public void onItemClick(int index) {
-        // Toast.makeText(getContext(), "Click", Toast.LENGTH_SHORT).show();
-    }
+    private void showMenu(View v) {
 
-    @Override
-    public void onMenuClick(int i, View v) {
-        Toast.makeText(getContext(), "I am good", Toast.LENGTH_SHORT).show();
         PopupMenu popupMenu = new PopupMenu(getContext(), v);
         popupMenu.getMenuInflater().inflate(R.menu.trip_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return false;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.edit:
+
+                    Toast.makeText(getContext(), "edit", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.del:
+
+                    currentUserRef.child(tripId).removeValue(new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                            Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    Log.i(TAG, "onMenuItemClick: currentUserRef: " + currentUserRef);
+                    Log.i(TAG, "onMenuItemClick: tripId: " + tripId);
+                    return true;
             }
+
+            return false;
         });
-        //popupMenu.inflate(R.menu.trip_menu);
         popupMenu.show();
     }
 
