@@ -136,7 +136,7 @@ public class TripsViewFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
                 Log.i(TAG, "onChildAdded: trip: " + trip);
-                if (trip != null) {
+                if (trip != null && trip.timeInMilliSeconds != null) {
                     calendar.setTimeInMillis(trip.timeInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
 

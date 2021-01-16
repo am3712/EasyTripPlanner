@@ -8,14 +8,10 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.example.easytripplanner.Fragments.PastTripFragment;
 import com.example.easytripplanner.Fragments.TripsViewFragment;
-import com.example.easytripplanner.MapFragment;
 import com.example.easytripplanner.R;
-import com.example.easytripplanner.adapters.SectionsPagerAdapter;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.shrikanthravi.customnavigationdrawer2.data.MenuItem;
 import com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer;
@@ -38,9 +34,6 @@ public class MainActivity extends AppCompatActivity {
             "primary_notification_channel";
 
 
-    TabLayout tabLayout;
-    ViewPager pager;
-    SectionsPagerAdapter mAdapter;
 
 
     @Override
@@ -54,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         itemList.add(new MenuItem("Upcoming", R.drawable.car));
         itemList.add(new MenuItem("History", R.drawable.history));
         itemList.add(new MenuItem("Maps", R.drawable.download));
-        itemList.add(new MenuItem("Logout", R.drawable.log));
+        //itemList.add(new MenuItem("Logout", R.drawable.log));
         // itemList.add(new MenuItem("About As",R.drawable.ic_baseline_info_24));
         // itemList.add(new MenuItem("Logout",R.drawable.ic_baseline_power_settings_new_24));
 
@@ -76,10 +69,8 @@ public class MainActivity extends AppCompatActivity {
                     case 1:
                         aClass = PastTripFragment.class;
                         break;
+
                     case 2:
-                        aClass = MapFragment.class;
-                        break;
-                    case 3:
                         FirebaseAuth.getInstance().signOut();
 
                         //aClass=LoginActivity.class;
