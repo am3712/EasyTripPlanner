@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.easytripplanner.Fragments.NewTripFragment;
 import com.example.easytripplanner.Fragments.PastTripFragment;
 import com.example.easytripplanner.Fragments.TripsViewFragment;
 import com.example.easytripplanner.R;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         //add menu item in list
         itemList.add(new MenuItem("Upcoming", R.drawable.car));
         itemList.add(new MenuItem("History", R.drawable.history));
-        itemList.add(new MenuItem("Maps", R.drawable.download));
+        itemList.add(new MenuItem("Logout", R.drawable.download));
         //itemList.add(new MenuItem("Logout", R.drawable.log));
         // itemList.add(new MenuItem("About As",R.drawable.ic_baseline_info_24));
         // itemList.add(new MenuItem("Logout",R.drawable.ic_baseline_power_settings_new_24));
@@ -134,8 +135,7 @@ public class MainActivity extends AppCompatActivity {
         // tabLayout.setupWithViewPager(pager);
 
         findViewById(R.id.add_button).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, NewTripActivity.class);
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new NewTripFragment()).addToBackStack(null).commit();
         });
 
 

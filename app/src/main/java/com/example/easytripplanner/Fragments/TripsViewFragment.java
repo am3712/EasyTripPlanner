@@ -293,7 +293,7 @@ public class TripsViewFragment extends Fragment {
             switch (item.getItemId()) {
                 case R.id.edit:
 
-                    Toast.makeText(getContext(), "edit", Toast.LENGTH_SHORT).show();
+                  Toast.makeText(getContext(), "edit", Toast.LENGTH_SHORT).show();
                     return true;
                 case R.id.del:
 
@@ -319,4 +319,5 @@ public class TripsViewFragment extends Fragment {
         CANCELED,
         UPCOMING
     }
+
 }
