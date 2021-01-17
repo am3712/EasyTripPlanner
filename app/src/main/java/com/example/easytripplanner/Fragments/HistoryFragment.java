@@ -29,15 +29,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import static com.example.easytripplanner.Fragments.TripsViewFragment.LIST_STATE_KEY;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.LIST_STATE_KEY;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PastTripFragment extends Fragment {
+public class HistoryFragment extends Fragment {
 
 
-    private static final String TAG = "PastTripFragment";
+    private static final String TAG = "HistoryFragment";
     @SuppressLint("SimpleDateFormat")
     public static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
 
@@ -50,7 +50,7 @@ public class PastTripFragment extends Fragment {
 
     Parcelable listState;
 
-    public PastTripFragment() {
+    public HistoryFragment() {
 
     }
 
@@ -67,7 +67,7 @@ public class PastTripFragment extends Fragment {
         initQueryAndListener();
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list_trip, container, false);
+        View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
@@ -102,8 +102,8 @@ public class PastTripFragment extends Fragment {
 
         queryReference = currentUserRef
                 .orderByChild("status")
-                .startAt(TripsViewFragment.TRIP_STATUS.CANCELED.name())
-                .endAt(TripsViewFragment.TRIP_STATUS.DONE.name());
+                .startAt(UpcomingFragment.TRIP_STATUS.CANCELED.name())
+                .endAt(UpcomingFragment.TRIP_STATUS.DONE.name());
 
         listener = new ValueEventListener() {
             @Override

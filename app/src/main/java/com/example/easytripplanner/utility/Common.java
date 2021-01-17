@@ -1,18 +1,14 @@
 package com.example.easytripplanner.utility;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Build;
-import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.example.easytripplanner.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 public abstract class Common {
 
@@ -21,9 +17,9 @@ public abstract class Common {
         boolean b = Pattern.compile(
                 "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
         ).matcher(strPattern).matches();
-        Log.i("Common", "strPattern : " + strPattern);
-        Log.i("Common", "matches : " + b);
-        return b;
+        Timber.i("strPattern : %s", strPattern);
+        Timber.i("matches : %s", b);
+        return !b;
     }
 
     public static boolean isValidPassword(String password) {
@@ -34,16 +30,6 @@ public abstract class Common {
         matcher = pattern.matcher(password);
         return matcher.matches();
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public static boolean isCheckNetwork(Context context) {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-    }
-
 
 /*
     open var

@@ -18,7 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
-import com.example.easytripplanner.Fragments.TripsViewFragment;
+import com.example.easytripplanner.Fragments.UpcomingFragment;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.services.FloatingViewService;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -29,12 +29,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Objects;
 
 import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_HASH_CODE;
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_LOCATION_NAME;
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_LOC_LATITUDE;
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_LOC_LONGITUDE;
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_NAME;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_HASH_CODE;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOCATION_NAME;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOC_LATITUDE;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOC_LONGITUDE;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_NAME;
 import static com.example.easytripplanner.activities.MainActivity.PRIMARY_CHANNEL_ID;
 
 public class MyDialog extends AppCompatActivity {
@@ -91,7 +91,7 @@ public class MyDialog extends AppCompatActivity {
                     checkOverlayPermissionAndStartNav();
                 })
                 .setNegativeButton("CANCEL", (dialog, which) -> {
-                    changeTripStatus(TripsViewFragment.TRIP_STATUS.CANCELED.name());
+                    changeTripStatus(UpcomingFragment.TRIP_STATUS.CANCELED.name());
                     mNotificationManager.cancel(tripHashCode);
                     finishAndRemoveTask();
                 })
@@ -183,7 +183,7 @@ public class MyDialog extends AppCompatActivity {
     }
 
     private void startAction() {
-        changeTripStatus(TripsViewFragment.TRIP_STATUS.DONE.name());
+        changeTripStatus(UpcomingFragment.TRIP_STATUS.DONE.name());
         startNavigation();
         mNotificationManager.cancel(tripHashCode);
     }

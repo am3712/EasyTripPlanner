@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/upcomingFragment">
+
+    <fragment
+        android:id="@+id/upcomingFragment"
+        android:name="com.example.easytripplanner.Fragments.UpcomingFragment"
+        android:label="Upcoming Trips"
+        tools:layout="@layout/fragment_upcoming" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.easytripplanner.Fragments.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_upcomingFragment"
+            app:destination="@id/upcomingFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:popUpTo="@id/loginFragment"
+            app:launchSingleTop="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.easytripplanner.Fragments.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_upcomingFragment"
+            app:destination="@id/upcomingFragment"
+            app:popUpTo="@id/registerFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/mappedFragment"
+        android:name="com.example.easytripplanner.Fragments.MappedFragment"
+        android:label="fragment_mapped"
+        tools:layout="@layout/fragment_mapped" />
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.easytripplanner.Fragments.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
+</navigation>
