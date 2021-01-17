@@ -2,7 +2,6 @@ package com.example.easytripplanner;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -10,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.example.easytripplanner.Fragments.NewTripFragment;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jetbrains.annotations.NotNull;
@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(pager);
 
         findViewById(R.id.add_button).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, NewTripActivity.class);
-            startActivity(intent);
+          /*  Intent intent = new Intent(MainActivity.this, NewTripActivity.class);
+            startActivity(intent);*/
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new NewTripFragment()).addToBackStack(null).commit();
         });
 
 

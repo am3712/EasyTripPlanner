@@ -8,7 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.provider.Settings;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -64,6 +66,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         tripHashCode = intent.getIntExtra(TRIP_HASH_CODE, 0);
         tripID = intent.getStringExtra(TRIP_ID);
         showAlertDialog();
+
 
 
     }

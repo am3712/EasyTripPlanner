@@ -157,6 +157,7 @@ public class TripsViewFragment extends Fragment {
                             viewAdapter.notifyDataSetChanged();
                             checkAlarm();
                         }
+
                     }
                 }
 

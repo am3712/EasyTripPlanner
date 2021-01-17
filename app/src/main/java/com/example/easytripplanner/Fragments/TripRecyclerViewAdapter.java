@@ -1,22 +1,31 @@
 package com.example.easytripplanner.Fragments;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.utility.OnItemClickListener;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerViewAdapter.MyViewHolder> {
 
+   /* CardView cardView;
+    Button ButtonMore;*/
 
     Context context;
     ArrayList<Trip> trips;
@@ -28,6 +37,38 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         trips = t;
         this.listener = listener;
     }
+
+    //Constuctor
+     /*  public TripRecyclerViewAdapter(final View view, OnItemClickListener listener){
+        this.listener = listener;
+        ButtonMore = view.findViewById(R.id.btnMore);
+        ButtonMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(ButtonMore.getContext(), view);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return true;
+
+                    }
+                });
+                popup.inflate(R.menu.trip_menu);
+              //  popup.setGravity(Gravity.RIGHT);
+                try {
+                    Field mFieldPopup=popup.getClass().getDeclaredField("mPopup");
+                    mFieldPopup.setAccessible(true);
+                    MenuPopupHelper mPopup = (MenuPopupHelper) mFieldPopup.get(popup);
+                  //  mPopup.setForceShowIcon(true);
+                } catch (Exception e) {
+
+                }
+                popup.show();
+
+
+            }
+        });
+    }*/
 
     @NonNull
     @Override
