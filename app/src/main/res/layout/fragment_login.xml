@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FBFAFB"
-    tools:context=".activities.LoginActivity">
+    tools:context=".Fragments.LoginFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,10 +29,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginBottom="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
                 android:fontFamily="@font/candal"
+                android:paddingVertical="@dimen/_42sdp"
                 android:paddingTop="20dp"
-                android:paddingBottom="90dp"
                 android:text="Login Form"
                 android:textColor="#FB4C40"
                 android:textSize="36sp"
@@ -84,13 +84,12 @@
 
             <com.spark.submitbutton.SubmitButton
                 android:id="@+id/logLoginBtn"
-                android:layout_width="218dp"
-                android:layout_height="96dp"
-
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="@dimen/_60sdp"
                 android:gravity="center"
                 android:text="@string/login"
                 android:textColor="@color/white"
-                android:textSize="13sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:sub_btn_background="@color/colorPrimary"
                 app:sub_btn_duration="3000"

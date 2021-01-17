@@ -2,162 +2,75 @@ package com.example.easytripplanner.activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
-import com.example.easytripplanner.Fragments.NewTripFragment;
-import com.example.easytripplanner.Fragments.PastTripFragment;
-import com.example.easytripplanner.Fragments.TripsViewFragment;
 import com.example.easytripplanner.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.shrikanthravi.customnavigationdrawer2.data.MenuItem;
-import com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
-import java.util.List;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
-    SNavigationDrawer sNavigationDrawer;
-    Class aClass;
-    // configure icons
-    private final int[] imageResId = {
-            R.drawable.baseline_event_note_24,
-            R.drawable.baseline_event_available_24};
+
     private static final String TAG = "MainActivity";
-    public static String POSITION = "POSITION";
+    private NavController navController;
 
     // Notification channel ID.
     public static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Timber.i("onCreate: Main Activity Created");
 
-        sNavigationDrawer = findViewById(R.id.navigation_drawer);
-        List<MenuItem> itemList = new ArrayList<>();
-        //add menu item in list
-        itemList.add(new MenuItem("Upcoming", R.drawable.car));
-        itemList.add(new MenuItem("History", R.drawable.history));
-        itemList.add(new MenuItem("Logout", R.drawable.download));
-        //itemList.add(new MenuItem("Logout", R.drawable.log));
-        // itemList.add(new MenuItem("About As",R.drawable.ic_baseline_info_24));
-        // itemList.add(new MenuItem("Logout",R.drawable.ic_baseline_power_settings_new_24));
 
-        //set menu item
-        sNavigationDrawer.setMenuItemList(itemList);
-        //set defualt title
-        sNavigationDrawer.setAppbarTitleTV("Upcoming");
-        //defualt fragment
-        aClass = TripsViewFragment.class;
-        //open fragment
-        openFragment();
-        sNavigationDrawer.setOnMenuItemClickListener(new SNavigationDrawer.OnMenuItemClickListener() {
-            @Override
-            public void onMenuItemClicked(int position) {
-                switch (position) {
-                    case 0:
-                        aClass = TripsViewFragment.class;
-                        break;
-                    case 1:
-                        aClass = PastTripFragment.class;
-                        break;
+        //Initialize NavController.
+        NavHostFragment navHostFragment =
+                (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        assert navHostFragment != null;
+        NavController navController = navHostFragment.getNavController();
 
-                    case 2:
-                        FirebaseAuth.getInstance().signOut();
+        //Initialize Bottom Navigation View.
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
 
-                        //aClass=LoginActivity.class;
+        //Pass the ID's of Different destinations
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(R.id.upcomingFragment, R.id.historyFragment, R.id.mappedFragment).build();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        NavigationUI.setupWithNavController(
+                toolbar, navController, appBarConfiguration);
 
-                        // Log.i(TAG, "onMenuItemClicked: current Usr: " + FirebaseAuth.getInstance().getCurrentUser());
-                        MainActivity.this.startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        break;
-                }
 
+        NavigationUI.setupWithNavController(bottomNav, navController);
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.loginFragment) {
+                toolbar.setVisibility(View.GONE);
+                bottomNav.setVisibility(View.GONE);
+            } else if (destination.getId() == R.id.registerFragment)
+                bottomNav.setVisibility(View.GONE);
+            else {
+                toolbar.setVisibility(View.VISIBLE);
+                bottomNav.setVisibility(View.VISIBLE);
             }
         });
 
-        sNavigationDrawer.setDrawerListener(new SNavigationDrawer.DrawerListener() {
-            @Override
-            public void onDrawerOpening() {
-
-            }
-
-            @Override
-            public void onDrawerClosing() {
-                openFragment();
-            }
-
-            @Override
-            public void onDrawerOpened() {
-
-            }
-
-            @Override
-            public void onDrawerClosed() {
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        });
-
-        // mAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),MainActivity.this);
-
-
-        //tabs
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
-       /* pager = findViewById(R.id.view_pager);
-        pager.setOffscreenPageLimit(2);
-
-        pager.setAdapter(mAdapter);
-
-        pager.setPageTransformer(true, new RotateUpTransformer());*/
-        //pager.setPageTransformer(true, new AccordionTransformer());
-        //pager.setPageTransformer(true, new BackgroundToForegroundTransformer());
-        //pager.setPageTransformer(true, new ZoomInTransformer());
-        //pager.setPageTransformer(true, new CubeInTransformer());
-        //pager.setPageTransformer(true, new DepthPageTransformer());
-        //pager.setPageTransformer(true, new TabletTransformer());
-        //pager.setPageTransformer(true, new FlipHorizontalTransformer());
-
-        // Give the TabLayout the ViewPager
-        // tabLayout = findViewById(R.id.tabs);
-        // tabLayout.setupWithViewPager(pager);
-
-        findViewById(R.id.add_button).setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new NewTripFragment()).addToBackStack(null).commit();
-        });
-
-
-        /*for (int i = 0; i < imageResId.length; i++) {
-            Objects.requireNonNull(tabLayout.getTabAt(i)).setIcon(imageResId[i]);
-        }*/
 
         // Create the notification channel.
         createNotificationChannel();
     }
-
-    // @Override
-    /*public void onSaveInstanceState(@NotNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
-    }*/
-
-   /* @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        pager.setCurrentItem(savedInstanceState.getInt(POSITION));
-    }*/
 
 
     /**
@@ -185,21 +98,4 @@ public class MainActivity extends AppCompatActivity {
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
     }
-
-    private void openFragment() {
-        try {
-            Fragment fragment = (Fragment) aClass.newInstance();
-            //open fragment
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.frame_layout, fragment)
-                    .commit();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 }
