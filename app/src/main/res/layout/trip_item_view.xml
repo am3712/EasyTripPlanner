@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/_10sdp"
-    android:layout_marginTop="@dimen/_4sdp"
+    android:layout_margin="@dimen/_8sdp"
     android:background="@color/gray_orange"
     card_view:cardCornerRadius="@dimen/_8sdp">
 
@@ -22,9 +21,8 @@
             android:layout_width="@dimen/_25sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_8sdp"
-            android:layout_marginEnd="@dimen/_8sdp"
             android:background="@drawable/ic_baseline_more_vert_24"
-            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintEnd_toEndOf="@+id/btn_Note"
             card_view:layout_constraintTop_toTopOf="parent" />
 
 
@@ -111,12 +109,11 @@
             android:id="@+id/btn_Note"
             android:layout_width="@dimen/_25sdp"
             android:layout_height="@dimen/_25sdp"
-            android:layout_marginEnd="@dimen/_8sdp"
             android:layout_marginBottom="@dimen/_8sdp"
             android:background="@drawable/ic_baseline_sticky_note_2_24"
             android:backgroundTint="@color/gray_orange"
             card_view:layout_constraintBottom_toTopOf="@+id/btnStart"
-            card_view:layout_constraintEnd_toEndOf="parent" />
+            card_view:layout_constraintEnd_toEndOf="@+id/btnStart" />
 
         <TextView
             android:id="@+id/statusView"
@@ -130,11 +127,12 @@
 
         <Button
             android:id="@+id/btnStart"
-            android:layout_width="369dp"
-            android:layout_height="35dp"
-            android:layout_margin="@dimen/_8sdp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_8sdp"
+            android:layout_marginVertical="@dimen/_12sdp"
             android:layout_marginTop="@dimen/_12sdp"
-            android:background="#FBFAFB"
+            android:background="@drawable/bg_edit_field"
             android:backgroundTint="#FBFAFB"
             android:text="@string/btn_Start"
             android:textColor="#F6F4FA"

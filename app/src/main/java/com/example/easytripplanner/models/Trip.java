@@ -2,9 +2,10 @@ package com.example.easytripplanner.models;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Trip implements Comparable<Trip> {
+public class Trip implements Serializable, Comparable<Trip> {
     public String name;
     public TripLocation locationFrom;
     public TripLocation locationTo;

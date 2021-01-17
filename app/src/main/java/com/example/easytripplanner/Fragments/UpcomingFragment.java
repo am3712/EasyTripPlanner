@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
@@ -38,7 +38,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Objects;
+
+import timber.log.Timber;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
@@ -46,7 +47,7 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TripsViewFragment extends Fragment {
+public class UpcomingFragment extends Fragment {
 
     public static final String TRIP_NAME = "Name";
     public static final String TRIP_LOCATION_NAME = "LOCATION NAME";
@@ -54,23 +55,21 @@ public class TripsViewFragment extends Fragment {
     public static final String TRIP_LOC_LATITUDE = "LOCATION LATITUDE";
     public static final String TRIP_ID = "ID";
     public static final String TRIP_HASH_CODE = "HASH CODE";
-    private static final String TAG = "TripsViewFragment";
     public final static String LIST_STATE_KEY = "recycler_list_state";
     @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
 
-    private TripRecyclerViewAdapter viewAdapter;
+    private TripRecyclerViewAdapter mAdapter;
     private ArrayList<Trip> trips;
     private RecyclerView.LayoutManager mLayoutManager;
-    private RecyclerView recyclerView;
     private ChildEventListener listener;
     private Query queryReference;
     DatabaseReference currentUserRef;
     private String tripId;
-
+    private RecyclerView recyclerView;
     Parcelable listState;
 
-    public TripsViewFragment() {
+    public UpcomingFragment() {
 
     }
 
@@ -84,28 +83,29 @@ public class TripsViewFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        initQueryAndListener();
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list_trip, container, false);
+        View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            recyclerView = (RecyclerView) view;
-            viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, (view1, id) -> {
-                tripId = id;
-                showMenu(view1);
-            });
-            recyclerView.setAdapter(viewAdapter);
-            //recyclerView.setAdapter(new TripRecyclerViewAdapter(games, item -> ((Communicator) getActivity()).openGame(item)));
-        }
+        recyclerView = view.findViewById(R.id.tripList);
+        mAdapter = new TripRecyclerViewAdapter(getContext(), trips, (view1, id) -> {
+            tripId = id;
+            showMenu(view1);
+        });
+        recyclerView.setAdapter(mAdapter);
+        mLayoutManager = recyclerView.getLayoutManager();
+        initQueryAndListener();
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mLayoutManager = recyclerView.getLayoutManager();
-
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Timber.i("onViewCreated: ");
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Navigation.findNavController(view).popBackStack();
+            Navigation.findNavController(view).navigate(R.id.loginFragment);
+        }
     }
 
     public void initQueryAndListener() {
@@ -117,10 +117,8 @@ public class TripsViewFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         currentUserRef = null;
-        if (userId != null) {
-            currentUserRef = database.getReference("Users").child(userId);
-            currentUserRef.keepSynced(true);
-        }
+        currentUserRef = database.getReference("Users").child(userId);
+        currentUserRef.keepSynced(true);
 
         //get upcoming trips
         queryReference = currentUserRef
@@ -135,7 +133,6 @@ public class TripsViewFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
-                Log.i(TAG, "onChildAdded: trip: " + trip);
                 if (trip != null && trip.timeInMilliSeconds != null) {
                     calendar.setTimeInMillis(trip.timeInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
@@ -145,7 +142,7 @@ public class TripsViewFragment extends Fragment {
                     }
                     trips.add(trip);
                     Collections.sort(trips);
-                    viewAdapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged();
                     checkAlarm(trip);
                 }
             }
@@ -175,13 +172,13 @@ public class TripsViewFragment extends Fragment {
 
     private void checkAlarm(Trip t) {
         //save Shared Preferences
-        SharedPreferences sharedPref = Objects.requireNonNull(getContext()).getSharedPreferences("Save", MODE_PRIVATE);
+        SharedPreferences sharedPref = requireContext().getSharedPreferences("Save", MODE_PRIVATE);
 
         //set Alarm
-        AlarmManager alarmMgr = (AlarmManager) Objects.requireNonNull(getActivity()).getSystemService(ALARM_SERVICE);
+        AlarmManager alarmMgr = (AlarmManager) requireActivity().getSystemService(ALARM_SERVICE);
 
         //first scenario if trip is forgotten then do not fire and if found in sharedPreferences delete it
-        if (t.status.equals("FORGOTTEN")) {
+        if (t.status.equalsIgnoreCase(TRIP_STATUS.FORGOTTEN.name())) {
             if (sharedPref.contains(t.pushId)) {
                 //delete it from sharedPreference
                 sharedPref.edit().remove(t.pushId).apply();
@@ -189,7 +186,7 @@ public class TripsViewFragment extends Fragment {
         } else if (!sharedPref.contains(t.pushId)) {
 
             //save trips id and trigger time in sharedPreference
-            Log.i(TAG, "checkAlarm: trip name: " + t.name + ", fire alarm");
+            Timber.i("checkAlarm: trip name: " + t.name + ", fire alarm");
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putLong(t.pushId, t.timeInMilliSeconds);
             editor.apply();
@@ -199,8 +196,6 @@ public class TripsViewFragment extends Fragment {
             intent.putExtra(TRIP_NAME, t.name);
             intent.putExtra(TRIP_ID, t.pushId);
             intent.putExtra(TRIP_HASH_CODE, t.pushId.hashCode());
-            Log.i(TAG, "checkAlarm: longitude: " + t.locationTo.longitude);
-            Log.i(TAG, "checkAlarm: latitude: " + t.locationTo.latitude);
             intent.putExtra(TRIP_LOCATION_NAME, t.locationTo.Address);
             intent.putExtra(TRIP_LOC_LONGITUDE, t.locationTo.longitude);
             intent.putExtra(TRIP_LOC_LATITUDE, t.locationTo.latitude);
@@ -246,44 +241,8 @@ public class TripsViewFragment extends Fragment {
 
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Save list state
-        listState = mLayoutManager.onSaveInstanceState();
-        outState.putParcelable(LIST_STATE_KEY, listState);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        // Retrieve list state and list/item positions
-        if (savedInstanceState != null) {
-            listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (listState != null) {
-            mLayoutManager.onRestoreInstanceState(listState);
-        }
-    }
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        queryReference.addChildEventListener(listener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        queryReference.removeEventListener(listener);
-        trips.clear();
-    }
 
     private void showMenu(View v) {
 
@@ -303,8 +262,8 @@ public class TripsViewFragment extends Fragment {
                             Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    Log.i(TAG, "onMenuItemClick: currentUserRef: " + currentUserRef);
-                    Log.i(TAG, "onMenuItemClick: tripId: " + tripId);
+                    Timber.i("onMenuItemClick: currentUserRef: %s", currentUserRef);
+                    Timber.i("onMenuItemClick: tripId: %s", tripId);
                     return true;
             }
 
@@ -318,5 +277,42 @@ public class TripsViewFragment extends Fragment {
         FORGOTTEN,
         CANCELED,
         UPCOMING
+    }
+
+    public void onSaveInstanceState(@NotNull Bundle state) {
+        super.onSaveInstanceState(state);
+        // Save list state
+        listState = mLayoutManager.onSaveInstanceState();
+        state.putParcelable(LIST_STATE_KEY, listState);
+    }
+
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        // Retrieve list state and list/item positions
+        if (savedInstanceState != null) {
+            listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        queryReference.addChildEventListener(listener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        queryReference.removeEventListener(listener);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (listState != null) {
+            mLayoutManager.onRestoreInstanceState(listState);
+        }
     }
 }

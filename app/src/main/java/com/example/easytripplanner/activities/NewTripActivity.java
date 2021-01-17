@@ -51,7 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
 
 public class NewTripActivity extends AppCompatActivity {
 
