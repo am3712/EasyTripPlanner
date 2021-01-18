@@ -65,10 +65,12 @@
 
 
     <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranQxZzV6ODA5Ym8yeXFza2twcHk2c3gifQ.iBGtCdrUO8X3QufPn3C1Pg</string>
-    <string name="save_edit_btn_txt">Save Edit</string>
-    <string name="history">History</string>
+    <string name="save_edit_btn_txt">SAVE EDIT</string>
+    <string name="history">HISTORY</string>
     <string name="registration">Registration</string>
     <string name="floating_button">Floating button</string>
-    <string name="mapped_trips">Mapped Trips</string>
+    <string name="mapped_trips">MAPPED TRIPS</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 
 </resources>

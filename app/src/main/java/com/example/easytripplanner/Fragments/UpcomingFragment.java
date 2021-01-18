@@ -3,13 +3,16 @@ package com.example.easytripplanner.Fragments;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +24,8 @@ import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
 import com.example.easytripplanner.databinding.FragmentUpcomingBinding;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.services.AlarmReceiver;
+import com.example.easytripplanner.services.FloatingViewService;
+import com.example.easytripplanner.utility.TripListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -36,11 +41,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Objects;
 
 import timber.log.Timber;
 
 import static android.content.Context.ALARM_SERVICE;
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,6 +67,8 @@ public class UpcomingFragment extends Fragment {
     private Query queryReference;
     DatabaseReference currentUserRef;
 
+    private TripListener menuItemListener;
+
     private FragmentUpcomingBinding binding;
 
 
@@ -74,14 +81,16 @@ public class UpcomingFragment extends Fragment {
         super.onCreate(savedInstanceState);
         trips = new ArrayList<>();
         initQueryAndListener();
+        initPopUpMenuItemListener();
     }
+
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         binding = FragmentUpcomingBinding.inflate(inflater, container, false);
-        mAdapter = new TripRecyclerViewAdapter(getContext(), trips, true, currentUserRef);
+        mAdapter = new TripRecyclerViewAdapter(getContext(), trips, true, menuItemListener);
         binding.recyclerView.setAdapter(mAdapter);
 
         binding.fbAddTrip.setOnClickListener(v -> {
@@ -158,7 +167,7 @@ public class UpcomingFragment extends Fragment {
                         }
                     }
                 }
-                binding.recyclerView.getAdapter().notifyDataSetChanged();
+                Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
             }
 
             @Override
@@ -173,28 +182,45 @@ public class UpcomingFragment extends Fragment {
         };
     }
 
+    private void initPopUpMenuItemListener() {
+        menuItemListener = new TripListener() {
+            @Override
+            public void editItem(String tripId) {
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(UpcomingFragmentDirections
+                                .actionUpcomingFragmentToAddTripFragment()
+                                .setID(tripId));
+            }
+
+            @Override
+            public void deleteItem(Trip trip) {
+                currentUserRef.child(trip.pushId).removeValue((error, ref) ->
+                        Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void startNav(Trip trip) {
+                startNavigation(trip);
+            }
+        };
+    }
+
+
     private void checkAlarm(Trip t) {
-        //save Shared Preferences
-        SharedPreferences sharedPref = requireContext().getSharedPreferences("Save", MODE_PRIVATE);
 
         //set Alarm
         AlarmManager alarmMgr = (AlarmManager) requireActivity().getSystemService(ALARM_SERVICE);
 
-        //first scenario if trip is forgotten then do not fire and if found in sharedPreferences delete it
-        if (t.status.equalsIgnoreCase(TRIP_STATUS.FORGOTTEN.name())) {
-            if (sharedPref.contains(t.pushId)) {
-                //delete it from sharedPreference
-                sharedPref.edit().remove(t.pushId).apply();
-            }
-        } else if (!sharedPref.contains(t.pushId)) {
+        final Intent intent = new Intent(getContext(), AlarmReceiver.class);
 
-            //save trips id and trigger time in sharedPreference
-            Timber.i("checkAlarm: trip name: " + t.name + ", fire alarm");
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putLong(t.pushId, t.timeInMilliSeconds);
-            editor.apply();
+        PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(requireContext(), t.pushId.hashCode(),
+                intent, PendingIntent.FLAG_NO_CREATE);
+        //check if alarm is exist or not
+        if (notifyPendingIntent == null) {
 
-            final Intent intent = new Intent(getContext(), AlarmReceiver.class);
+            //alarm is not exist add it
+
+            Timber.i("checkAlarm: %s is exist in alarm manager..", t.name);
 
             intent.putExtra(TRIP_NAME, t.name);
             intent.putExtra(TRIP_ID, t.pushId);
@@ -203,13 +229,10 @@ public class UpcomingFragment extends Fragment {
             intent.putExtra(TRIP_LOC_LONGITUDE, t.locationTo.longitude);
             intent.putExtra(TRIP_LOC_LATITUDE, t.locationTo.latitude);
 
+            notifyPendingIntent = PendingIntent.getBroadcast
+                    (requireContext(), t.pushId.hashCode(), intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
 
-            PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(getContext(), t.pushId.hashCode(),
-                    intent, PendingIntent.FLAG_NO_CREATE);
-            if (notifyPendingIntent == null)
-                notifyPendingIntent = PendingIntent.getBroadcast
-                        (getContext(), t.pushId.hashCode(), intent,
-                                PendingIntent.FLAG_UPDATE_CURRENT);
             if (t.repeating.equals("No Repeated")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     alarmMgr.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, t.timeInMilliSeconds, notifyPendingIntent);
@@ -239,7 +262,8 @@ public class UpcomingFragment extends Fragment {
                         repeatInterval,
                         notifyPendingIntent);
             }
-        }
+        } else
+            Timber.i("checkAlarm: %s is not exist in alarm manager..", t.name);
 
 
     }
@@ -262,12 +286,58 @@ public class UpcomingFragment extends Fragment {
         super.onStop();
         queryReference.removeEventListener(listener);
         trips.clear();
-        binding.recyclerView.getAdapter().notifyDataSetChanged();
+        Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+
+    @SuppressLint("QueryPermissionsNeeded")
+    public void startNavigation(Trip trip) {
+
+        //open on google maps
+        Uri uri = Uri.parse("google.navigation:q=" + trip.locationTo.latitude + "," + trip.locationTo.longitude);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, uri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(requireContext().getPackageManager()) != null) {
+            mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            //cancel trigger remainder
+            cancelRemainder(trip.pushId);
+
+            //set new Status : DONE
+            currentUserRef.child(trip.pushId).child("status").setValue(TRIP_STATUS.DONE.name());
+
+            //start Trip in maps
+            this.startActivity(mapIntent);
+
+            //start floating service
+            requireActivity().startService(new Intent(getContext(), FloatingViewService.class));
+
+            //finish activity (App)
+            requireActivity().finish();
+
+        } else {
+            Toast.makeText(getContext(), "please install google maps!!!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void cancelRemainder(String pushId) {
+
+        Intent intent = new Intent();
+
+        AlarmManager alarmManager =
+                (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent =
+                PendingIntent.getBroadcast(requireContext(), pushId.hashCode(), intent,
+                        PendingIntent.FLAG_NO_CREATE);
+        if (pendingIntent != null && alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+        }
     }
 }

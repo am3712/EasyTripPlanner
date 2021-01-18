@@ -50,13 +50,17 @@
     <fragment
         android:id="@+id/addTripFragment"
         android:name="com.example.easytripplanner.Fragments.AddTripFragment"
-        android:label="fragment_add_trip"
-        tools:layout="@layout/fragment_add_trip" >
+        android:label="ADD NEW TRIP"
+        tools:layout="@layout/fragment_add_trip">
         <action
             android:id="@+id/action_addTripFragment_to_upcomingFragment"
             app:destination="@id/upcomingFragment"
+            app:launchSingleTop="true"
             app:popUpTo="@id/addTripFragment"
-            app:popUpToInclusive="true"
-            app:launchSingleTop="true" />
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="ID"
+            android:defaultValue="EMPTY"
+            app:argType="string" />
     </fragment>
 </navigation>

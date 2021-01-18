@@ -57,8 +57,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
+import java.util.Objects;
 
 
 public class AddTripFragment extends Fragment {
@@ -123,22 +122,18 @@ public class AddTripFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentAddTripBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
-
         initComponents();
-        if (getArguments() != null && getArguments().containsKey(TRIP_ID)) {
-
-            tripId = getArguments().getString(TRIP_ID);
-            enableEditMode();
-        }
-
-        return view;
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        tripId = AddTripFragmentArgs.fromBundle(getArguments()).getID();
+        if (!tripId.equals("EMPTY")) {
+            Objects.requireNonNull(Navigation.findNavController(binding.getRoot()).getCurrentDestination()).setLabel("EDIT TRIP");
+            enableEditMode();
+        }
 
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.

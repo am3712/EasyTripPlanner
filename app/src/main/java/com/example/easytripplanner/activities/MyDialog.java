@@ -6,12 +6,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -26,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Objects;
+import timber.log.Timber;
 
 import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_HASH_CODE;
@@ -39,6 +37,10 @@ import static com.example.easytripplanner.activities.MainActivity.PRIMARY_CHANNE
 
 public class MyDialog extends AppCompatActivity {
 
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
+    private static final String TAG = "MyDialog";
+    public static String NOTIFICATION_STATUS = "Notification Status";
+    private static final String GROUP_KEY = "com.android.example.EasyTripPlanner";
     private String tripName;
     private String tripLocAddress;
     private double tripLocLat;
@@ -48,12 +50,6 @@ public class MyDialog extends AppCompatActivity {
     private Intent receiverIntent;
     private NotificationManager mNotificationManager;
     private boolean isNotificationFired;
-    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
-
-    private static final String TAG = "MyDialog";
-    private static String GROUP_KEY = "com.android.example.EasyTripPlanner";
-    public static String NOTIFICATION_STATUS = "Notification Status";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +67,8 @@ public class MyDialog extends AppCompatActivity {
         tripName = getIntent().getStringExtra(TRIP_NAME);
         tripLocAddress = getIntent().getStringExtra(TRIP_LOCATION_NAME);
 
-        Log.i(TAG, "getIntentData: tripName: " + tripName);
-        Log.i(TAG, "getIntentData: tripLocAddress: " + tripLocAddress);
+        Timber.i("getIntentData: tripName: %s", tripName);
+        Timber.i("getIntentData: tripLocAddress: %s", tripLocAddress);
 
 
         tripLocLat = getIntent().getDoubleExtra(TRIP_LOC_LATITUDE, 0);
@@ -119,14 +115,6 @@ public class MyDialog extends AppCompatActivity {
         }
         if (currentUserRef != null)
             currentUserRef.child(tripID).child("status").setValue(value);
-
-
-        //remove from sharedPreference
-        SharedPreferences sharedPref = Objects.requireNonNull(getSharedPreferences("Save", MODE_PRIVATE));
-        if (sharedPref.contains(tripID)) {
-            //delete it from sharedPreference
-            sharedPref.edit().remove(tripID).apply();
-        }
     }
 
 
@@ -159,7 +147,7 @@ public class MyDialog extends AppCompatActivity {
         Uri uri = Uri.parse("google.navigation:q=" + tripLocLat + "," + tripLocLong);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, uri);
         mapIntent.setPackage("com.google.android.apps.maps");
-        if (receiverIntent.resolveActivity(this.getPackageManager()) != null) {
+        if (mapIntent.resolveActivity(this.getPackageManager()) != null) {
             mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             this.startActivity(mapIntent);

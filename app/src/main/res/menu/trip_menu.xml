@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/edit"
-        android:title="Edit"/>
+        android:id="@+id/editTrip"
+        android:icon="@drawable/ic_baseline_edit_road_18"
+        android:title="@string/edit" />
     <item
-        android:id="@+id/del"
-        android:title="delete"/>
+        android:id="@+id/deleteTrip"
+        android:icon="@drawable/ic_baseline_delete_18"
+        android:title="@string/delete" />
 </menu>
