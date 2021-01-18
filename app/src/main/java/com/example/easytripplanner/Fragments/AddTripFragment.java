@@ -129,6 +129,8 @@ public class AddTripFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        assert getArguments() != null;
         tripId = AddTripFragmentArgs.fromBundle(getArguments()).getID();
         if (!tripId.equals("EMPTY")) {
             Objects.requireNonNull(Navigation.findNavController(binding.getRoot()).getCurrentDestination()).setLabel("EDIT TRIP");

@@ -25,6 +25,8 @@ import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     Button button;
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(MainActivity.this, "Logout " + item.getTitle(),
                     Toast.LENGTH_SHORT).show();
-            if (navController.getCurrentDestination().getId() != R.id.upcomingFragment)
+            if (Objects.requireNonNull(navController.getCurrentDestination()).getId() != R.id.upcomingFragment)
                 navController.popBackStack();
             navController.popBackStack();
             navController.navigate(R.id.loginFragment);
