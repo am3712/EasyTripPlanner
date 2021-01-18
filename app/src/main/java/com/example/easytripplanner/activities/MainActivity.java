@@ -2,6 +2,7 @@ package com.example.easytripplanner.activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
@@ -108,4 +110,5 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.logout_menu, menu);
         return true;
     }
+
 }
