@@ -132,4 +132,10 @@ public class HistoryFragment extends Fragment {
         trips.clear();
         binding.getRoot().getAdapter().notifyDataSetChanged();
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

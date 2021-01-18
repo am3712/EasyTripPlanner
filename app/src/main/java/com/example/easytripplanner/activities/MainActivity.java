@@ -16,12 +16,9 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.easytripplanner.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import timber.log.Timber;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private NavController navController;
 
     // Notification channel ID.
     public static final String PRIMARY_CHANNEL_ID =
@@ -32,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Timber.i("onCreate: Main Activity Created");
-
 
         //Initialize NavController.
         NavHostFragment navHostFragment =
@@ -58,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             if (destination.getId() == R.id.loginFragment) {
                 toolbar.setVisibility(View.GONE);
                 bottomNav.setVisibility(View.GONE);
-            } else if (destination.getId() == R.id.registerFragment) {
+            } else if (destination.getId() == R.id.registerFragment || destination.getId() == R.id.addTripFragment) {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.GONE);
             } else {
@@ -66,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 bottomNav.setVisibility(View.VISIBLE);
             }
         });
-
 
         // Create the notification channel.
         createNotificationChannel();

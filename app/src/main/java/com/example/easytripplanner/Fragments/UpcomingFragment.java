@@ -84,6 +84,10 @@ public class UpcomingFragment extends Fragment {
         mAdapter = new TripRecyclerViewAdapter(getContext(), trips, true, currentUserRef);
         binding.recyclerView.setAdapter(mAdapter);
 
+        binding.fbAddTrip.setOnClickListener(v -> {
+            Navigation.findNavController(binding.getRoot()).navigate(UpcomingFragmentDirections.actionUpcomingFragmentToAddTripFragment());
+        });
+
         return binding.getRoot();
     }
 
@@ -259,5 +263,11 @@ public class UpcomingFragment extends Fragment {
         queryReference.removeEventListener(listener);
         trips.clear();
         binding.recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
