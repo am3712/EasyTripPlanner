@@ -2,12 +2,17 @@ package com.example.easytripplanner.activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
@@ -109,4 +114,12 @@ public class MainActivity extends AppCompatActivity {
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+       // MenuInflater inflater = getMenuInflater();
+        //inflater.inflate(R.menu.logout_menu, menu);
+        getMenuInflater().inflate(R.menu.logout_menu, menu);
+        return true;
+    }
+
 }

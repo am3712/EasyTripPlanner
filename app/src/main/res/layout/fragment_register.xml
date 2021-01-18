@@ -33,7 +33,7 @@
                 android:paddingTop="20dp"
                 android:paddingBottom="100dp"
                 android:text="@string/registration"
-                android:textColor="#FB4C40"
+                android:textColor="#455A64"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
@@ -101,7 +101,7 @@
                 android:textColor="#0E0E0E"
                 android:textSize="18sp" />
 
-            <com.spark.submitbutton.SubmitButton
+        <!--    <com.spark.submitbutton.SubmitButton
                 android:id="@+id/regSignUpBtn"
                 android:layout_width="@dimen/_147sdp"
                 android:layout_height="@dimen/_64sdp"
@@ -116,7 +116,16 @@
                 app:sub_btn_ripple_color="@color/colorPrimaryDark"
                 app:sub_btn_tick_color="@color/white"
                 tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="16dp" />
+                tools:layout_editor_absoluteY="16dp" />-->
+            <Button
+                android:id="@+id/regSignUpBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:layout_marginBottom="@dimen/_20sdp"
+                android:background="@drawable/btnsignin"
+                android:text="Register" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -144,7 +153,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/login"
-                    android:textColor="#FB4C40"
+                    android:textColor="#455A64"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     tools:ignore="MissingPrefix" />

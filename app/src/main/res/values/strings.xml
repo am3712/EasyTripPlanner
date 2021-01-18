@@ -73,4 +73,8 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
 
+    <string name="facebook_app_id">1016690535493094</string>
+    <string name="fb_login_protocol_scheme">fb1016690535493094</string>
+
+
 </resources>

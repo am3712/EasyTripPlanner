@@ -63,6 +63,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 //import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
+
 
 public class NewTripFragment extends Fragment {
 
@@ -95,8 +97,6 @@ public class NewTripFragment extends Fragment {
 
     boolean startPointClicked;
     private Context context;
-
-    private TimePicker timePicker;
 
     public NewTripFragment() {
 
@@ -165,7 +165,6 @@ public class NewTripFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setComponentsAction();
-
     }
 
     private void enableEditMode() {
@@ -350,35 +349,7 @@ public class NewTripFragment extends Fragment {
                     now.get(Calendar.MINUTE),
                     false
             ).show();
-            Calendar calendar = Calendar.getInstance();
-            if (android.os.Build.VERSION.SDK_INT >= 23) {
-                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-                        timePicker.getHour(), timePicker.getMinute(), 0);
-            } else {
-                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-                        timePicker.getCurrentHour(), timePicker.getCurrentMinute(), 0);
-            }
-
-
-            setAlarm(calendar.getTimeInMillis());
         });
-    }
-
-    private void setAlarm(long timeInMilli) {
-        //getting the alarm manager
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        //creating a new intent specifying the broadcast receiver
-        Intent i = new Intent(getContext(), myAlram.class);
-
-        //creating a pending intent using the intent
-        PendingIntent pi = PendingIntent.getBroadcast(getContext(), 0, i, 0);
-
-        //setting the repeating alarm that will be fired every day
-        am.setRepeating(AlarmManager.RTC, timeInMilli, AlarmManager.INTERVAL_DAY, pi);
-        Toast.makeText(getContext(), "Alarm is set", Toast.LENGTH_SHORT).show();
-
-
     }
 
     private void initDatePicker() {
