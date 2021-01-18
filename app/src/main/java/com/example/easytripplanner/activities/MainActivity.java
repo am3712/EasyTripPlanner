@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -14,16 +16,21 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+
+    Button button;
+    private FragmentLoginBinding binding;
 
     private static final String TAG = "MainActivity";
 
     // Notification channel ID.
     public static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
-
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,16 @@ public class MainActivity extends AppCompatActivity {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.VISIBLE);
             }
+        });
+        toolbar.setOnMenuItemClickListener(item -> {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(MainActivity.this, "Logout " + item.getTitle(),
+                    Toast.LENGTH_SHORT).show();
+            if (navController.getCurrentDestination().getId() != R.id.upcomingFragment)
+                navController.popBackStack();
+            navController.popBackStack();
+            navController.navigate(R.id.loginFragment);
+            return true;
         });
 
         // Create the notification channel.
