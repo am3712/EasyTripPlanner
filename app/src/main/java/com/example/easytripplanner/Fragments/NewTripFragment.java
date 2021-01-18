@@ -57,7 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
+import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
 
 
 public class NewTripFragment extends Fragment {
@@ -153,13 +153,8 @@ public class NewTripFragment extends Fragment {
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
         Mapbox.getInstance(context, getString(R.string.access_token));
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         setComponentsAction();
-
     }
 
     private void enableEditMode() {

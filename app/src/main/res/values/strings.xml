@@ -71,4 +71,8 @@
     <string name="floating_button">Floating button</string>
     <string name="mapped_trips">Mapped Trips</string>
 
+    <string name="facebook_app_id">1016690535493094</string>
+    <string name="fb_login_protocol_scheme">fb1016690535493094</string>
+
+
 </resources>

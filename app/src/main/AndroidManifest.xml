@@ -54,9 +54,9 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:noHistory="true"
             android:autoRemoveFromRecents="true"
-            android:configChanges="navigation|screenSize|keyboardHidden">
+            android:configChanges="orientation|screenSize|keyboardHidden|navigation"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -66,6 +66,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
     </application>
 
 </manifest>

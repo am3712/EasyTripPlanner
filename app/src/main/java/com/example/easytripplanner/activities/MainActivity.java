@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -97,5 +99,12 @@ public class MainActivity extends AppCompatActivity {
             notificationChannel.enableVibration(true);
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+       // MenuInflater inflater = getMenuInflater();
+        //inflater.inflate(R.menu.logout_menu, menu);
+        getMenuInflater().inflate(R.menu.logout_menu, menu);
+        return true;
     }
 }
