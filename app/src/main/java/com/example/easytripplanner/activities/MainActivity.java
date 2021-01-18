@@ -61,9 +61,10 @@ public class MainActivity extends AppCompatActivity {
             if (destination.getId() == R.id.loginFragment) {
                 toolbar.setVisibility(View.GONE);
                 bottomNav.setVisibility(View.GONE);
-            } else if (destination.getId() == R.id.registerFragment)
+            } else if (destination.getId() == R.id.registerFragment) {
+                toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.GONE);
-            else {
+            } else {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.VISIBLE);
             }
