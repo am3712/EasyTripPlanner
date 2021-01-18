@@ -50,8 +50,6 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activities.NewTripActivity" />
-
         <activity
             android:name=".activities.MainActivity"
             android:configChanges="navigation|screenSize|keyboardHidden">
