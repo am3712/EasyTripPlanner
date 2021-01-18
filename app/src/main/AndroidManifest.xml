@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- To request foreground location access, declare one of these permissions. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <queries>
 
@@ -31,30 +31,33 @@
         android:theme="@style/Theme.EasyTripPlanner"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <receiver
-            android:name=".broadcastreceiver.myAlram"
+        <service
+            android:name=".services.FloatingViewService"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.MyDialog"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.Transparent" />
+
         <receiver
-            android:name=".broadcastreceiver.AlarmReceiver"
+            android:name=".services.AlarmReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".RegistrationActivity" />
-        <activity android:name=".LoginActivity">
+        <activity
+            android:name=".activities.MainActivity"
+            android:configChanges="navigation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.EasyTripPlanner.NoActionBar" />
 
         <meta-data
             android:name="preloaded_fonts"
