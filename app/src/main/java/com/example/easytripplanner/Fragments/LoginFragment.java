@@ -1,7 +1,6 @@
 package com.example.easytripplanner.Fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +54,7 @@ public class LoginFragment extends Fragment {
         loginProcess();
 
         binding.logSignUpBtn.setOnClickListener(v -> {
-
+            Navigation.findNavController(binding.getRoot()).navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment());
         });
     }
 

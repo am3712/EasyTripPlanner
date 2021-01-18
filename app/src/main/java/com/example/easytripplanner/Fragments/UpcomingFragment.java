@@ -7,21 +7,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
+import com.example.easytripplanner.databinding.FragmentUpcomingBinding;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.services.AlarmReceiver;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 
 import timber.log.Timber;
 
@@ -55,19 +53,17 @@ public class UpcomingFragment extends Fragment {
     public static final String TRIP_LOC_LATITUDE = "LOCATION LATITUDE";
     public static final String TRIP_ID = "ID";
     public static final String TRIP_HASH_CODE = "HASH CODE";
-    public final static String LIST_STATE_KEY = "recycler_list_state";
     @SuppressLint("SimpleDateFormat")
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
+    public static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
 
     private TripRecyclerViewAdapter mAdapter;
     private ArrayList<Trip> trips;
-    private RecyclerView.LayoutManager mLayoutManager;
     private ChildEventListener listener;
     private Query queryReference;
     DatabaseReference currentUserRef;
-    private String tripId;
-    private RecyclerView recyclerView;
-    Parcelable listState;
+
+    private FragmentUpcomingBinding binding;
+
 
     public UpcomingFragment() {
 
@@ -77,25 +73,18 @@ public class UpcomingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         trips = new ArrayList<>();
+        initQueryAndListener();
     }
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        binding = FragmentUpcomingBinding.inflate(inflater, container, false);
+        mAdapter = new TripRecyclerViewAdapter(getContext(), trips, true, currentUserRef);
+        binding.recyclerView.setAdapter(mAdapter);
 
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
-        // Set the adapter
-        recyclerView = view.findViewById(R.id.tripList);
-        mAdapter = new TripRecyclerViewAdapter(getContext(), trips, (view1, id) -> {
-            tripId = id;
-            showMenu(view1);
-        });
-        recyclerView.setAdapter(mAdapter);
-        mLayoutManager = recyclerView.getLayoutManager();
-        initQueryAndListener();
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -154,8 +143,18 @@ public class UpcomingFragment extends Fragment {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                Trip trip = snapshot.getValue(Trip.class);
-
+                String id = snapshot.child("pushId").getValue(String.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    trips.removeIf(trip -> trip.pushId.equals(id));
+                } else {
+                    for (Iterator<Trip> iterator = trips.iterator(); iterator.hasNext(); ) {
+                        if (iterator.next().pushId.equals(id)) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+                }
+                binding.recyclerView.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -241,59 +240,11 @@ public class UpcomingFragment extends Fragment {
 
     }
 
-
-
-
-    private void showMenu(View v) {
-
-        PopupMenu popupMenu = new PopupMenu(getContext(), v);
-        popupMenu.getMenuInflater().inflate(R.menu.trip_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.edit:
-
-                    Toast.makeText(getContext(), "edit", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.del:
-
-                    currentUserRef.child(tripId).removeValue(new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                            Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    Timber.i("onMenuItemClick: currentUserRef: %s", currentUserRef);
-                    Timber.i("onMenuItemClick: tripId: %s", tripId);
-                    return true;
-            }
-
-            return false;
-        });
-        popupMenu.show();
-    }
-
     public enum TRIP_STATUS {
         DONE,
         FORGOTTEN,
         CANCELED,
         UPCOMING
-    }
-
-    public void onSaveInstanceState(@NotNull Bundle state) {
-        super.onSaveInstanceState(state);
-        // Save list state
-        listState = mLayoutManager.onSaveInstanceState();
-        state.putParcelable(LIST_STATE_KEY, listState);
-    }
-
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        // Retrieve list state and list/item positions
-        if (savedInstanceState != null) {
-            listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
-        }
     }
 
     @Override
@@ -306,13 +257,7 @@ public class UpcomingFragment extends Fragment {
     public void onStop() {
         super.onStop();
         queryReference.removeEventListener(listener);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (listState != null) {
-            mLayoutManager.onRestoreInstanceState(listState);
-        }
+        trips.clear();
+        binding.recyclerView.getAdapter().notifyDataSetChanged();
     }
 }

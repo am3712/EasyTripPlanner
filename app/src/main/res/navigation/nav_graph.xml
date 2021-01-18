@@ -14,7 +14,7 @@
         android:id="@+id/loginFragment"
         android:name="com.example.easytripplanner.Fragments.LoginFragment"
         android:label="Login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_upcomingFragment"
             app:destination="@id/upcomingFragment"
@@ -23,28 +23,22 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment"
-            app:popUpTo="@id/loginFragment"
-            app:launchSingleTop="true" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.easytripplanner.Fragments.RegisterFragment"
-        android:label="fragment_register"
-        tools:layout="@layout/fragment_register" >
-        <action
-            android:id="@+id/action_registerFragment_to_upcomingFragment"
-            app:destination="@id/upcomingFragment"
-            app:popUpTo="@id/registerFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+        android:label="@string/sign_up"
+        tools:layout="@layout/fragment_register" />
     <fragment
         android:id="@+id/mappedFragment"
         android:name="com.example.easytripplanner.Fragments.MappedFragment"
-        android:label="fragment_mapped"
+        android:label="@string/mapped_trips"
         tools:layout="@layout/fragment_mapped" />
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.example.easytripplanner.Fragments.HistoryFragment"
-        android:label="fragment_history"
+        android:label="@string/history"
         tools:layout="@layout/fragment_history" />
 </navigation>

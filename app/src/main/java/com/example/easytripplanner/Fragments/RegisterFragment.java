@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.databinding.FragmentRegisterBinding;
@@ -17,12 +18,14 @@ import com.example.easytripplanner.utility.NetworkMonitorUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.jetbrains.annotations.NotNull;
+
 import timber.log.Timber;
 
 public class RegisterFragment extends Fragment {
 
     private FragmentRegisterBinding binding;
-    private FirebaseAuth mAuth;
+    private final FirebaseAuth mAuth;
     private static final String TAG = "RegisterFragment";
 
     public RegisterFragment() {
@@ -37,11 +40,10 @@ public class RegisterFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentRegisterBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -117,9 +119,7 @@ public class RegisterFragment extends Fragment {
                         FirebaseUser user = mAuth.getCurrentUser();
                         updateUI(user);
                     } else {
-                        // If sign in fails, display a message to the user.
-                        Timber.tag(TAG).w(task.getException(), "signInWithEmail:failure");
-                        Toast.makeText(getContext(), "Authentication failed.",
+                        Toast.makeText(getContext(), task.getException().getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -128,7 +128,8 @@ public class RegisterFragment extends Fragment {
 
     private void updateUI(FirebaseUser currentUser) {
         if (currentUser != null) {
-
+            Navigation.findNavController(binding.getRoot()).popBackStack();
+            Navigation.findNavController(binding.getRoot()).navigate(LoginFragmentDirections.actionLoginFragmentToUpcomingFragment());
         }
     }
 

@@ -54,8 +54,6 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:noHistory="true"
-            android:autoRemoveFromRecents="true"
             android:configChanges="navigation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

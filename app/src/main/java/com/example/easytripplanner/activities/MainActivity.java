@@ -4,7 +4,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,9 +58,10 @@ public class MainActivity extends AppCompatActivity {
             if (destination.getId() == R.id.loginFragment) {
                 toolbar.setVisibility(View.GONE);
                 bottomNav.setVisibility(View.GONE);
-            } else if (destination.getId() == R.id.registerFragment)
+            } else if (destination.getId() == R.id.registerFragment) {
+                toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.GONE);
-            else {
+            } else {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.VISIBLE);
             }

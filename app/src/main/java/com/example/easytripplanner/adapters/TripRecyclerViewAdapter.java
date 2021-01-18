@@ -5,33 +5,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
-import com.example.easytripplanner.utility.OnItemClickListener;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
 public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerViewAdapter.MyViewHolder> {
 
+    private final DatabaseReference currentUserRef;
 
     Context context;
     ArrayList<Trip> trips;
-    private OnItemClickListener listener;
+    boolean isUpcomingList;
 
-    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t, OnItemClickListener listener) {
+    public TripRecyclerViewAdapter(Context c, ArrayList<Trip> t, boolean isUpcomingList, DatabaseReference currentUserRef) {
         context = c;
         trips = t;
-        this.listener = listener;
-    }
-
-    public TripRecyclerViewAdapter(Context context, ArrayList<Trip> trips) {
-        this.context = context;
-        this.trips = trips;
+        this.isUpcomingList = isUpcomingList;
+        this.currentUserRef = currentUserRef;
     }
 
     @NonNull
@@ -48,8 +47,8 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         holder.endPointView.setText(trips.get(position).locationTo.Address);
         holder.dateView.setText(trips.get(position).getDate());
         holder.statusView.setText(trips.get(position).status);
-        holder.btnMore.setOnClickListener(v -> listener.onItemClick(holder.btnMore, trips.get(position).pushId));
-
+        holder.btnMore.setOnClickListener(v -> showMenu(holder.btnMore, trips.get(position).pushId));
+        //if (isUpcomingList)
     }
 
     @Override
@@ -64,6 +63,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         public final TextView statusView;
         public final TextView dateView;
         public final Button btnMore;
+        public final Button mStartBtn;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,8 +73,29 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
             statusView = itemView.findViewById(R.id.statusView);
             dateView = itemView.findViewById(R.id.dateTextView);
             btnMore = itemView.findViewById(R.id.btnMore);
+            mStartBtn = itemView.findViewById(R.id.btnStart);
+
+            if (!isUpcomingList)
+                mStartBtn.setVisibility(View.GONE);
         }
     }
 
+    private void showMenu(View v, String tripId) {
+        PopupMenu popupMenu = new PopupMenu(context, v);
+        popupMenu.getMenuInflater().inflate(R.menu.trip_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.edit:
+                    Toast.makeText(context, "edit", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.del:
+                    currentUserRef.child(tripId).removeValue((error, ref) ->
+                            Toast.makeText(context, "deleting success", Toast.LENGTH_SHORT).show());
+                    return true;
+            }
+            return false;
+        });
+        popupMenu.show();
+    }
 
 }
