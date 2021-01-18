@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.easytripplanner.R;
+//import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.utility.Common;
 import com.example.easytripplanner.utility.NetworkMonitorUtil;
