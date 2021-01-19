@@ -70,5 +70,6 @@
     <string name="registration">Registration</string>
     <string name="floating_button">Floating button</string>
     <string name="mapped_trips">Mapped Trips</string>
+    <string name="add_note_title">ِADD NOTE</string>
 
 </resources>

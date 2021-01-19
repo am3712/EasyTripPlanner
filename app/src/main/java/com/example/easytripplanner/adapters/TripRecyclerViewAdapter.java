@@ -10,8 +10,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.easytripplanner.Fragments.LoginFragmentDirections;
+import com.example.easytripplanner.Fragments.UpcomingFragment;
+import com.example.easytripplanner.Fragments.UpcomingFragmentDirections;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
 import com.google.firebase.database.DatabaseReference;
@@ -92,6 +96,10 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
                     currentUserRef.child(tripId).removeValue((error, ref) ->
                             Toast.makeText(context, "deleting success", Toast.LENGTH_SHORT).show());
                     return true;
+                case R.id.add_note:
+                    Navigation.findNavController(v).navigate(UpcomingFragmentDirections.actionUpcomingFragmentToAddNote(tripId));
+                    Toast.makeText(context, "deleting success", Toast.LENGTH_SHORT).show();
+
             }
             return false;
         });

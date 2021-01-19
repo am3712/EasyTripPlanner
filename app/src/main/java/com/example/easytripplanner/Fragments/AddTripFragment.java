@@ -28,6 +28,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
 import com.example.easytripplanner.R;
@@ -89,7 +91,6 @@ public class AddTripFragment extends Fragment {
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private static final String DATE_PICKER_TAG = "MATERIAL_DATE_PICKER";
     private static final String TAG = "NewTripActivity";
-
     boolean startPointClicked;
     private Context context;
 
@@ -189,6 +190,7 @@ public class AddTripFragment extends Fragment {
             //TODO show progress Dialog here
 
 
+
             // now handle the positive button click from the
             // material design date picker
 
@@ -220,8 +222,20 @@ public class AddTripFragment extends Fragment {
     }
 
     private void initAddNote() {
+
+
         mAddTripNote.setOnClickListener(v1 -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+           /* Navigation.findNavController(binding.getRoot())
+                    .navigate(AddTripFragmentDirections
+                            .actionAddTripFragmentToAddNote(getString(R.string.add_trip_title)));
+
+            /*FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.layout.fragment_add_note, fragment);*/
+
+            //Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionaddTripFragmentToAddTrip22);
+
+          /*  AlertDialog.Builder builder = new AlertDialog.Builder(context);
             final View noteDialog = getLayoutInflater().inflate(R.layout.note_dialog, null);
             builder.setView(noteDialog);
             // builder.setIcon(R.drawable.ic_baseline_note_add_24);
@@ -242,7 +256,8 @@ public class AddTripFragment extends Fragment {
             });
 
             AlertDialog dialog = builder.create();
-            dialog.show();
+            dialog.show();*/
+
         });
     }
 

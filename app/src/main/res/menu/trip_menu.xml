@@ -6,4 +6,7 @@
     <item
         android:id="@+id/del"
         android:title="delete"/>
+    <item
+        android:id="@+id/add_note"
+        android:title="Add Note"/>
 </menu>
