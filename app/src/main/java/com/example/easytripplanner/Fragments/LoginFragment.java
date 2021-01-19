@@ -71,7 +71,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
-        binding.loginButton.setReadPermissions("email", "public_profile");
+//        binding.loginButton.setReadPermissions("email", "public_profile");
         return binding.getRoot();
     }
 

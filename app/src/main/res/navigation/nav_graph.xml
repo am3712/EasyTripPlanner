@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/upcomingFragment"
         android:name="com.example.easytripplanner.Fragments.UpcomingFragment"
-        android:label="Upcoming Trips"
+        android:label="@string/upcoming_title"
         tools:layout="@layout/fragment_upcoming" >
         <action
             android:id="@+id/action_upcomingFragment_to_addTripFragment"
@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.easytripplanner.Fragments.LoginFragment"
-        android:label="Login"
+        android:label="@string/login_title"
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_upcomingFragment"
