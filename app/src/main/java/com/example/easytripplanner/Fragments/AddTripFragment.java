@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,6 +132,7 @@ public class AddTripFragment extends Fragment {
                         result -> {
                             if (result.get(Manifest.permission.ACCESS_FINE_LOCATION)
                                     && result.get(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                                Timber.i("AddTripFragment: requestPermissionLauncher");
                                 firePlaceAutocomplete();
                             }
                         });
@@ -377,12 +377,13 @@ public class AddTripFragment extends Fragment {
     }
 
     private void firePlaceAutocomplete() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Timber.i("firePlaceAutocomplete: PERMISSION_GRANTED ");
             performAutoCompletePlaceAction();
         } else {
             // You can directly ask for the permission.
+            Timber.i("firePlaceAutocomplete: PERMISSION_DENIED ");
             requestPermissionLauncher.launch(
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION});
