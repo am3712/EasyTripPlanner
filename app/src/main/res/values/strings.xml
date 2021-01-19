@@ -37,7 +37,7 @@
     <string name="past_list_of_trips">Past List of Trips</string>
     <string name="past_trips">past trips</string>
     <string name="upcoming_trips">Upcoming Trips</string>
-    <string name="add_new_trip_button">Add Trip</string>
+
     <string name="trip_name">Trip Name</string>
     <string name="start_point">Start Point :</string>
     <string name="new_trip">New Trip</string>
@@ -65,7 +65,9 @@
 
 
     <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranQxZzV6ODA5Ym8yeXFza2twcHk2c3gifQ.iBGtCdrUO8X3QufPn3C1Pg</string>
-    <string name="save_edit_btn_txt">SAVE EDIT</string>
+    <string name="save_edit_btn">SAVE EDIT</string>
+    <string name="save_update_btn">SAVE UPDATE</string>
+    <string name="save_add_btn">ADD TRIP</string>
     <string name="history">HISTORY</string>
     <string name="registration">Registration</string>
     <string name="floating_button">Floating button</string>
@@ -75,6 +77,14 @@
 
     <string name="facebook_app_id">1016690535493094</string>
     <string name="fb_login_protocol_scheme">fb1016690535493094</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
+    <string name="edit_trip_title">EDIT TRIP</string>
+    <string name="update_trip_title">UPDATE TRIP</string>
+    <string name="trip_edit_success">Trip Edit Success</string>
+    <string name="trip_updated_success">Trip Updated Success</string>
+    <string name="Trip_added_successfully">Trip Added Successfully</string>
+    <string name="add_trip_title">ADD NEW TRIP</string>
 
 
 </resources>

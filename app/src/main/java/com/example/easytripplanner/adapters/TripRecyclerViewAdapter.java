@@ -88,15 +88,20 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         PopupMenu popupMenu = new PopupMenu(context, v);
         setForceShowIcon(popupMenu);
         popupMenu.getMenuInflater().inflate(R.menu.trip_menu, popupMenu.getMenu());
-        if (!isUpcomingList)
-            popupMenu.getMenu().removeItem(R.id.editTrip);
+        if (!isUpcomingList) {
+            popupMenu.getMenu().removeItem(R.id.cancelTrip);
+            popupMenu.getMenu().findItem(R.id.editTrip).setTitle(context.getResources().getString(R.string.update));
+        }
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.editTrip:
-                    tripListener.editItem(trip.pushId);
+                    tripListener.edit(trip.pushId);
                     return true;
                 case R.id.deleteTrip:
-                    tripListener.deleteItem(trip);
+                    tripListener.delete(trip);
+                    return true;
+                case R.id.cancelTrip:
+                    tripListener.cancel(trip.pushId);
                     return true;
             }
             return false;

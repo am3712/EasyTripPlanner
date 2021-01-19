@@ -5,13 +5,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +22,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -57,7 +59,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
+
+import timber.log.Timber;
 
 
 public class AddTripFragment extends Fragment {
@@ -65,7 +68,7 @@ public class AddTripFragment extends Fragment {
     private ImageButton mPickDateButton;
     private Button mAddTripNote;
     private ImageButton mPickTimeButton;
-    private Button mAddTripButton;
+    private Button mSaveTripButton;
     private EditText mTripName;
     private EditText mStartPointEditText;
     private EditText mEndPointEditText;
@@ -85,15 +88,54 @@ public class AddTripFragment extends Fragment {
     private final DatabaseReference userRef;
 
     private static final int LOCATION_REQUEST_CODE = 0;
-    private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private static final String DATE_PICKER_TAG = "MATERIAL_DATE_PICKER";
-    private static final String TAG = "NewTripActivity";
 
     boolean startPointClicked;
     private Context context;
 
+    private int saveMode;
+
+    private final ActivityResultLauncher<Intent> autoCompletePlaceActivityResultLauncher;
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher;
+
 
     public AddTripFragment() {
+
+        autoCompletePlaceActivityResultLauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.StartActivityForResult(),
+                        result -> {
+                            if (result.getResultCode() == Activity.RESULT_OK) {
+                                Intent data = result.getData();
+                                CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+                                Point point = (Point) feature.geometry();
+                                TripLocation locationSrc = null;
+                                if (point != null) {
+                                    locationSrc = new TripLocation(
+                                            feature.text(),
+                                            point.latitude(),
+                                            point.longitude());
+                                    if (startPointClicked) {
+                                        mCurrentTrip.locationFrom = locationSrc;
+                                        mStartPointEditText.setText(feature.text());
+                                    } else {
+                                        mCurrentTrip.locationTo = locationSrc;
+                                        mEndPointEditText.setText(feature.text());
+                                    }
+                                }
+                            }
+                            myLayout.requestFocus();
+                        });
+
+
+        requestPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                        result -> {
+                            if (result.get(Manifest.permission.ACCESS_FINE_LOCATION)
+                                    && result.get(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                                firePlaceAutocomplete();
+                            }
+                        });
 
 
         //firebase
@@ -114,8 +156,6 @@ public class AddTripFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //tripId = getArguments().getString(TRIP_ID);
-
     }
 
     @Override
@@ -129,13 +169,8 @@ public class AddTripFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
-        assert getArguments() != null;
-        tripId = AddTripFragmentArgs.fromBundle(getArguments()).getID();
-        if (!tripId.equals("EMPTY")) {
-            Objects.requireNonNull(Navigation.findNavController(binding.getRoot()).getCurrentDestination()).setLabel("EDIT TRIP");
-            enableEditMode();
-        }
+
+        setMode();
 
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
@@ -157,7 +192,10 @@ public class AddTripFragment extends Fragment {
 
             }
         });
-        mAddTripButton.setText(R.string.save_edit_btn_txt);
+        if (saveMode == 1)
+            mSaveTripButton.setText(R.string.save_edit_btn);
+        else
+            mSaveTripButton.setText(R.string.save_update_btn);
     }
 
     private void fillData() {
@@ -177,7 +215,7 @@ public class AddTripFragment extends Fragment {
 
 
     private void initAddTrip() {
-        mAddTripButton.setOnClickListener(v -> {
+        mSaveTripButton.setOnClickListener(v -> {
 
             //TODO validate trip attributes (make sure no empty cells)
             if (!validateInput()) {
@@ -195,7 +233,7 @@ public class AddTripFragment extends Fragment {
             mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
 
             //insert trip to specific user
-            if (tripId == null)
+            if (saveMode == 0)
                 mCurrentTrip.pushId = userRef.push().getKey();
 
             if (mCurrentTrip.pushId != null) {
@@ -203,8 +241,9 @@ public class AddTripFragment extends Fragment {
                     //Todo --> hide progress Dialog
 
                     if (task.isSuccessful()) {
-                        String message = (tripId == null) ? "Trip Added Successfully" : "Trip Edit Success";
-
+                        String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
+                                : getString(R.string.trip_updated_success)
+                                : getString(R.string.Trip_added_successfully);
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
 
@@ -221,22 +260,14 @@ public class AddTripFragment extends Fragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             final View noteDialog = getLayoutInflater().inflate(R.layout.note_dialog, null);
             builder.setView(noteDialog);
-            // builder.setIcon(R.drawable.ic_baseline_note_add_24);
             builder.setTitle("Add Note");
 
-            builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    EditText editText = noteDialog.findViewById(R.id.editNote);
-                    Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show();
-                }
+            builder.setPositiveButton("Add", (dialog, which) -> {
+                EditText editText = noteDialog.findViewById(R.id.editNote);
+                Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show();
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(context, "you cancelled", Toast.LENGTH_SHORT).show();
-                }
-            });
+            builder.setNegativeButton("Cancel", (dialog, which) ->
+                    Toast.makeText(context, "you cancelled", Toast.LENGTH_SHORT).show());
 
             AlertDialog dialog = builder.create();
             dialog.show();
@@ -291,7 +322,7 @@ public class AddTripFragment extends Fragment {
         mPickDateButton = binding.calenderBtn;
         mAddTripNote = binding.btnAddNote;
         mPickTimeButton = binding.timeBtn;
-        mAddTripButton = binding.addTripBtn;
+        mSaveTripButton = binding.addTripBtn;
         mStartPointEditText = binding.startPointSearchView;
         mEndPointEditText = binding.endPointSearchView;
         mRepeatingSpinner = binding.repeatingSpinner;
@@ -332,11 +363,11 @@ public class AddTripFragment extends Fragment {
 
         //range of date
         CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from((long) (System.currentTimeMillis() - 8.64e+7));
-        final MaterialDatePicker materialDatePicker = MaterialDatePicker.Builder.datePicker()
+        MaterialDatePicker materialDatePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("SELECT TRIP DATE")
                 .setCalendarConstraints(new CalendarConstraints.Builder().setValidator(dateValidator).build())
                 .build();
-        mPickDateButton.setOnClickListener(v -> materialDatePicker.show(getFragmentManager(), DATE_PICKER_TAG));
+        mPickDateButton.setOnClickListener(v -> materialDatePicker.show(getParentFragmentManager(), DATE_PICKER_TAG));
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
                     dateInMilliseconds = (long) materialDatePicker.getSelection();
@@ -346,12 +377,21 @@ public class AddTripFragment extends Fragment {
     }
 
     private void firePlaceAutocomplete() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-            ActivityCompat.requestPermissions(getActivity(), permissions, LOCATION_REQUEST_CODE);
-            return;
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Timber.i("firePlaceAutocomplete: PERMISSION_GRANTED ");
+            performAutoCompletePlaceAction();
+        } else {
+            // You can directly ask for the permission.
+            requestPermissionLauncher.launch(
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION});
         }
+
+
+    }
+
+    private void performAutoCompletePlaceAction() {
         Intent intent = new PlaceAutocomplete.IntentBuilder()
                 .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.access_token))
                 .placeOptions(PlaceOptions.builder()
@@ -359,44 +399,9 @@ public class AddTripFragment extends Fragment {
                         .limit(10)
                         .build(PlaceOptions.MODE_CARDS))
                 .build(getActivity());
-        startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
+        autoCompletePlaceActivityResultLauncher.launch(intent);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
-            if (resultCode == Activity.RESULT_OK) {
-                CarmenFeature feature = PlaceAutocomplete.getPlace(data);
-                Point point = (Point) feature.geometry();
-                TripLocation locationSrc = null;
-                if (point != null) {
-                    locationSrc = new TripLocation(
-                            feature.text(),
-                            point.latitude(),
-                            point.longitude());
-                    if (startPointClicked) {
-                        mCurrentTrip.locationFrom = locationSrc;
-                        mStartPointEditText.setText(feature.text());
-                    } else {
-                        mCurrentTrip.locationTo = locationSrc;
-                        mEndPointEditText.setText(feature.text());
-                    }
-                }
-            }
-            myLayout.requestFocus();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_REQUEST_CODE) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                firePlaceAutocomplete();
-            }
-        }
-    }
 
     private boolean validateInput() {
         if (mCurrentTrip.name == null || mCurrentTrip.name.isEmpty())
@@ -413,5 +418,20 @@ public class AddTripFragment extends Fragment {
             return true;
 
         return false;
+    }
+
+    private void setMode() {
+        assert getArguments() != null;
+        tripId = AddTripFragmentArgs.fromBundle(getArguments()).getID();
+        if (!tripId.equals("EMPTY")) {
+            boolean isEdit = AddTripFragmentArgs.fromBundle(getArguments()).getEditMode();
+            Timber.i("onViewCreated: isEdit: %s", isEdit);
+            if (isEdit)
+                saveMode = 1;
+            else
+                saveMode = 2;
+
+            enableEditMode();
+        }
     }
 }

@@ -10,7 +10,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
 import com.example.easytripplanner.databinding.FragmentHistoryBinding;
 import com.example.easytripplanner.models.Trip;
@@ -26,6 +28,7 @@ import com.google.firebase.database.Query;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -81,12 +84,19 @@ public class HistoryFragment extends Fragment {
                 .startAt(UpcomingFragment.TRIP_STATUS.CANCELED.name())
                 .endAt(UpcomingFragment.TRIP_STATUS.DONE.name());
 
+
+        DatabaseReference finalCurrentUserRef = currentUserRef;
+        Calendar calendar = Calendar.getInstance();
         listener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
-                trips.add(trip);
-                Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
+                if (trip != null && trip.timeInMilliSeconds != null) {
+                    calendar.setTimeInMillis(trip.timeInMilliSeconds);
+                    trip.setDate(UpcomingFragment.formatter.format(calendar.getTime()));
+                    trips.add(trip);
+                    Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -107,7 +117,7 @@ public class HistoryFragment extends Fragment {
                         }
                     }
                 }
-                binding.getRoot().getAdapter().notifyDataSetChanged();
+                Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
             }
 
             @Override
@@ -125,17 +135,26 @@ public class HistoryFragment extends Fragment {
     private void initPopUpMenuItemListener() {
         mTripListener = new TripListener() {
             @Override
-            public void editItem(String tripId) {
+            public void edit(String tripId) {
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(HistoryFragmentDirections
+                                .actionHistoryFragmentToAddTripFragment(getString(R.string.update_trip_title))
+                                .setID(tripId).setEditMode(false));
             }
 
             @Override
-            public void deleteItem(Trip trip) {
+            public void delete(Trip trip) {
                 currentUserRef.child(trip.pushId).removeValue((error, ref) ->
                         Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void startNav(Trip trip) {
+            }
+
+            @Override
+            public void cancel(String id) {
+
             }
         };
     }

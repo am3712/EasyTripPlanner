@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +62,7 @@ public class UpcomingFragment extends Fragment {
 
     private TripRecyclerViewAdapter mAdapter;
     private ArrayList<Trip> trips;
-    private ChildEventListener listener;
+    private ChildEventListener mRetrieveTripslistener;
     private Query queryReference;
     DatabaseReference currentUserRef;
 
@@ -93,9 +92,10 @@ public class UpcomingFragment extends Fragment {
         mAdapter = new TripRecyclerViewAdapter(getContext(), trips, true, menuItemListener);
         binding.recyclerView.setAdapter(mAdapter);
 
-        binding.fbAddTrip.setOnClickListener(v -> {
-            Navigation.findNavController(binding.getRoot()).navigate(UpcomingFragmentDirections.actionUpcomingFragmentToAddTripFragment());
-        });
+        binding.fbAddTrip.setOnClickListener(v ->
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(UpcomingFragmentDirections
+                                .actionUpcomingFragmentToAddTripFragment(getString(R.string.add_trip_title))));
 
         return binding.getRoot();
     }
@@ -131,7 +131,7 @@ public class UpcomingFragment extends Fragment {
         DatabaseReference finalCurrentUserRef = currentUserRef;
 
         Calendar calendar = Calendar.getInstance();
-        listener = new ChildEventListener() {
+        mRetrieveTripslistener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
@@ -151,7 +151,8 @@ public class UpcomingFragment extends Fragment {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                clear();
+                queryReference.addChildEventListener(mRetrieveTripslistener);
             }
 
             @Override
@@ -185,15 +186,15 @@ public class UpcomingFragment extends Fragment {
     private void initPopUpMenuItemListener() {
         menuItemListener = new TripListener() {
             @Override
-            public void editItem(String tripId) {
+            public void edit(String tripId) {
                 Navigation.findNavController(binding.getRoot())
                         .navigate(UpcomingFragmentDirections
-                                .actionUpcomingFragmentToAddTripFragment()
+                                .actionUpcomingFragmentToAddTripFragment(getString(R.string.edit_trip_title))
                                 .setID(tripId));
             }
 
             @Override
-            public void deleteItem(Trip trip) {
+            public void delete(Trip trip) {
                 currentUserRef.child(trip.pushId).removeValue((error, ref) ->
                         Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show());
             }
@@ -201,6 +202,14 @@ public class UpcomingFragment extends Fragment {
             @Override
             public void startNav(Trip trip) {
                 startNavigation(trip);
+            }
+
+            @Override
+            public void cancel(String id) {
+                //set new Status : Canceled
+                currentUserRef.child(id).child("status").setValue(TRIP_STATUS.CANCELED.name());
+                cancelRemainder(id);
+                Toast.makeText(requireContext(), "Trip Canceled", Toast.LENGTH_SHORT).show();
             }
         };
     }
@@ -213,6 +222,7 @@ public class UpcomingFragment extends Fragment {
 
         final Intent intent = new Intent(getContext(), AlarmReceiver.class);
 
+
         PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(requireContext(), t.pushId.hashCode(),
                 intent, PendingIntent.FLAG_NO_CREATE);
         //check if alarm is exist or not
@@ -220,7 +230,7 @@ public class UpcomingFragment extends Fragment {
 
             //alarm is not exist add it
 
-            Timber.i("checkAlarm: %s is exist in alarm manager..", t.name);
+            Timber.i("checkAlarm: %s is not exist in alarm manager..", t.name);
 
             intent.putExtra(TRIP_NAME, t.name);
             intent.putExtra(TRIP_ID, t.pushId);
@@ -228,6 +238,7 @@ public class UpcomingFragment extends Fragment {
             intent.putExtra(TRIP_LOCATION_NAME, t.locationTo.Address);
             intent.putExtra(TRIP_LOC_LONGITUDE, t.locationTo.longitude);
             intent.putExtra(TRIP_LOC_LATITUDE, t.locationTo.latitude);
+
 
             notifyPendingIntent = PendingIntent.getBroadcast
                     (requireContext(), t.pushId.hashCode(), intent,
@@ -263,7 +274,7 @@ public class UpcomingFragment extends Fragment {
                         notifyPendingIntent);
             }
         } else
-            Timber.i("checkAlarm: %s is not exist in alarm manager..", t.name);
+            Timber.i("checkAlarm: %s is exist in alarm manager..", t.name);
 
 
     }
@@ -278,15 +289,13 @@ public class UpcomingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        queryReference.addChildEventListener(listener);
+        queryReference.addChildEventListener(mRetrieveTripslistener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        queryReference.removeEventListener(listener);
-        trips.clear();
-        Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
+        clear();
     }
 
     @Override
@@ -307,11 +316,12 @@ public class UpcomingFragment extends Fragment {
             mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-            //cancel trigger remainder
-            cancelRemainder(trip.pushId);
 
             //set new Status : DONE
             currentUserRef.child(trip.pushId).child("status").setValue(TRIP_STATUS.DONE.name());
+
+            //cancel trigger remainder
+            cancelRemainder(trip.pushId);
 
             //start Trip in maps
             this.startActivity(mapIntent);
@@ -339,5 +349,11 @@ public class UpcomingFragment extends Fragment {
         if (pendingIntent != null && alarmManager != null) {
             alarmManager.cancel(pendingIntent);
         }
+    }
+
+    private void clear() {
+        queryReference.removeEventListener(mRetrieveTripslistener);
+        trips.clear();
+        Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
     }
 }

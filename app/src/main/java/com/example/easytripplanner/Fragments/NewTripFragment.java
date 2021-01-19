@@ -3,8 +3,6 @@ package com.example.easytripplanner.Fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,7 +31,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.easytripplanner.R;
 //import com.example.easytripplanner.broadcastreceiver.AlarmReceiver;
-import com.example.easytripplanner.broadcastreceiver.myAlram;
 import com.example.easytripplanner.databinding.FragmentNewTripBinding;
 import com.example.easytripplanner.models.Note;
 import com.example.easytripplanner.models.Trip;
@@ -63,7 +59,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 //import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
 
 
 public class NewTripFragment extends Fragment {
@@ -180,7 +175,7 @@ public class NewTripFragment extends Fragment {
 
             }
         });
-        mAddTripButton.setText(R.string.save_edit_btn_txt);
+        mAddTripButton.setText(R.string.save_edit_btn);
     }
 
     private void fillData() {

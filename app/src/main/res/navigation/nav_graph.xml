@@ -46,11 +46,17 @@
         android:id="@+id/historyFragment"
         android:name="com.example.easytripplanner.Fragments.HistoryFragment"
         android:label="@string/history"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history" >
+        <action
+            android:id="@+id/action_historyFragment_to_addTripFragment"
+            app:destination="@id/addTripFragment"
+            app:popUpTo="@id/historyFragment"
+            app:launchSingleTop="true" />
+    </fragment>
     <fragment
         android:id="@+id/addTripFragment"
         android:name="com.example.easytripplanner.Fragments.AddTripFragment"
-        android:label="ADD NEW TRIP"
+        android:label="{title}"
         tools:layout="@layout/fragment_add_trip">
         <action
             android:id="@+id/action_addTripFragment_to_upcomingFragment"
@@ -61,6 +67,12 @@
         <argument
             android:name="ID"
             android:defaultValue="EMPTY"
+            app:argType="string" />
+        <argument android:name="editMode"
+            app:argType="boolean"
+            android:defaultValue="true"/>
+        <argument
+            android:name="title"
             app:argType="string" />
     </fragment>
 </navigation>
