@@ -1,7 +1,6 @@
 package com.example.easytripplanner.activities;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -27,7 +28,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import timber.log.Timber;
 
-import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_HASH_CODE;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOCATION_NAME;
@@ -39,7 +39,6 @@ import static com.example.easytripplanner.activities.MainActivity.PRIMARY_CHANNE
 public class MyDialog extends AppCompatActivity {
 
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
-    private static final String TAG = "MyDialog";
     public static String NOTIFICATION_STATUS = "Notification Status";
     private static final String GROUP_KEY = "com.android.example.EasyTripPlanner";
     private String tripName;
@@ -55,6 +54,7 @@ public class MyDialog extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        turnScreenOn();
         setTitle("");
         getIntentData();
         displayAlert();
@@ -81,12 +81,11 @@ public class MyDialog extends AppCompatActivity {
 
     private void displayAlert() {
 
+
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.RoundShapeTheme)
                 .setTitle("Reminder: " + tripName)
                 .setMessage(("to : " + tripLocAddress))
-                .setPositiveButton("START", (dialog, which) -> {
-                    checkOverlayPermissionAndStartNav();
-                })
+                .setPositiveButton("START", (dialog, which) -> checkOverlayPermissionAndStartNav())
                 .setNegativeButton("CANCEL", (dialog, which) -> {
                     changeTripStatus(UpcomingFragment.TRIP_STATUS.CANCELED.name());
                     mNotificationManager.cancel(tripHashCode);
@@ -101,7 +100,7 @@ public class MyDialog extends AppCompatActivity {
                     finishAndRemoveTask();
                 });
         AlertDialog alertDialog = builder.create();
-        alertDialog.getWindow().addFlags(FLAG_TURN_SCREEN_ON);
+
         alertDialog.show();
     }
 
@@ -193,4 +192,20 @@ public class MyDialog extends AppCompatActivity {
             finishAndRemoveTask();
         }
     }
+
+    private void turnScreenOn() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        } else {
+            final Window win = getWindow();
+            win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                    WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        }
+    }
+
+
 }

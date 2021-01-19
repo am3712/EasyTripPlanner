@@ -29,11 +29,8 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -136,8 +133,8 @@ public class MappedFragment extends Fragment {
         loadedMapStyle.addLayer(routeLayer);
 
         // Add the red marker icon image to the map
-        loadedMapStyle.addImage(RED_PIN_ICON_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.drawable.baseline_location_on_24))));
+        loadedMapStyle.addImage(RED_PIN_ICON_ID,
+                requireContext().getResources().getDrawable(R.drawable.baseline_location_on_24, requireContext().getResources().newTheme()));
 
         // Add the red marker icon SymbolLayer to the map
         loadedMapStyle.addLayer(new SymbolLayer(ICON_LAYER_ID, ICON_SOURCE_ID).withProperties(

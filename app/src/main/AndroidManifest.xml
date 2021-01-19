@@ -39,7 +39,9 @@
         <activity
             android:name=".activities.MyDialog"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/Theme.Transparent"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"/>
 
         <receiver
             android:name=".services.AlarmReceiver"

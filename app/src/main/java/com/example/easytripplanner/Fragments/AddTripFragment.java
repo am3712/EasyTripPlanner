@@ -229,7 +229,7 @@ public class AddTripFragment extends Fragment {
 
             mCurrentTrip.type = (String) mTripTypeSpinner.getSelectedItem();
             mCurrentTrip.repeating = (String) mRepeatingSpinner.getSelectedItem();
-            mCurrentTrip.status = "UPCOMING";
+            mCurrentTrip.status = UpcomingFragment.TRIP_STATUS.UPCOMING.name();
             mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
 
             //insert trip to specific user
