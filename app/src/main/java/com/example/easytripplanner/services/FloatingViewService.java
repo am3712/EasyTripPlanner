@@ -23,7 +23,6 @@ public class FloatingViewService extends Service {
     private int dpWidth;
     private int viewWidth;
     private int viewHeight;
-    private static final String TAG = "FloatingViewService";
 
     public FloatingViewService() {
     }

@@ -2,7 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/logout"
-
-        android:title="Logout"/>
+        android:id="@+id/logout_menu_item"
+        android:actionLayout="@layout/activity_main"
+        android:icon="@drawable/ic_baseline_login_18"
+        android:title="@string/logout"
+        app:showAsAction="collapseActionView|ifRoom|withText" />
 </menu>

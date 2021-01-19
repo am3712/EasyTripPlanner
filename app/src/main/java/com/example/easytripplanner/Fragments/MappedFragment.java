@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.easytripplanner.R;
@@ -23,13 +24,11 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -64,8 +63,6 @@ public class MappedFragment extends Fragment {
 
     public MappedFragment() {
         // Required empty public constructor
-
-
     }
 
 
@@ -84,35 +81,30 @@ public class MappedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mapped, container, false);
 
 
-// This contains the MapView in XML and needs to be called after the access token is configured.
-
-
-// Setup the MapView
+        // This contains the MapView in XML and needs to be called after the access token is configured.
+        // Setup the MapView
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull MapboxMap mapboxMap) {
-                mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-// Set the origin location to the Alhambra landmark in Granada, Spain.
-                        origin = Point.fromLngLat(-3.588098, 37.176164);
-
-// Set the destination location to the Plaza del Triunfo in Granada, Spain.
-                        destination = Point.fromLngLat(-3.601845, 37.184080);
-
-                        initSource(style);
-
-                        initLayers(style);
-
-// Get the directions route from the Mapbox Directions API
-                        getRoute(mapboxMap, origin, destination);
-                    }
-                });
-            }
-        });
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mapView.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+            // Set the origin location to the Alhambra landmark in Granada, Spain.
+            origin = Point.fromLngLat(-3.588098, 37.176164);
+
+            // Set the destination location to the Plaza del Triunfo in Granada, Spain.
+            destination = Point.fromLngLat(-3.601845, 37.184080);
+
+            initSource(style);
+
+            initLayers(style);
+
+            // Get the directions route from the Mapbox Directions API
+            getRoute(mapboxMap, origin, destination);
+        }));
     }
 
     /**
@@ -131,7 +123,7 @@ public class MappedFragment extends Fragment {
     private void initLayers(@NonNull Style loadedMapStyle) {
         LineLayer routeLayer = new LineLayer(ROUTE_LAYER_ID, ROUTE_SOURCE_ID);
 
-// Add the LineLayer to the map. This layer will display the directions route.
+        // Add the LineLayer to the map. This layer will display the directions route.
         routeLayer.setProperties(
                 lineCap(Property.LINE_CAP_ROUND),
                 lineJoin(Property.LINE_JOIN_ROUND),
@@ -140,11 +132,11 @@ public class MappedFragment extends Fragment {
         );
         loadedMapStyle.addLayer(routeLayer);
 
-// Add the red marker icon image to the map
-        loadedMapStyle.addImage(RED_PIN_ICON_ID, BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.drawable.baseline_location_on_24)));
+        // Add the red marker icon image to the map
+        loadedMapStyle.addImage(RED_PIN_ICON_ID,
+                requireContext().getResources().getDrawable(R.drawable.baseline_location_on_24, requireContext().getResources().newTheme()));
 
-// Add the red marker icon SymbolLayer to the map
+        // Add the red marker icon SymbolLayer to the map
         loadedMapStyle.addLayer(new SymbolLayer(ICON_LAYER_ID, ICON_SOURCE_ID).withProperties(
                 iconImage(RED_PIN_ICON_ID),
                 iconIgnorePlacement(true),
@@ -163,8 +155,8 @@ public class MappedFragment extends Fragment {
 
         client.enqueueCall(new Callback<DirectionsResponse>() {
             @Override
-            public void onResponse(@NotNull Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-// You can get the generic HTTP info about the response
+            public void onResponse(@NotNull Call<DirectionsResponse> call, @NotNull Response<DirectionsResponse> response) {
+                // You can get the generic HTTP info about the response
                 Timber.d("Response code: %s", response.code());
                 if (response.body() == null) {
                     Timber.e("No routes found, make sure you set the right user and access token.");
@@ -174,10 +166,10 @@ public class MappedFragment extends Fragment {
                     return;
                 }
 
-// Get the directions route
+                // Get the directions route
                 currentRoute = response.body().routes().get(0);
 
-// Make a toast which displays the route's distance
+                // Make a toast which displays the route's distance
 
 
                 if (mapboxMap != null) {
@@ -185,11 +177,11 @@ public class MappedFragment extends Fragment {
                         @Override
                         public void onStyleLoaded(@NonNull Style style) {
 
-// Retrieve and update the source designated for showing the directions route
+                            // Retrieve and update the source designated for showing the directions route
                             GeoJsonSource source = style.getSourceAs(ROUTE_SOURCE_ID);
 
-// Create a LineString with the directions route's geometry and
-// reset the GeoJSON source for the route LineLayer source
+                            // Create a LineString with the directions route's geometry and
+                            // reset the GeoJSON source for the route LineLayer source
                             if (source != null) {
                                 source.setGeoJson(LineString.fromPolyline(currentRoute.geometry(), PRECISION_6));
                             }
@@ -201,7 +193,7 @@ public class MappedFragment extends Fragment {
             @Override
             public void onFailure(@NotNull Call<DirectionsResponse> call, @NotNull Throwable throwable) {
                 Timber.e("Error: %s", throwable.getMessage());
-                Toast.makeText(getContext(), "Error: " + throwable.getMessage(),
+                Toast.makeText(requireContext(), "Error: " + throwable.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -240,7 +232,7 @@ public class MappedFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-// Cancel the Directions API request
+        // Cancel the Directions API request
         if (client != null) {
             client.cancelCall();
         }

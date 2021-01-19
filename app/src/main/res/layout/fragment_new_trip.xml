@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -198,7 +199,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:layout_marginBottom="21dp"
             android:background="@drawable/btnframe"
-            android:text="@string/add_new_trip_button"
+            android:text="@string/save_add_btn"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.452"

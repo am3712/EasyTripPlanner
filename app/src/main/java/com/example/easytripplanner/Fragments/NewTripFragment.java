@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.easytripplanner.R;
+//import com.example.easytripplanner.broadcastreceiver.AlarmReceiver;
 import com.example.easytripplanner.databinding.FragmentNewTripBinding;
 import com.example.easytripplanner.models.Note;
 import com.example.easytripplanner.models.Trip;
@@ -57,7 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
+//import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
 
 
 public class NewTripFragment extends Fragment {
@@ -136,9 +137,9 @@ public class NewTripFragment extends Fragment {
         View view = binding.getRoot();
 
         initComponents();
-        if (getArguments() != null && getArguments().containsKey(TRIP_ID)) {
+        if (getArguments() != null && getArguments().containsKey(UpcomingFragment.TRIP_ID)) {
 
-            tripId = getArguments().getString(TRIP_ID);
+            tripId = getArguments().getString(UpcomingFragment.TRIP_ID);
             enableEditMode();
         }
 
@@ -153,7 +154,11 @@ public class NewTripFragment extends Fragment {
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
         Mapbox.getInstance(context, getString(R.string.access_token));
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         setComponentsAction();
     }
 
@@ -170,7 +175,7 @@ public class NewTripFragment extends Fragment {
 
             }
         });
-        mAddTripButton.setText(R.string.save_edit_btn_txt);
+        mAddTripButton.setText(R.string.save_edit_btn);
     }
 
     private void fillData() {

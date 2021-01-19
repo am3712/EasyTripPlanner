@@ -2,15 +2,13 @@ package com.example.easytripplanner.activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
@@ -19,16 +17,23 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+
+    Button button;
+    private FragmentLoginBinding binding;
 
     private static final String TAG = "MainActivity";
 
     // Notification channel ID.
     public static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
-
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +63,26 @@ public class MainActivity extends AppCompatActivity {
             if (destination.getId() == R.id.loginFragment) {
                 toolbar.setVisibility(View.GONE);
                 bottomNav.setVisibility(View.GONE);
-            } else if (destination.getId() == R.id.registerFragment || destination.getId() == R.id.addTripFragment) {
+            } else if (destination.getId() == R.id.addTripFragment) {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.GONE);
+            } else if (destination.getId() == R.id.registerFragment) {
+                toolbar.setVisibility(View.VISIBLE);
+                bottomNav.setVisibility(View.GONE);
+                toolbar.getMenu().findItem(R.id.logout_menu_item).setVisible(false);
             } else {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.VISIBLE);
+                toolbar.getMenu().findItem(R.id.logout_menu_item).setVisible(true);
             }
+        });
+        toolbar.setOnMenuItemClickListener(item -> {
+            FirebaseAuth.getInstance().signOut();
+            if (Objects.requireNonNull(navController.getCurrentDestination()).getId() != R.id.upcomingFragment)
+                navController.popBackStack();
+            navController.popBackStack();
+            navController.navigate(R.id.loginFragment);
+            return true;
         });
 
         // Create the notification channel.
@@ -97,9 +115,10 @@ public class MainActivity extends AppCompatActivity {
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-       // MenuInflater inflater = getMenuInflater();
+        // MenuInflater inflater = getMenuInflater();
         //inflater.inflate(R.menu.logout_menu, menu);
         getMenuInflater().inflate(R.menu.logout_menu, menu);
         return true;

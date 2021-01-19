@@ -15,6 +15,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.easytripplanner.R;
+//import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.utility.Common;
 import com.example.easytripplanner.utility.NetworkMonitorUtil;
@@ -70,7 +71,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
-        binding.loginButton.setReadPermissions("email", "public_profile");
+//        binding.loginButton.setReadPermissions("email", "public_profile");
         return binding.getRoot();
     }
 
