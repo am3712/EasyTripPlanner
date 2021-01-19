@@ -5,14 +5,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.TripRecyclerViewAdapter;
 import com.example.easytripplanner.databinding.FragmentHistoryBinding;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.utility.TripListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -24,7 +28,9 @@ import com.google.firebase.database.Query;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class HistoryFragment extends Fragment {
 
@@ -35,6 +41,7 @@ public class HistoryFragment extends Fragment {
     private ArrayList<Trip> trips;
     private ChildEventListener listener;
     private Query queryReference;
+    private TripListener mTripListener;
 
     public HistoryFragment() {
 
@@ -45,6 +52,7 @@ public class HistoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         trips = new ArrayList<>();
         initQueryAndListener();
+        initPopUpMenuItemListener();
     }
 
     @Override
@@ -53,7 +61,7 @@ public class HistoryFragment extends Fragment {
 
         binding = FragmentHistoryBinding.inflate(inflater, container, false);
         // Set the adapter
-        TripRecyclerViewAdapter viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, false, currentUserRef);
+        TripRecyclerViewAdapter viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, false, mTripListener);
         binding.getRoot().setAdapter(viewAdapter);
         return binding.getRoot();
     }
@@ -67,10 +75,8 @@ public class HistoryFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         currentUserRef = null;
-        if (userId != null) {
-            currentUserRef = database.getReference("Users").child(userId);
-            currentUserRef.keepSynced(true);
-        }
+        currentUserRef = database.getReference("Users").child(userId);
+        currentUserRef.keepSynced(true);
 
 
         queryReference = currentUserRef
@@ -78,12 +84,19 @@ public class HistoryFragment extends Fragment {
                 .startAt(UpcomingFragment.TRIP_STATUS.CANCELED.name())
                 .endAt(UpcomingFragment.TRIP_STATUS.DONE.name());
 
+
+        DatabaseReference finalCurrentUserRef = currentUserRef;
+        Calendar calendar = Calendar.getInstance();
         listener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
-                trips.add(trip);
-                binding.getRoot().getAdapter().notifyDataSetChanged();
+                if (trip != null && trip.timeInMilliSeconds != null) {
+                    calendar.setTimeInMillis(trip.timeInMilliSeconds);
+                    trip.setDate(UpcomingFragment.formatter.format(calendar.getTime()));
+                    trips.add(trip);
+                    Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -104,7 +117,7 @@ public class HistoryFragment extends Fragment {
                         }
                     }
                 }
-                binding.getRoot().getAdapter().notifyDataSetChanged();
+                Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
             }
 
             @Override
@@ -114,6 +127,33 @@ public class HistoryFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+    }
+
+    private void initPopUpMenuItemListener() {
+        mTripListener = new TripListener() {
+            @Override
+            public void edit(String tripId) {
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(HistoryFragmentDirections
+                                .actionHistoryFragmentToAddTripFragment(getString(R.string.update_trip_title))
+                                .setID(tripId).setEditMode(false));
+            }
+
+            @Override
+            public void delete(Trip trip) {
+                currentUserRef.child(trip.pushId).removeValue((error, ref) ->
+                        Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void startNav(Trip trip) {
+            }
+
+            @Override
+            public void cancel(String id) {
 
             }
         };
@@ -130,7 +170,7 @@ public class HistoryFragment extends Fragment {
         super.onStop();
         queryReference.removeEventListener(listener);
         trips.clear();
-        binding.getRoot().getAdapter().notifyDataSetChanged();
+        Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
     }
 
     @Override

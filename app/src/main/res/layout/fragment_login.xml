@@ -34,7 +34,7 @@
                 android:paddingVertical="@dimen/_42sdp"
                 android:paddingTop="20dp"
                 android:text="Login Form"
-                android:textColor="#FB4C40"
+                android:textColor="#455A64"
                 android:textSize="36sp"
                 android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
@@ -82,7 +82,7 @@
                 android:textStyle="bold"
                 tools:ignore="MissingPrefix" />
 
-            <com.spark.submitbutton.SubmitButton
+            <!--<com.spark.submitbutton.SubmitButton
                 android:id="@+id/logLoginBtn"
                 android:layout_width="@dimen/_60sdp"
                 android:layout_height="@dimen/_60sdp"
@@ -97,7 +97,22 @@
                 app:sub_btn_ripple_color="@color/colorPrimaryDark"
                 app:sub_btn_tick_color="@color/white"
                 tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="16dp" />
+                tools:layout_editor_absoluteY="16dp" />-->
+            <Button
+                android:id="@+id/logLoginBtn"
+                android:layout_width="167dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@drawable/btnsignin"
+                android:text="@string/login" />
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="162dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -127,7 +142,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/sign_up"
-                    android:textColor="#FB4C40"
+                    android:textColor="#455A64"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     tools:ignore="MissingPrefix" />

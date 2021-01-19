@@ -3,8 +3,6 @@ package com.example.easytripplanner.Fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,7 +31,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.easytripplanner.R;
 //import com.example.easytripplanner.broadcastreceiver.AlarmReceiver;
-import com.example.easytripplanner.broadcastreceiver.myAlram;
 import com.example.easytripplanner.databinding.FragmentNewTripBinding;
 import com.example.easytripplanner.models.Note;
 import com.example.easytripplanner.models.Trip;
@@ -63,6 +59,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 //import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
+
 
 public class NewTripFragment extends Fragment {
 
@@ -95,8 +92,6 @@ public class NewTripFragment extends Fragment {
 
     boolean startPointClicked;
     private Context context;
-
-    private TimePicker timePicker;
 
     public NewTripFragment() {
 
@@ -165,7 +160,6 @@ public class NewTripFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setComponentsAction();
-
     }
 
     private void enableEditMode() {
@@ -181,7 +175,7 @@ public class NewTripFragment extends Fragment {
 
             }
         });
-        mAddTripButton.setText(R.string.save_edit_btn_txt);
+        mAddTripButton.setText(R.string.save_edit_btn);
     }
 
     private void fillData() {
@@ -350,35 +344,7 @@ public class NewTripFragment extends Fragment {
                     now.get(Calendar.MINUTE),
                     false
             ).show();
-            Calendar calendar = Calendar.getInstance();
-            if (android.os.Build.VERSION.SDK_INT >= 23) {
-                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-                        timePicker.getHour(), timePicker.getMinute(), 0);
-            } else {
-                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-                        timePicker.getCurrentHour(), timePicker.getCurrentMinute(), 0);
-            }
-
-
-            setAlarm(calendar.getTimeInMillis());
         });
-    }
-
-    private void setAlarm(long timeInMilli) {
-        //getting the alarm manager
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        //creating a new intent specifying the broadcast receiver
-        Intent i = new Intent(getContext(), myAlram.class);
-
-        //creating a pending intent using the intent
-        PendingIntent pi = PendingIntent.getBroadcast(getContext(), 0, i, 0);
-
-        //setting the repeating alarm that will be fired every day
-        am.setRepeating(AlarmManager.RTC, timeInMilli, AlarmManager.INTERVAL_DAY, pi);
-        Toast.makeText(getContext(), "Alarm is set", Toast.LENGTH_SHORT).show();
-
-
     }
 
     private void initDatePicker() {
