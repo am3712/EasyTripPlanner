@@ -156,6 +156,11 @@ public class HistoryFragment extends Fragment {
             public void cancel(String id) {
 
             }
+
+            @Override
+            public void showNote(String id) {
+
+            }
         };
     }
 

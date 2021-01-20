@@ -5,13 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FBFAFB"
     tools:context=".Fragments.AddTripFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/my_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FBFAFB"
+
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:paddingBottom="@dimen/_16sdp">
@@ -132,7 +133,7 @@
             android:contentDescription="@string/time_image"
             android:src="@drawable/ic_baseline_more_time_24"
             app:layout_constraintStart_toStartOf="@+id/textView6"
-            app:layout_constraintTop_toTopOf="@+id/calender_btn"/>
+            app:layout_constraintTop_toTopOf="@+id/calender_btn" />
 
         <TextView
             android:id="@+id/textView5"

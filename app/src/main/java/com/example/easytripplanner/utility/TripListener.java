@@ -7,4 +7,6 @@ public interface TripListener {
     void delete(Trip trip);
     void startNav(Trip trip);
     void cancel(String id);
+    void showNote(String id);
+
 }

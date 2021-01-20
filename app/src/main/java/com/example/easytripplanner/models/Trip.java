@@ -12,7 +12,6 @@ public class Trip implements Serializable, Comparable<Trip> {
     public String status;
     public String type;
     public String repeating;
-    public List<Note> notes;
     public String pushId;
     public Long timeInMilliSeconds;
     private String date;
@@ -21,16 +20,16 @@ public class Trip implements Serializable, Comparable<Trip> {
     public Trip() {
     }
 
-    public Trip(String name, TripLocation locationFrom, TripLocation locationTo, String status, String type, String repeating, List<Note> notes, String pushId, Long timeInMilliSeconds) {
+    public Trip(String name, TripLocation locationFrom, TripLocation locationTo, String status, String type, String repeating, String pushId, Long timeInMilliSeconds, String date) {
         this.name = name;
         this.locationFrom = locationFrom;
         this.locationTo = locationTo;
         this.status = status;
         this.type = type;
         this.repeating = repeating;
-        this.notes = notes;
         this.pushId = pushId;
         this.timeInMilliSeconds = timeInMilliSeconds;
+        this.date = date;
     }
 
     @Override
@@ -42,7 +41,6 @@ public class Trip implements Serializable, Comparable<Trip> {
                 ", status='" + status + '\'' + "\n" +
                 ", type='" + type + '\'' + "\n" +
                 ", repeating='" + repeating + '\'' + "\n" +
-                ", notes=" + notes + "\n" +
                 ", pushId='" + pushId + '\'' + "\n" +
                 ", timeInMilliSeconds=" + timeInMilliSeconds +
                 '}';

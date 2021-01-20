@@ -1,42 +1,55 @@
 package com.example.easytripplanner.Fragments;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.RecyleNoteAdapter;
 import com.example.easytripplanner.models.Note;
+import com.example.easytripplanner.utility.RemoveNote;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
+import timber.log.Timber;
 
 
 public class AddNote extends Fragment {
-    private ArrayList<String> arrayList;
+    private List<Note> arrayList;
     private ListView listView;
     private EditText editText;
     private Button btnAdd;
     private Button btnRemov;
     private String tripId;
-    Note mNote;
+    //private ArrayAdapter<String> adapter;
+    private ChildEventListener notesListener;
+    private RecyclerView recyclerView;
+    private static final String TAG = "AddNote";
     DatabaseReference userRef;
+    private RecyleNoteAdapter recyleNoteAdapter;
+    RemoveNote removeNote;
 
     public AddNote() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -44,17 +57,27 @@ public class AddNote extends Fragment {
         //reference to user trips
         assert firebaseUser != null;
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        removeNote = new RemoveNote() {
+            @Override
+            public void remove(String noteID) {
+                userRef.child(tripId).child("notes").child(noteID).removeValue((error, ref) ->
+                        Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show());
 
-        //Note Object
-        mNote = new Note();
+            }
+        };
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null) {
+            tripId = AddNoteArgs.fromBundle(getArguments()).getID();
+            Timber.i("onViewCreated: Trip id :" + tripId);
+        }
+        initTripLis();
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,66 +88,97 @@ public class AddNote extends Fragment {
         editText = view.findViewById(R.id.editText);
         btnAdd = view.findViewById(R.id.btnAdd);
         btnRemov = view.findViewById(R.id.btnRemov);
-        listView = view.findViewById(R.id.listview);
+        recyclerView = view.findViewById(R.id.listview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyleNoteAdapter = new RecyleNoteAdapter(getContext(), arrayList,removeNote);
+        recyclerView.setAdapter(recyleNoteAdapter);
 
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, arrayList);
-        listView.setAdapter(adapter);
-        if (getArguments() != null && getArguments().containsKey(TRIP_ID)) {
+        /*adapter = new ArrayAdapter<String>(getContext(),
+                R.layout.note_list_item, R.id.textViewNote, arrayList);
+        listView.setAdapter(adapter);*/
 
-            tripId = getArguments().getString(TRIP_ID);
-            enableEditMode();
-        }
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         initAddNote();
+
+        return view;
     }
 
     private void initAddNote() {
         btnAdd.setOnClickListener(v -> {
 
-            mNote.text = editText.getText().toString();
+            String text = editText.getText().toString();
 
-            mNote.id = userRef.child(tripId).child("notes").push().getKey();
-
-            userRef.child(tripId).child("notes").setValue(mNote).addOnCompleteListener(task -> {
+            String id = userRef.child(tripId).child("notes").push().getKey();
+            assert id != null;
+            userRef.child(tripId).child("notes").child(id).setValue(new Note(text, false, id)).addOnCompleteListener(task -> {
                 //Todo --> hide progress Dialog
 
                 if (task.isSuccessful()) {
-                    //      Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
-
+                    Toast.makeText(getContext(), "Note is add successfully", Toast.LENGTH_SHORT).show();
                 } else {
-                    //Todo show message error
+                    Toast.makeText(getContext(), "Note is not added successfully", Toast.LENGTH_SHORT).show();
                 }
             });
         });
 
     }
 
-    private void enableEditMode() {
-        userRef.child(tripId).child("notes").addListenerForSingleValueEvent(new ValueEventListener() {
+
+    private void initTripLis() {
+
+        notesListener = new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                mNote = snapshot.getValue(Note.class);
-                fillData();
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Note note = snapshot.getValue(Note.class);
+                if (note != null) {
+                    Timber.i("onChildAdded: note text : %s", note.text);
+                    arrayList.add(note);
+                    recyleNoteAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                String id = snapshot.child("id").getValue(String.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    arrayList.removeIf(note -> note.id.equals(id));
+                } else {
+                    for (Iterator<Note> iterator = arrayList.iterator(); iterator.hasNext(); ) {
+                        if (iterator.next().id.equals(id)) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+                }
+                recyleNoteAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
     }
 
-    private void fillData() {
-
-        editText.setText(mNote.text);
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        userRef.child(tripId).child("notes").addChildEventListener(notesListener);
     }
 
-
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop: removeEventListener");
+        userRef.child(tripId).child("notes").removeEventListener(notesListener);
+    }
 }

@@ -14,7 +14,26 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.easytripplanner.Fragments.UpcomingFragment;
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.FloatAdapter;
+import com.example.easytripplanner.models.Note;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import timber.log.Timber;
 
 public class FloatingViewService extends Service {
     private WindowManager mWindowManager;
@@ -23,6 +42,10 @@ public class FloatingViewService extends Service {
     private int dpWidth;
     private int viewWidth;
     private int viewHeight;
+    private String tripID;
+    private List<Note> arrayList;
+    private FloatAdapter floatAdapter;
+    private static final String TAG = "FloatingViewService";
 
     public FloatingViewService() {
     }
@@ -32,12 +55,26 @@ public class FloatingViewService extends Service {
         return null;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        tripID = intent.getStringExtra(UpcomingFragment.TRIP_ID);
+        Timber.i("onBind: id:%s", tripID);
+
+        retreiveNotes();
+
+        return START_STICKY;
+                //super.onStartCommand(intent, flags, startId);
+    }
+
     @SuppressLint("InflateParams")
     @Override
     public void onCreate() {
         super.onCreate();
+
+
         //Inflate the floating view layout we created
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget, null);
+        arrayList = new ArrayList<>();
 
         int layoutParams;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -81,7 +118,7 @@ public class FloatingViewService extends Service {
 
 
         //The root element of the expanded view layout
-        final View expandedView = mFloatingView.findViewById(R.id.expanded_container);
+        final RecyclerView expandedView = mFloatingView.findViewById(R.id.expanded_container);
 
 
         //Set the close button
@@ -153,7 +190,42 @@ public class FloatingViewService extends Service {
                 return false;
             }
         });
+
+        expandedView.setLayoutManager(new LinearLayoutManager(this));
+        floatAdapter = new FloatAdapter(this, arrayList);
+        expandedView.setAdapter(floatAdapter);
+
+
+
+
     }
+
+    private void retreiveNotes() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        //reference to user trips
+        assert firebaseUser != null;
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+
+        reference.child(tripID).child("notes").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Note note = dataSnapshot.getValue(Note.class);
+                    if (note != null) {
+                        arrayList.add(note);
+                        floatAdapter.notifyDataSetChanged();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        }
 
     /**
      * Detect if the floating view is collapsed or expanded.

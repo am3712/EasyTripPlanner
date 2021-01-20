@@ -10,12 +10,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.easytripplanner.Fragments.LoginFragmentDirections;
-import com.example.easytripplanner.Fragments.UpcomingFragment;
-import com.example.easytripplanner.Fragments.UpcomingFragmentDirections;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.utility.TripListener;
@@ -54,6 +50,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         holder.dateView.setText(trips.get(position).getDate());
         holder.statusView.setText(trips.get(position).status);
         holder.btnMore.setOnClickListener(v -> showMenu(holder.btnMore, trips.get(position)));
+        holder.mNoteBtn.setOnClickListener(v -> tripListener.showNote(trips.get(position).pushId));
         if (isUpcomingList)
             holder.mStartBtn.setOnClickListener(v -> tripListener.startNav(trips.get(position)));
     }
@@ -71,6 +68,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         public final TextView dateView;
         public final Button btnMore;
         public final Button mStartBtn;
+        public final Button mNoteBtn;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,6 +79,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
             dateView = itemView.findViewById(R.id.dateTextView);
             btnMore = itemView.findViewById(R.id.btnMore);
             mStartBtn = itemView.findViewById(R.id.btnStart);
+            mNoteBtn = itemView.findViewById(R.id.btn_Note);
             if (!isUpcomingList)
                 mStartBtn.setVisibility(View.GONE);
 
@@ -107,10 +106,6 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
                 case R.id.cancelTrip:
                     tripListener.cancel(trip.pushId);
                     return true;
-                case R.id.add_note:
-                    Navigation.findNavController(v).navigate(UpcomingFragmentDirections.actionUpcomingFragmentToAddNote(tripId));
-                    Toast.makeText(context, "deleting success", Toast.LENGTH_SHORT).show();
-
             }
             return false;
         });
