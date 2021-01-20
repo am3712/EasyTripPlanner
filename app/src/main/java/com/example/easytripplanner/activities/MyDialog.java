@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -99,12 +100,13 @@ public class MyDialog extends AppCompatActivity {
                 })
                 .setNeutralButton("SNOOZE", (dialog, which) -> {
                     if (!isNotificationFired) {
-                        mediaPlayer.stop();
-                        mediaPlayer.release();
                         receiverIntent.putExtra(NOTIFICATION_STATUS, true);
                         deliverNotification();
                     }
                     finishAndRemoveTask();
+                }).setOnDismissListener(dialog -> {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
                 });
         AlertDialog alertDialog = builder.create();
 
@@ -120,12 +122,33 @@ public class MyDialog extends AppCompatActivity {
         if (userId != null) {
             currentUserRef = database.getReference("Users").child(userId);
         }
-        if (currentUserRef != null)
+        if (currentUserRef != null) {
+            DatabaseReference finalCurrentUserRef = currentUserRef;
             currentUserRef.child(tripID).get().addOnCompleteListener(task -> {
                 Trip tripayia = task.getResult().getValue(Trip.class);
-
+                if (tripayia != null && !tripayia.repeating.equalsIgnoreCase("No Repeated")) {
+                    long repeatInterval;
+                    long ONE_DAY = 86400000;
+                    switch (tripayia.repeating) {
+                        case "Repeated Daily":
+                            repeatInterval = ONE_DAY;
+                            break;
+                        case "Repeated weekly":
+                            repeatInterval = ONE_DAY * 7;
+                            break;
+                        case "Repeated Monthly":
+                            repeatInterval = ONE_DAY * 7 * 4;
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + tripayia.repeating);
+                    }
+                    finalCurrentUserRef.child(tripID).child("timeInMilliSeconds").setValue(tripayia.timeInMilliSeconds + repeatInterval);
+                } else {
+                    finalCurrentUserRef.child(tripID).child("status").setValue(value);
+                }
             });
-        currentUserRef.child(tripID).child("status").setValue(value);
+        }
+
     }
 
 
