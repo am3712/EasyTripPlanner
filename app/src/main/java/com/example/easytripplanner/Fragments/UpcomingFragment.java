@@ -136,6 +136,7 @@ public class UpcomingFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
                 if (trip != null && trip.timeInMilliSeconds != null) {
+                    binding.noData.setVisibility(View.GONE);
                     calendar.setTimeInMillis(trip.timeInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
 
@@ -164,6 +165,9 @@ public class UpcomingFragment extends Fragment {
                     for (Iterator<Trip> iterator = trips.iterator(); iterator.hasNext(); ) {
                         if (iterator.next().pushId.equals(id)) {
                             iterator.remove();
+                            if (trips.size() == 0) {
+                                binding.noData.setVisibility(View.VISIBLE);
+                            }
                             break;
                         }
                     }

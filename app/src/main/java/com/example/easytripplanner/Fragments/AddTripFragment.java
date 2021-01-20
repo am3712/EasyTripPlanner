@@ -232,6 +232,10 @@ public class AddTripFragment extends Fragment {
             mCurrentTrip.status = UpcomingFragment.TRIP_STATUS.UPCOMING.name();
             mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
 
+            if (mCurrentTrip.timeInMilliSeconds <= System.currentTimeMillis()) {
+                Toast.makeText(context, "change time ,you can not add past date!!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             //insert trip to specific user
             if (saveMode == 0)
                 mCurrentTrip.pushId = userRef.push().getKey();
@@ -255,31 +259,11 @@ public class AddTripFragment extends Fragment {
         });
     }
 
-    private void initAddNote() {
-        mAddTripNote.setOnClickListener(v1 -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            final View noteDialog = getLayoutInflater().inflate(R.layout.note_dialog, null);
-            builder.setView(noteDialog);
-            builder.setTitle("Add Note");
-
-            builder.setPositiveButton("Add", (dialog, which) -> {
-                EditText editText = noteDialog.findViewById(R.id.editNote);
-                Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show();
-            });
-            builder.setNegativeButton("Cancel", (dialog, which) ->
-                    Toast.makeText(context, "you cancelled", Toast.LENGTH_SHORT).show());
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        });
-    }
-
     private void setComponentsAction() {
         initTripName();
         initDatePicker();
         initTimePicker();
         initAddTrip();
-        initAddNote();
 
         //search view click (Start Point)
         mStartPointEditText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -320,7 +304,6 @@ public class AddTripFragment extends Fragment {
     private void initComponents() {
         mTripName = binding.tripNameInput;
         mPickDateButton = binding.calenderBtn;
-        mAddTripNote = binding.btnAddNote;
         mPickTimeButton = binding.timeBtn;
         mSaveTripButton = binding.addTripBtn;
         mStartPointEditText = binding.startPointSearchView;

@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.easytripplanner.Fragments.UpcomingFragment;
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.services.FloatingViewService;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,6 +52,7 @@ public class MyDialog extends AppCompatActivity {
     private Intent receiverIntent;
     private NotificationManager mNotificationManager;
     private boolean isNotificationFired;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +83,11 @@ public class MyDialog extends AppCompatActivity {
     }
 
     private void displayAlert() {
-
-
+        isNotificationFired = receiverIntent.getBooleanExtra(NOTIFICATION_STATUS, false);
+        if (!isNotificationFired) {
+            mediaPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_RINGTONE_URI);
+            mediaPlayer.start();
+        }
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.RoundShapeTheme)
                 .setTitle("Reminder: " + tripName)
                 .setMessage(("to : " + tripLocAddress))
@@ -92,8 +98,9 @@ public class MyDialog extends AppCompatActivity {
                     finishAndRemoveTask();
                 })
                 .setNeutralButton("SNOOZE", (dialog, which) -> {
-                    isNotificationFired = receiverIntent.getBooleanExtra(NOTIFICATION_STATUS, false);
                     if (!isNotificationFired) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
                         receiverIntent.putExtra(NOTIFICATION_STATUS, true);
                         deliverNotification();
                     }
@@ -114,7 +121,11 @@ public class MyDialog extends AppCompatActivity {
             currentUserRef = database.getReference("Users").child(userId);
         }
         if (currentUserRef != null)
-            currentUserRef.child(tripID).child("status").setValue(value);
+            currentUserRef.child(tripID).get().addOnCompleteListener(task -> {
+                Trip tripayia = task.getResult().getValue(Trip.class);
+
+            });
+        currentUserRef.child(tripID).child("status").setValue(value);
     }
 
 
@@ -165,8 +176,8 @@ public class MyDialog extends AppCompatActivity {
                 return;
             }
         }
-        Intent noteIntent =new Intent(MyDialog.this, FloatingViewService.class);
-        noteIntent.putExtra(TRIP_ID,tripID);
+        Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
+        noteIntent.putExtra(TRIP_ID, tripID);
         getApplicationContext().startService(noteIntent);
         startAction();
         finishAndRemoveTask();

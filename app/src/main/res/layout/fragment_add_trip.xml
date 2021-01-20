@@ -183,19 +183,10 @@
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <Button
-            android:id="@+id/btnAddNote"
-            android:layout_width="45dp"
-            android:layout_height="31dp"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/ic_baseline_note_add_24"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-        <Button
             android:id="@+id/add_trip_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_24sdp"
             android:layout_marginBottom="21dp"
             android:background="@drawable/btnsignin"
             android:text="@string/save_add_btn"
@@ -203,20 +194,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.452"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnAddNote"
+            app:layout_constraintTop_toBottomOf="@+id/repeating_spinner"
             app:layout_constraintVertical_bias="0.19" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16sdp"
-            android:text="@string/Add_Note"
-            android:textColor="#3B5998"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/repeating_spinner"
-            app:layout_constraintTop_toBottomOf="@+id/repeating_spinner" />
 
         <TextView
             android:id="@+id/timeTextView"
