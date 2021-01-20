@@ -19,13 +19,13 @@ import com.example.easytripplanner.R;
 import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.utility.Common;
 import com.example.easytripplanner.utility.NetworkMonitorUtil;
-import com.facebook.AccessToken;
+/*import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.login.LoginResult;
+import com.facebook.login.LoginResult;*/
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -187,7 +187,7 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void handleFacebookAccessToken(AccessToken token) {
+  /*  private void handleFacebookAccessToken(AccessToken token) {
 
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
@@ -211,7 +211,7 @@ public class LoginFragment extends Fragment {
 
 
                 });
-    }
+    }*/
 
     @Override
     public void onStart() {

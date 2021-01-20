@@ -211,6 +211,12 @@ public class UpcomingFragment extends Fragment {
                 cancelRemainder(id);
                 Toast.makeText(requireContext(), "Trip Canceled", Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void showNote(String id) {
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(UpcomingFragmentDirections.actionUpcomingFragmentToAddNote(id));
+            }
         };
     }
 
