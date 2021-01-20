@@ -64,7 +64,7 @@
     </string-array>
 
 
-    <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNranQxZzV6ODA5Ym8yeXFza2twcHk2c3gifQ.iBGtCdrUO8X3QufPn3C1Pg</string>
+    <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNrazU2YnFnbDA5NG0yb2x3dDE1cHhwODcifQ.MtT0dHV_I8G7YaqtDVzgyA</string>
     <string name="save_edit_btn">SAVE EDIT</string>
     <string name="save_update_btn">SAVE UPDATE</string>
     <string name="save_add_btn">ADD TRIP</string>

@@ -73,6 +73,18 @@ public class NetworkMonitorUtil {
         }
     }
 
+    public static boolean checkNetwork(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) {
+            activeNetwork.isConnectedOrConnecting();
+            return true;
+        }
+        return false;
+    }
+
     public static void stopTriggerNetwork() {
         if (connectivityManager != null)
             connectivityManager.unregisterNetworkCallback(getNetworkCallbackInstance());

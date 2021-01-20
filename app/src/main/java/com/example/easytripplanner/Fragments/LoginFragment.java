@@ -1,8 +1,6 @@
 package com.example.easytripplanner.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,21 +9,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.easytripplanner.R;
-//import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.utility.Common;
 import com.example.easytripplanner.utility.NetworkMonitorUtil;
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +26,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.Executor;
 
 import timber.log.Timber;
+
+//import com.example.easytripplanner.databinding.FragmentLoginBinding;
 
 
 public class LoginFragment extends Fragment {
@@ -155,7 +147,7 @@ public class LoginFragment extends Fragment {
                         , getResources().getString(R.string.validation_password));
 
             } else {
-                if (NetworkMonitorUtil.networkStatus) {
+                if (NetworkMonitorUtil.checkNetwork(getContext())) {
                     Timber.i("loginProcess: NETWORK STATUS: %s", NetworkMonitorUtil.networkStatus);
                     login();
                 } else {

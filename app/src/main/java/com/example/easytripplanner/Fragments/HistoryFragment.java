@@ -85,7 +85,6 @@ public class HistoryFragment extends Fragment {
                 .endAt(UpcomingFragment.TRIP_STATUS.DONE.name());
 
 
-        DatabaseReference finalCurrentUserRef = currentUserRef;
         Calendar calendar = Calendar.getInstance();
         listener = new ChildEventListener() {
             @Override

@@ -95,7 +95,7 @@ public class RegisterFragment extends Fragment {
                         , getString(R.string.registeration_failed)
                         , getResources().getString(R.string.validation_valid_current_password));
             } else {
-                if (NetworkMonitorUtil.networkStatus) {
+                if (NetworkMonitorUtil.checkNetwork(getContext())) {
                     signUp();
                 } else {
                     Common.alertErrorOrValidationDialog(
