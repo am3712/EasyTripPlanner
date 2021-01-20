@@ -165,8 +165,10 @@ public class MyDialog extends AppCompatActivity {
                 return;
             }
         }
+        Intent noteIntent =new Intent(MyDialog.this, FloatingViewService.class);
+        noteIntent.putExtra(TRIP_ID,tripID);
+        getApplicationContext().startService(noteIntent);
         startAction();
-        startService(new Intent(MyDialog.this, FloatingViewService.class));
         finishAndRemoveTask();
     }
 

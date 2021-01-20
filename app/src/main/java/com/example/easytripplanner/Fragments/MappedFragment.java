@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,6 +45,8 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,6 +64,8 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 
 
 public class MappedFragment extends Fragment {
+   // private ArrayList<String> arrayList;
+    String countryList[] = {"India", "China", "australia", "Portugle", "America", "NewZealand"};
 
     private static final String ROUTE_LAYER_ID = "route-layer-id";
     private static final String ROUTE_SOURCE_ID = "route-source-id";
@@ -98,8 +104,13 @@ public class MappedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mapped, container, false);
         // This contains the MapView in XML and needs to be called after the access token is configured.
         // Setup the MapView
+        ListView listView=view.findViewById(R.id.listView);
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.map_list_view, R.id.textViewMap, countryList);
+        listView.setAdapter(arrayAdapter);
+
         return view;
     }
 

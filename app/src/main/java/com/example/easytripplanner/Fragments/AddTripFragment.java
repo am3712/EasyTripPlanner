@@ -248,7 +248,7 @@ public class AddTripFragment extends Fragment {
                         Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
 
                     } else {
-                        //Todo show message error
+                        //Todo show message errorsz
                     }
                 });
             }

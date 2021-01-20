@@ -50,6 +50,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         holder.dateView.setText(trips.get(position).getDate());
         holder.statusView.setText(trips.get(position).status);
         holder.btnMore.setOnClickListener(v -> showMenu(holder.btnMore, trips.get(position)));
+        holder.mNoteBtn.setOnClickListener(v -> tripListener.showNote(trips.get(position).pushId));
         if (isUpcomingList)
             holder.mStartBtn.setOnClickListener(v -> tripListener.startNav(trips.get(position)));
     }
@@ -67,6 +68,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         public final TextView dateView;
         public final Button btnMore;
         public final Button mStartBtn;
+        public final Button mNoteBtn;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,6 +79,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
             dateView = itemView.findViewById(R.id.dateTextView);
             btnMore = itemView.findViewById(R.id.btnMore);
             mStartBtn = itemView.findViewById(R.id.btnStart);
+            mNoteBtn = itemView.findViewById(R.id.btn_Note);
             if (!isUpcomingList)
                 mStartBtn.setVisibility(View.GONE);
 
