@@ -45,7 +45,8 @@
             android:layout_width="@dimen/_220sdp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible" />
+            android:background="@color/white"
+            android:visibility="gone" />
 
     </LinearLayout>
 </FrameLayout>

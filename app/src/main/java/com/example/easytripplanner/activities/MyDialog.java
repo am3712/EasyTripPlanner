@@ -53,7 +53,6 @@ public class MyDialog extends AppCompatActivity {
     private NotificationManager mNotificationManager;
     private boolean isNotificationFired;
     private MediaPlayer mediaPlayer;
-    private boolean hasNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,8 +146,11 @@ public class MyDialog extends AppCompatActivity {
                 } else {
                     finalCurrentUserRef.child(tripID).child("status").setValue(value);
                 }
-                if (task.getResult().hasChild("notes"))
-                    hasNotes = true;
+                if (task.getResult().hasChild("notes")) {
+                    Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
+                    noteIntent.putExtra(TRIP_ID, tripID);
+                    getApplicationContext().startService(noteIntent);
+                }
             });
         }
 
@@ -203,11 +205,6 @@ public class MyDialog extends AppCompatActivity {
             }
         }
         startAction();
-        if (hasNotes) {
-            Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
-            noteIntent.putExtra(TRIP_ID, tripID);
-            getApplicationContext().startService(noteIntent);
-        }
         finishAndRemoveTask();
     }
 

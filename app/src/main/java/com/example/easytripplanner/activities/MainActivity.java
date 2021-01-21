@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             if (destination.getId() == R.id.loginFragment) {
                 toolbar.setVisibility(View.GONE);
                 bottomNav.setVisibility(View.GONE);
-            } else if (destination.getId() == R.id.addTripFragment) {
+            } else if (destination.getId() == R.id.addTripFragment||destination.getId() == R.id.addNoteFragment) {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.GONE);
             } else if (destination.getId() == R.id.registerFragment) {

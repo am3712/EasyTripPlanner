@@ -55,8 +55,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import timber.log.Timber;
@@ -75,6 +77,8 @@ public class AddTripFragment extends Fragment {
     private ConstraintLayout myLayout;
     private TextView mDateTextView;
     private TextView mTimeTextView;
+    private List<String> repeatingOptions;
+
 
     private String tripId;
     private FragmentAddTripBinding binding;
@@ -102,7 +106,6 @@ public class AddTripFragment extends Fragment {
 
 
     public AddTripFragment() {
-
         autoCompletePlaceActivityResultLauncher =
                 registerForActivityResult(
                         new ActivityResultContracts.StartActivityForResult(),
@@ -165,6 +168,7 @@ public class AddTripFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        repeatingOptions = Arrays.asList(getResources().getStringArray(R.array.repeating_options));
     }
 
     @Override
@@ -211,6 +215,8 @@ public class AddTripFragment extends Fragment {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(mCurrentTrip.timeInMilliSeconds);
+        DATE_FORMAT.setTimeZone(calendar.getTimeZone());
+        TIME_FORMAT.setTimeZone(calendar.getTimeZone());
 
         String date = DATE_FORMAT.format(calendar.getTime());
         String time = TIME_FORMAT.format(calendar.getTime());
@@ -218,21 +224,12 @@ public class AddTripFragment extends Fragment {
         dateInMilliseconds = getMillisecondsFromString(date, DATE_FORMAT);
         timeInMilliseconds = getMillisecondsFromString(time, TIME_FORMAT);
 
-        Timber.i("dateInMilliseconds : %s", dateInMilliseconds);
-        calendar.setTimeInMillis(dateInMilliseconds);
-        Timber.i("dateInMilliseconds : %s", DATE_FORMAT.format(calendar.getTime()));
-
-
-        Timber.i("timeInMilliseconds : %s", timeInMilliseconds);
-        calendar.setTimeInMillis(timeInMilliseconds);
-        Timber.i("timeInMilliseconds : %s", TIME_FORMAT.format(calendar.getTime()));
-
-
         mTripName.setText(mCurrentTrip.name);
         mStartPointEditText.setText(mCurrentTrip.locationFrom.Address);
         mEndPointEditText.setText(mCurrentTrip.locationTo.Address);
         mDateTextView.setText(date);
         mTimeTextView.setText(time);
+        mRepeatingSpinner.setSelection(repeatingOptions.indexOf(mCurrentTrip.repeating));
     }
 
 
@@ -259,7 +256,7 @@ public class AddTripFragment extends Fragment {
                 Toast.makeText(context, "Change Date Calender, you can not add past date!!", Toast.LENGTH_SHORT).show();
                 return;
             } else if (dateInMilliseconds >= getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT) &&
-                    timeInMilliseconds < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
+                    timeInMilliseconds - 60000 < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
                 Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
                 return;
             }

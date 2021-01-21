@@ -148,6 +148,7 @@ public class UpcomingFragment extends Fragment {
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 clear();
+                binding.noData.setVisibility(View.VISIBLE);
                 queryReference.addChildEventListener(mRetrieveTripsListener);
             }
 
@@ -160,9 +161,8 @@ public class UpcomingFragment extends Fragment {
                     for (Iterator<Trip> iterator = trips.iterator(); iterator.hasNext(); ) {
                         if (iterator.next().pushId.equals(id)) {
                             iterator.remove();
-                            if (trips.size() == 0) {
+                            if (trips.size() == 0)
                                 binding.noData.setVisibility(View.VISIBLE);
-                            }
                             break;
                         }
                     }
@@ -330,8 +330,14 @@ public class UpcomingFragment extends Fragment {
             //start Trip in maps
             this.startActivity(mapIntent);
 
-            //start floating service
-            requireActivity().startService(new Intent(getContext(), FloatingViewService.class));
+            currentUserRef.child(trip.pushId).get().addOnCompleteListener(task -> {
+                //start floating service
+                if (Objects.requireNonNull(task.getResult()).hasChild("notes")) {
+                    Intent noteIntent = new Intent(requireContext(), FloatingViewService.class);
+                    noteIntent.putExtra(TRIP_ID, trip.pushId);
+                    requireContext().getApplicationContext().startService(noteIntent);
+                }
+            });
 
             //finish activity (App)
             requireActivity().finishAndRemoveTask();
