@@ -256,26 +256,11 @@ public class UpcomingFragment extends Fragment {
                     alarmMgr.setExact(AlarmManager.RTC_WAKEUP, t.timeInMilliSeconds, notifyPendingIntent);
                 }
             } else {
-                long repeatInterval;
-                long ONE_DAY = 86400000;
-                switch (t.repeating) {
-                    case "Repeated Daily":
-                        repeatInterval = ONE_DAY;
-                        break;
-                    case "Repeated weekly":
-                        repeatInterval = ONE_DAY * 7;
-                        break;
-                    case "Repeated Monthly":
-                        repeatInterval = ONE_DAY * 7 * 4;
-                        break;
-                    default:
-                        repeatInterval = 0;
-                }
 
                 alarmMgr.setRepeating(
                         AlarmManager.RTC_WAKEUP,
                         t.timeInMilliSeconds,
-                        repeatInterval,
+                        getRepeatInterval(t.repeating),
                         notifyPendingIntent);
             }
         } else
@@ -322,7 +307,7 @@ public class UpcomingFragment extends Fragment {
 
 
             //set new Status : DONE
-            currentUserRef.child(trip.pushId).child("status").setValue(TRIP_STATUS.DONE.name());
+            changeTripStatus(trip);
 
             //cancel trigger remainder
             cancelRemainder(trip.pushId);
@@ -347,6 +332,15 @@ public class UpcomingFragment extends Fragment {
         }
     }
 
+    private void changeTripStatus(Trip trip) {
+        if (trip != null) {
+            if (!trip.repeating.equalsIgnoreCase("No Repeated"))
+                currentUserRef.child(trip.pushId).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + getRepeatInterval(trip.repeating));
+            else
+                currentUserRef.child(trip.pushId).child("status").setValue(TRIP_STATUS.DONE.name());
+        }
+    }
+
     private void cancelRemainder(String pushId) {
 
         Intent intent = new Intent();
@@ -365,5 +359,19 @@ public class UpcomingFragment extends Fragment {
         queryReference.removeEventListener(mRetrieveTripsListener);
         trips.clear();
         Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
+    }
+
+    public static long getRepeatInterval(String repeating) {
+        long ONE_DAY = 86400000;
+        switch (repeating) {
+            case "Repeated Daily":
+                return ONE_DAY;
+            case "Repeated weekly":
+                return ONE_DAY * 7;
+            case "Repeated Monthly":
+                return ONE_DAY * 7 * 4;
+            default:
+                throw new IllegalStateException("Unexpected value: " + repeating);
+        }
     }
 }
