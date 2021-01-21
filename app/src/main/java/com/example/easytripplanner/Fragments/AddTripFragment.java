@@ -254,6 +254,8 @@ public class AddTripFragment extends Fragment {
             if (!validInputTime())
                 return;
 
+            Timber.i("Come here :it is valid input Time");
+
 
             //insert trip to specific user
             if (saveMode == 0)
@@ -285,11 +287,13 @@ public class AddTripFragment extends Fragment {
         if (repeating.equals(repeatingOptions.get(0))) {
             if (dateInMilliseconds < getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)) {
                 Toast.makeText(context, "Change Date Calender, you can not add past date!!", Toast.LENGTH_SHORT).show();
+                return false;
             } else if (dateInMilliseconds >= getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT) &&
                     timeInMilliseconds - 60000 < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
                 Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
+                return false;
             }
-            return false;
+            return true;
         } else {
             mCurrentTrip.timeInMilliSeconds += UpcomingFragment.getRepeatInterval(repeating);
             return true;
@@ -383,7 +387,7 @@ public class AddTripFragment extends Fragment {
     private void initDatePicker() {
 
         //range of date
-        CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from((long) (System.currentTimeMillis() - 8.64e+7));
+        CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from((long) (System.currentTimeMillis()));
         MaterialDatePicker materialDatePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("SELECT TRIP DATE")
                 .setCalendarConstraints(new CalendarConstraints.Builder().setValidator(dateValidator).build())
