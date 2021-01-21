@@ -264,20 +264,13 @@ public class AddTripFragment extends Fragment {
             Timber.i("id : %s", mCurrentTrip.pushId);
 
             if (mCurrentTrip.pushId != null) {
-                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
-                                : getString(R.string.trip_updated_success)
-                                : getString(R.string.Trip_added_successfully);
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
-                        Timber.i("initAddTrip: add trip successfully");
-                    } else if (task.isCanceled()) {
-                        Timber.i("initAddTrip: add trip canceled");
-                    } else if (task.isComplete()) {
-                        Timber.i("initAddTrip: add trip canceled");
-                    }
-                });
+                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip);
+                String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
+                        : getString(R.string.trip_updated_success)
+                        : getString(R.string.Trip_added_successfully);
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                Timber.i("initAddTrip: add trip successfully");
+                Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
             }
         });
     }

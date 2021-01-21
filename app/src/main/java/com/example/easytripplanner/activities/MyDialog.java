@@ -28,8 +28,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Objects;
-
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_HASH_CODE;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOCATION_NAME;
@@ -126,7 +124,7 @@ public class MyDialog extends AppCompatActivity {
         if (currentUserRef != null) {
             DatabaseReference finalCurrentUserRef = currentUserRef;
             currentUserRef.child(tripID).get().addOnCompleteListener(task -> {
-                Trip trip = Objects.requireNonNull(task.getResult()).getValue(Trip.class);
+                Trip trip = task.getResult().getValue(Trip.class);
                 if (trip != null && !trip.repeating.equalsIgnoreCase("No Repeated"))
                     finalCurrentUserRef.child(tripID).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + getRepeatInterval(trip.repeating));
                 else

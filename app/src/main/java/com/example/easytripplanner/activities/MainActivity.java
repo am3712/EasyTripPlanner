@@ -24,10 +24,6 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button button;
-    private FragmentLoginBinding binding;
-
-    private static final String TAG = "MainActivity";
 
     // Notification channel ID.
     public static final String PRIMARY_CHANNEL_ID =
