@@ -90,6 +90,7 @@
     <string name="upcoming_title">UPCOMING TRIPS</string>
     <string name="logout">LOGOUT</string>
     <string name="no_upcoming_trips">No Upcoming Trips</string>
+    <string name="checkbox">CheckBox</string>
 
 
 </resources>

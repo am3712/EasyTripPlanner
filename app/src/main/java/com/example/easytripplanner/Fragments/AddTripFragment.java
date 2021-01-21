@@ -25,7 +25,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -58,6 +57,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import timber.log.Timber;
 
@@ -65,7 +65,6 @@ import timber.log.Timber;
 public class AddTripFragment extends Fragment {
 
     private ImageButton mPickDateButton;
-    private Button mAddTripNote;
     private ImageButton mPickTimeButton;
     private Button mSaveTripButton;
     private EditText mTripName;
@@ -80,13 +79,17 @@ public class AddTripFragment extends Fragment {
     private String tripId;
     private FragmentAddTripBinding binding;
 
+    @SuppressLint("SimpleDateFormat")
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd MMM yyyy");
+    @SuppressLint("SimpleDateFormat")
+    private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm aa");
+
     Trip mCurrentTrip;
     Note mNote;
     private long dateInMilliseconds;
     private long timeInMilliseconds;
     private final DatabaseReference userRef;
 
-    private static final int LOCATION_REQUEST_CODE = 0;
     private static final String DATE_PICKER_TAG = "MATERIAL_DATE_PICKER";
 
     boolean startPointClicked;
@@ -106,8 +109,14 @@ public class AddTripFragment extends Fragment {
                         result -> {
                             if (result.getResultCode() == Activity.RESULT_OK) {
                                 Intent data = result.getData();
-                                CarmenFeature feature = PlaceAutocomplete.getPlace(data);
-                                Point point = (Point) feature.geometry();
+                                CarmenFeature feature = null;
+                                if (data != null) {
+                                    feature = PlaceAutocomplete.getPlace(data);
+                                }
+                                Point point = null;
+                                if (feature != null) {
+                                    point = (Point) feature.geometry();
+                                }
                                 TripLocation locationSrc = null;
                                 if (point != null) {
                                     locationSrc = new TripLocation(
@@ -203,14 +212,27 @@ public class AddTripFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(mCurrentTrip.timeInMilliSeconds);
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+        String date = DATE_FORMAT.format(calendar.getTime());
+        String time = TIME_FORMAT.format(calendar.getTime());
+
+        dateInMilliseconds = getMillisecondsFromString(date, DATE_FORMAT);
+        timeInMilliseconds = getMillisecondsFromString(time, TIME_FORMAT);
+
+        Timber.i("dateInMilliseconds : %s", dateInMilliseconds);
+        calendar.setTimeInMillis(dateInMilliseconds);
+        Timber.i("dateInMilliseconds : %s", DATE_FORMAT.format(calendar.getTime()));
+
+
+        Timber.i("timeInMilliseconds : %s", timeInMilliseconds);
+        calendar.setTimeInMillis(timeInMilliseconds);
+        Timber.i("timeInMilliseconds : %s", TIME_FORMAT.format(calendar.getTime()));
+
 
         mTripName.setText(mCurrentTrip.name);
         mStartPointEditText.setText(mCurrentTrip.locationFrom.Address);
         mEndPointEditText.setText(mCurrentTrip.locationTo.Address);
-        mDateTextView.setText(dateFormat.format(calendar.getTime()));
-        mTimeTextView.setText(timeFormat.format(calendar.getTime()));
+        mDateTextView.setText(date);
+        mTimeTextView.setText(time);
     }
 
 
@@ -232,8 +254,13 @@ public class AddTripFragment extends Fragment {
             mCurrentTrip.status = UpcomingFragment.TRIP_STATUS.UPCOMING.name();
             mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
 
-            if (mCurrentTrip.timeInMilliSeconds <= System.currentTimeMillis()) {
-                Toast.makeText(context, "change time ,you can not add past date!!", Toast.LENGTH_SHORT).show();
+
+            if (dateInMilliseconds < getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)) {
+                Toast.makeText(context, "Change Date Calender, you can not add past date!!", Toast.LENGTH_SHORT).show();
+                return;
+            } else if (dateInMilliseconds >= getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT) &&
+                    timeInMilliseconds < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
+                Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
                 return;
             }
             //insert trip to specific user
@@ -241,19 +268,13 @@ public class AddTripFragment extends Fragment {
                 mCurrentTrip.pushId = userRef.push().getKey();
 
             if (mCurrentTrip.pushId != null) {
-                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnCompleteListener(task -> {
-                    //Todo --> hide progress Dialog
-
-                    if (task.isSuccessful()) {
-                        String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
-                                : getString(R.string.trip_updated_success)
-                                : getString(R.string.Trip_added_successfully);
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
-
-                    } else {
-                        //Todo show message errorsz
-                    }
+                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnSuccessListener(aVoid -> {
+                    String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
+                            : getString(R.string.trip_updated_success)
+                            : getString(R.string.Trip_added_successfully);
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
+                    Timber.i("initAddTrip: ad trip successfully");
                 });
             }
         });
@@ -333,6 +354,7 @@ public class AddTripFragment extends Fragment {
                         if (date != null) {
                             mTimeTextView.setText(new SimpleDateFormat("hh:mm aa").format(date));
                             timeInMilliseconds = date.getTime();
+                            Timber.i("Time Picker : %s", timeInMilliseconds);
                         }
                     },
                     now.get(Calendar.HOUR_OF_DAY),
@@ -354,6 +376,7 @@ public class AddTripFragment extends Fragment {
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
                     dateInMilliseconds = (long) materialDatePicker.getSelection();
+                    Timber.i("Date Picker : %s", dateInMilliseconds);
                     mDateTextView.setText(materialDatePicker.getHeaderText());
                 });
 
@@ -418,4 +441,14 @@ public class AddTripFragment extends Fragment {
             enableEditMode();
         }
     }
+
+    private long getMillisecondsFromString(String s, SimpleDateFormat format) {
+        try {
+            return Objects.requireNonNull(format.parse(s)).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 }

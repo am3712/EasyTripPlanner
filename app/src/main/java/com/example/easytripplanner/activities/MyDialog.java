@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -29,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import timber.log.Timber;
+import java.util.Objects;
 
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_HASH_CODE;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
@@ -53,7 +52,8 @@ public class MyDialog extends AppCompatActivity {
     private Intent receiverIntent;
     private NotificationManager mNotificationManager;
     private boolean isNotificationFired;
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
+    private boolean hasNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +71,6 @@ public class MyDialog extends AppCompatActivity {
         this.receiverIntent = getIntent();
         tripName = getIntent().getStringExtra(TRIP_NAME);
         tripLocAddress = getIntent().getStringExtra(TRIP_LOCATION_NAME);
-
-        Timber.i("getIntentData: tripName: %s", tripName);
-        Timber.i("getIntentData: tripLocAddress: %s", tripLocAddress);
 
 
         tripLocLat = getIntent().getDoubleExtra(TRIP_LOC_LATITUDE, 0);
@@ -105,10 +102,14 @@ public class MyDialog extends AppCompatActivity {
                     }
                     finishAndRemoveTask();
                 }).setOnDismissListener(dialog -> {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
+                    if (mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                    }
                 });
         AlertDialog alertDialog = builder.create();
+
+        alertDialog.setCanceledOnTouchOutside(false);
 
         alertDialog.show();
     }
@@ -125,11 +126,11 @@ public class MyDialog extends AppCompatActivity {
         if (currentUserRef != null) {
             DatabaseReference finalCurrentUserRef = currentUserRef;
             currentUserRef.child(tripID).get().addOnCompleteListener(task -> {
-                Trip tripayia = task.getResult().getValue(Trip.class);
-                if (tripayia != null && !tripayia.repeating.equalsIgnoreCase("No Repeated")) {
+                Trip trip = Objects.requireNonNull(task.getResult()).getValue(Trip.class);
+                if (trip != null && !trip.repeating.equalsIgnoreCase("No Repeated")) {
                     long repeatInterval;
                     long ONE_DAY = 86400000;
-                    switch (tripayia.repeating) {
+                    switch (trip.repeating) {
                         case "Repeated Daily":
                             repeatInterval = ONE_DAY;
                             break;
@@ -140,12 +141,14 @@ public class MyDialog extends AppCompatActivity {
                             repeatInterval = ONE_DAY * 7 * 4;
                             break;
                         default:
-                            throw new IllegalStateException("Unexpected value: " + tripayia.repeating);
+                            throw new IllegalStateException("Unexpected value: " + trip.repeating);
                     }
-                    finalCurrentUserRef.child(tripID).child("timeInMilliSeconds").setValue(tripayia.timeInMilliSeconds + repeatInterval);
+                    finalCurrentUserRef.child(tripID).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + repeatInterval);
                 } else {
                     finalCurrentUserRef.child(tripID).child("status").setValue(value);
                 }
+                if (task.getResult().hasChild("notes"))
+                    hasNotes = true;
             });
         }
 
@@ -199,10 +202,12 @@ public class MyDialog extends AppCompatActivity {
                 return;
             }
         }
-        Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
-        noteIntent.putExtra(TRIP_ID, tripID);
-        getApplicationContext().startService(noteIntent);
         startAction();
+        if (hasNotes) {
+            Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
+            noteIntent.putExtra(TRIP_ID, tripID);
+            getApplicationContext().startService(noteIntent);
+        }
         finishAndRemoveTask();
     }
 

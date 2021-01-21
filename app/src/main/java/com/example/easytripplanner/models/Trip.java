@@ -3,7 +3,6 @@ package com.example.easytripplanner.models;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Trip implements Serializable, Comparable<Trip> {
     public String name;

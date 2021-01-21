@@ -62,7 +62,7 @@ public class UpcomingFragment extends Fragment {
 
     private TripRecyclerViewAdapter mAdapter;
     private ArrayList<Trip> trips;
-    private ChildEventListener mRetrieveTripslistener;
+    private ChildEventListener mRetrieveTripsListener;
     private Query queryReference;
     DatabaseReference currentUserRef;
 
@@ -125,13 +125,12 @@ public class UpcomingFragment extends Fragment {
         //get upcoming trips
         queryReference = currentUserRef
                 .orderByChild("status")
-                .startAt(TRIP_STATUS.FORGOTTEN.name())
-                .endAt(TRIP_STATUS.UPCOMING.name());
+                .equalTo(TRIP_STATUS.UPCOMING.name());
 
         DatabaseReference finalCurrentUserRef = currentUserRef;
 
         Calendar calendar = Calendar.getInstance();
-        mRetrieveTripslistener = new ChildEventListener() {
+        mRetrieveTripsListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
@@ -139,10 +138,6 @@ public class UpcomingFragment extends Fragment {
                     binding.noData.setVisibility(View.GONE);
                     calendar.setTimeInMillis(trip.timeInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
-
-                    if (trip.timeInMilliSeconds < System.currentTimeMillis()) {
-                        finalCurrentUserRef.child(trip.pushId).child("status").setValue("FORGOTTEN");
-                    }
                     trips.add(trip);
                     Collections.sort(trips);
                     mAdapter.notifyDataSetChanged();
@@ -153,7 +148,7 @@ public class UpcomingFragment extends Fragment {
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 clear();
-                queryReference.addChildEventListener(mRetrieveTripslistener);
+                queryReference.addChildEventListener(mRetrieveTripsListener);
             }
 
             @Override
@@ -291,7 +286,6 @@ public class UpcomingFragment extends Fragment {
 
     public enum TRIP_STATUS {
         DONE,
-        FORGOTTEN,
         CANCELED,
         UPCOMING
     }
@@ -299,7 +293,7 @@ public class UpcomingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        queryReference.addChildEventListener(mRetrieveTripslistener);
+        queryReference.addChildEventListener(mRetrieveTripsListener);
     }
 
     @Override
@@ -340,7 +334,7 @@ public class UpcomingFragment extends Fragment {
             requireActivity().startService(new Intent(getContext(), FloatingViewService.class));
 
             //finish activity (App)
-            requireActivity().finish();
+            requireActivity().finishAndRemoveTask();
 
         } else {
             Toast.makeText(getContext(), "please install google maps!!!", Toast.LENGTH_SHORT).show();
@@ -362,7 +356,7 @@ public class UpcomingFragment extends Fragment {
     }
 
     private void clear() {
-        queryReference.removeEventListener(mRetrieveTripslistener);
+        queryReference.removeEventListener(mRetrieveTripsListener);
         trips.clear();
         Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
     }

@@ -60,10 +60,9 @@ public class FloatingViewService extends Service {
         tripID = intent.getStringExtra(UpcomingFragment.TRIP_ID);
         Timber.i("onBind: id:%s", tripID);
 
-        retreiveNotes();
+        retrieveNotes();
 
         return START_STICKY;
-                //super.onStartCommand(intent, flags, startId);
     }
 
     @SuppressLint("InflateParams")
@@ -200,7 +199,7 @@ public class FloatingViewService extends Service {
 
     }
 
-    private void retreiveNotes() {
+    private void retrieveNotes() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         //reference to user trips

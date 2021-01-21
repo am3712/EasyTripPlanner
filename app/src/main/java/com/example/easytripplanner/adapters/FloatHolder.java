@@ -1,7 +1,6 @@
 package com.example.easytripplanner.adapters;
 
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -17,7 +16,7 @@ public class FloatHolder extends RecyclerView.ViewHolder {
     public FloatHolder(@NonNull View itemView) {
         super(itemView);
         checkBox = itemView.findViewById(R.id.checkBox);
-        textFloat = itemView.findViewById(R.id.textfloat);
+        textFloat = itemView.findViewById(R.id.text_float);
     }
 
 }

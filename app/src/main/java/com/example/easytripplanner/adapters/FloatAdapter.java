@@ -4,14 +4,12 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Note;
-import com.example.easytripplanner.utility.RemoveNote;
 
 import java.util.List;
 
@@ -30,16 +28,14 @@ public class FloatAdapter extends RecyclerView.Adapter<FloatHolder> {
     @NonNull
     @Override
     public FloatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new FloatHolder(LayoutInflater.from(c).inflate(R.layout.note_list_item, parent, false));
+        return new FloatHolder(LayoutInflater.from(c).inflate(R.layout.floating_item, parent, false));
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull FloatHolder holder, int position) {
-        Log.i(TAG, "onBindViewHolder: item " + position + " : " + mData.get(position));
         holder.textFloat.setText(mData.get(position).text);
-
-
+        holder.checkBox.setChecked(mData.get(position).checked);
     }
 
 

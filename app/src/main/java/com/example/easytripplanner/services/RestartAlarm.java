@@ -34,6 +34,10 @@ public class RestartAlarm extends BroadcastReceiver {
     private ArrayList<Trip> trips;
     DatabaseReference currentUserRef;
 
+    public RestartAlarm() {
+
+    }
+
     public RestartAlarm(ArrayList<Trip> trips) {
         this.trips = trips;
     }
