@@ -237,9 +237,9 @@ public class AddTripFragment extends Fragment {
         mSaveTripButton.setOnClickListener(v -> {
 
             //TODO validate trip attributes (make sure no empty cells)
-            if (!validInput())
+            if (!validateInput()) {
                 return;
-
+            }
             //TODO show progress Dialog here
 
 
@@ -251,10 +251,15 @@ public class AddTripFragment extends Fragment {
             mCurrentTrip.status = UpcomingFragment.TRIP_STATUS.UPCOMING.name();
             mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
 
-            if (!validInputTime())
+
+            if (dateInMilliseconds < getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)) {
+                Toast.makeText(context, "Change Date Calender, you can not add past date!!", Toast.LENGTH_SHORT).show();
                 return;
-
-
+            } else if (dateInMilliseconds >= getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT) &&
+                    timeInMilliseconds - 60000 < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
+                Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             //insert trip to specific user
             if (saveMode == 0)
                 mCurrentTrip.pushId = userRef.push().getKey();
@@ -276,22 +281,6 @@ public class AddTripFragment extends Fragment {
                 });
             }
         });
-    }
-
-    private boolean validInputTime() {
-        String repeating = (String) mRepeatingSpinner.getSelectedItem();
-        if (repeating.equals(repeatingOptions.get(0))) {
-            if (dateInMilliseconds < getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)) {
-                Toast.makeText(context, "Change Date Calender, you can not add past date!!", Toast.LENGTH_SHORT).show();
-            } else if (dateInMilliseconds >= getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT) &&
-                    timeInMilliseconds - 60000 < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
-                Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            mCurrentTrip.timeInMilliSeconds += UpcomingFragment.getRepeatInterval(repeating);
-            return true;
-        }
-        return false;
     }
 
     private void setComponentsAction() {
@@ -424,7 +413,7 @@ public class AddTripFragment extends Fragment {
     }
 
 
-    private boolean validInput() {
+    private boolean validateInput() {
         if (mCurrentTrip.name == null || mCurrentTrip.name.isEmpty())
             Toast.makeText(context, "Trip Name Is Empty!!", Toast.LENGTH_SHORT).show();
         else if (mCurrentTrip.locationFrom == null)

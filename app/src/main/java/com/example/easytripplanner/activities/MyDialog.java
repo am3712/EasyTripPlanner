@@ -36,7 +36,6 @@ import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOCATI
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOC_LATITUDE;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOC_LONGITUDE;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_NAME;
-import static com.example.easytripplanner.Fragments.UpcomingFragment.getRepeatInterval;
 import static com.example.easytripplanner.activities.MainActivity.PRIMARY_CHANNEL_ID;
 
 public class MyDialog extends AppCompatActivity {
@@ -127,10 +126,26 @@ public class MyDialog extends AppCompatActivity {
             DatabaseReference finalCurrentUserRef = currentUserRef;
             currentUserRef.child(tripID).get().addOnCompleteListener(task -> {
                 Trip trip = Objects.requireNonNull(task.getResult()).getValue(Trip.class);
-                if (trip != null && !trip.repeating.equalsIgnoreCase("No Repeated"))
-                    finalCurrentUserRef.child(tripID).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + getRepeatInterval(trip.repeating));
-                else
+                if (trip != null && !trip.repeating.equalsIgnoreCase("No Repeated")) {
+                    long repeatInterval;
+                    long ONE_DAY = 86400000;
+                    switch (trip.repeating) {
+                        case "Repeated Daily":
+                            repeatInterval = ONE_DAY;
+                            break;
+                        case "Repeated weekly":
+                            repeatInterval = ONE_DAY * 7;
+                            break;
+                        case "Repeated Monthly":
+                            repeatInterval = ONE_DAY * 7 * 4;
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + trip.repeating);
+                    }
+                    finalCurrentUserRef.child(tripID).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + repeatInterval);
+                } else {
                     finalCurrentUserRef.child(tripID).child("status").setValue(value);
+                }
                 if (task.getResult().hasChild("notes")) {
                     Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
                     noteIntent.putExtra(TRIP_ID, tripID);
