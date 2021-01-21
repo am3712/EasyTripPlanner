@@ -84,9 +84,9 @@ public class AddTripFragment extends Fragment {
     private FragmentAddTripBinding binding;
 
     @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd MMM yyyy");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd MMM yyyy");
     @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm aa");
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm aa");
 
     Trip mCurrentTrip;
     Note mNote;
@@ -260,13 +260,19 @@ public class AddTripFragment extends Fragment {
                 mCurrentTrip.pushId = userRef.push().getKey();
 
             if (mCurrentTrip.pushId != null) {
-                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnSuccessListener(aVoid -> {
-                    String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
-                            : getString(R.string.trip_updated_success)
-                            : getString(R.string.Trip_added_successfully);
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
-                    Timber.i("initAddTrip: ad trip successfully");
+                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
+                                : getString(R.string.trip_updated_success)
+                                : getString(R.string.Trip_added_successfully);
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
+                        Timber.i("initAddTrip: add trip successfully");
+                    } else if(task.isCanceled()) {
+                        Timber.i("initAddTrip: add trip canceled");
+                    }else if(task.isComplete()){
+                        Timber.i("initAddTrip: add trip canceled");
+                    }
                 });
             }
         });

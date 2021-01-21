@@ -26,7 +26,6 @@ public class RegisterFragment extends Fragment {
 
     private FragmentRegisterBinding binding;
     private final FirebaseAuth mAuth;
-    private static final String TAG = "RegisterFragment";
 
     public RegisterFragment() {
         // Initialize Firebase Auth

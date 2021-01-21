@@ -65,7 +65,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 
 public class MappedFragment extends Fragment {
    // private ArrayList<String> arrayList;
-    String countryList[] = {"India", "China", "australia", "Portugle", "America", "NewZealand"};
+    String[] countryList = {"India", "China", "australia", "Portugle", "America", "NewZealand"};
 
     private static final String ROUTE_LAYER_ID = "route-layer-id";
     private static final String ROUTE_SOURCE_ID = "route-source-id";
@@ -198,7 +198,7 @@ public class MappedFragment extends Fragment {
                 currentRoute = response.body().routes().get(0);
 
                 // Make a toast which displays the route's distance
-                Toast.makeText(getContext(), "Distance: " + currentRoute.distance(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Distance: " + currentRoute.distance(), Toast.LENGTH_SHORT).show();
 
                 if (mapboxMap != null) {
                     mapboxMap.getStyle(style -> {

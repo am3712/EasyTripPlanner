@@ -30,7 +30,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.easytripplanner.R;
-//import com.example.easytripplanner.broadcastreceiver.AlarmReceiver;
 import com.example.easytripplanner.databinding.FragmentNewTripBinding;
 import com.example.easytripplanner.models.Note;
 import com.example.easytripplanner.models.Trip;
@@ -58,6 +57,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+//import com.example.easytripplanner.broadcastreceiver.AlarmReceiver;
+
 //import static com.example.easytripplanner.Fragments.TripsViewFragment.TRIP_ID;
 
 
@@ -83,7 +84,7 @@ public class NewTripFragment extends Fragment {
     Note mNote;
     private long dateInMilliseconds;
     private long timeInMilliseconds;
-    private DatabaseReference userRef;
+    private final DatabaseReference userRef;
 
     private static final int LOCATION_REQUEST_CODE = 0;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -94,7 +95,6 @@ public class NewTripFragment extends Fragment {
     private Context context;
 
     public NewTripFragment() {
-
 
 
         //firebase
@@ -111,23 +111,9 @@ public class NewTripFragment extends Fragment {
         mNote = new Note();
     }
 
-
-    public static NewTripFragment newInstance(String param1) {
-        NewTripFragment fragment = new NewTripFragment();
-        Bundle args = new Bundle();
-
-       /* if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(TRIP_ID)) {
-            tripId = getIntent().getExtras().getString(TRIP_ID);
-            enableEditMode();*/
-
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //tripId = getArguments().getString(TRIP_ID);
-
     }
 
     @Override
