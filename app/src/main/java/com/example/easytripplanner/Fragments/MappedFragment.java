@@ -45,8 +45,6 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,7 +62,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 
 
 public class MappedFragment extends Fragment {
-   // private ArrayList<String> arrayList;
+    // private ArrayList<String> arrayList;
     String[] countryList = {"India", "China", "australia", "Portugle", "America", "NewZealand"};
 
     private static final String ROUTE_LAYER_ID = "route-layer-id";
@@ -104,7 +102,7 @@ public class MappedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mapped, container, false);
         // This contains the MapView in XML and needs to be called after the access token is configured.
         // Setup the MapView
-        ListView listView=view.findViewById(R.id.listView);
+        ListView listView = view.findViewById(R.id.listView);
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
@@ -293,12 +291,12 @@ public class MappedFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Trip trip = dataSnapshot.getValue(Trip.class);
                     Timber.i("onDataChange: %s", trip);
-                    loop++;
-                    if (trip != null) {
+                    if (trip != null && trip.pushId != null) {
+                        loop++;
                         tripRoutes.add(new TripRoute(Point.fromLngLat(trip.locationFrom.longitude, trip.locationFrom.latitude),
                                 Point.fromLngLat(trip.locationTo.longitude, trip.locationTo.latitude)));
                     }
-                    if (loop >= snapshot.getChildrenCount()) {
+                    if (loop >= snapshot.getChildrenCount() && loop != 0) {
                         showRoutes();
                     }
                 }

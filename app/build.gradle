@@ -26,7 +26,25 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        // ProGuard optimizes the bytecode, removes unused code instructions,
+        // and obfuscates the remaining classes, fields, and methods with short names.
+        /* debug {
+             minifyEnabled true
+             useProguard false
+             proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                     'proguard-rules.pro'
+         }
+         release {
+             minifyEnabled true
+             shrinkResources true
+             proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                     'proguard-rules.pro'
+         }*/
+
     }
+
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

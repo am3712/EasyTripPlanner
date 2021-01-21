@@ -259,6 +259,8 @@ public class AddTripFragment extends Fragment {
             if (saveMode == 0)
                 mCurrentTrip.pushId = userRef.push().getKey();
 
+            Timber.i("id : %s", mCurrentTrip.pushId);
+
             if (mCurrentTrip.pushId != null) {
                 userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -268,9 +270,9 @@ public class AddTripFragment extends Fragment {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
                         Timber.i("initAddTrip: add trip successfully");
-                    } else if(task.isCanceled()) {
+                    } else if (task.isCanceled()) {
                         Timber.i("initAddTrip: add trip canceled");
-                    }else if(task.isComplete()){
+                    } else if (task.isComplete()) {
                         Timber.i("initAddTrip: add trip canceled");
                     }
                 });
@@ -287,11 +289,11 @@ public class AddTripFragment extends Fragment {
                     timeInMilliseconds - 60000 < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
                 Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
             }
+            return false;
         } else {
             mCurrentTrip.timeInMilliSeconds += UpcomingFragment.getRepeatInterval(repeating);
             return true;
         }
-        return false;
     }
 
     private void setComponentsAction() {

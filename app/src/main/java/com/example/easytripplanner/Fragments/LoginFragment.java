@@ -61,7 +61,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NetworkMonitorUtil.startTriggerNetwork(getContext());
 
     }
 
@@ -220,7 +219,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        NetworkMonitorUtil.stopTriggerNetwork();
 //        mAuth.removeAuthStateListener(authStateListener);
     }
 
