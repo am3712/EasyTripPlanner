@@ -1,18 +1,21 @@
 package com.example.easytripplanner.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,6 +27,7 @@ import com.example.easytripplanner.databinding.FragmentUpcomingBinding;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.services.AlarmReceiver;
 import com.example.easytripplanner.services.FloatingViewService;
+import com.example.easytripplanner.utility.Parcelables;
 import com.example.easytripplanner.utility.TripListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -51,28 +55,39 @@ import static android.content.Context.ALARM_SERVICE;
  */
 public class UpcomingFragment extends Fragment {
 
-    public static final String TRIP_NAME = "Name";
-    public static final String TRIP_LOCATION_NAME = "LOCATION NAME";
-    public static final String TRIP_LOC_LONGITUDE = "LOCATION LONGITUDE";
-    public static final String TRIP_LOC_LATITUDE = "LOCATION LATITUDE";
-    public static final String TRIP_ID = "ID";
-    public static final String TRIP_HASH_CODE = "HASH CODE";
+    public static final String TRIP = "TRIP";
+    public static final String TRIP_ID = "Trip Id";
     @SuppressLint("SimpleDateFormat")
     public static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
+
+    private Intent mapIntent;
+
+
+    private final ActivityResultLauncher<Intent> overlayActivityResultLauncher;
+
 
     private TripRecyclerViewAdapter mAdapter;
     private ArrayList<Trip> trips;
     private ChildEventListener mRetrieveTripsListener;
     private Query queryReference;
     DatabaseReference currentUserRef;
-
     private TripListener menuItemListener;
-
     private FragmentUpcomingBinding binding;
+    private String navigationTripId;
 
 
     public UpcomingFragment() {
-
+        overlayActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        startFloatingService();
+                        //start Trip in maps
+                        this.startActivity(mapIntent);
+                        //finish activity (App)
+                        requireActivity().finishAndRemoveTask();
+                    } else
+                        Toast.makeText(requireContext(), "Floating service permissions denied", Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
@@ -127,16 +142,14 @@ public class UpcomingFragment extends Fragment {
                 .orderByChild("status")
                 .equalTo(TRIP_STATUS.UPCOMING.name());
 
-        DatabaseReference finalCurrentUserRef = currentUserRef;
-
         Calendar calendar = Calendar.getInstance();
         mRetrieveTripsListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
-                if (trip != null && trip.timeInMilliSeconds != null) {
+                if (trip != null && trip.timeInMilliSeconds != null && trip.dateInMilliSeconds != null) {
                     binding.noData.setVisibility(View.GONE);
-                    calendar.setTimeInMillis(trip.timeInMilliSeconds);
+                    calendar.setTimeInMillis(trip.timeInMilliSeconds + trip.dateInMilliSeconds);
                     trip.setDate(formatter.format(calendar.getTime()));
                     trips.add(trip);
                     Collections.sort(trips);
@@ -147,6 +160,7 @@ public class UpcomingFragment extends Fragment {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Timber.i("onChildChanged called");
                 clear();
                 binding.noData.setVisibility(View.VISIBLE);
                 queryReference.addChildEventListener(mRetrieveTripsListener);
@@ -154,6 +168,7 @@ public class UpcomingFragment extends Fragment {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Timber.i("onChildRemoved called");
                 String id = snapshot.child("pushId").getValue(String.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     trips.removeIf(trip -> trip.pushId.equals(id));
@@ -194,8 +209,13 @@ public class UpcomingFragment extends Fragment {
 
             @Override
             public void delete(Trip trip) {
-                currentUserRef.child(trip.pushId).removeValue((error, ref) ->
-                        Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show());
+                //cancel remainder
+                cancelRemainder(trip.pushId);
+
+                //remove trip
+                currentUserRef.child(trip.pushId).removeValue();
+
+                Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -205,9 +225,12 @@ public class UpcomingFragment extends Fragment {
 
             @Override
             public void cancel(String id) {
-                //set new Status : Canceled
-                currentUserRef.child(id).child("status").setValue(TRIP_STATUS.CANCELED.name());
+                //cancel remainder
                 cancelRemainder(id);
+
+                //set new Status
+                currentUserRef.child(id).child("status").setValue(TRIP_STATUS.CANCELED.name());
+
                 Toast.makeText(requireContext(), "Trip Canceled", Toast.LENGTH_SHORT).show();
             }
 
@@ -223,27 +246,26 @@ public class UpcomingFragment extends Fragment {
     private void checkAlarm(Trip t) {
 
         //set Alarm
-        AlarmManager alarmMgr = (AlarmManager) requireActivity().getSystemService(ALARM_SERVICE);
+        AlarmManager alarmMgr = (AlarmManager) requireContext().getSystemService(ALARM_SERVICE);
 
-        final Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        final Intent intent = new Intent(requireContext(), AlarmReceiver.class);
 
+        Timber.i("trip is updated: %s", t.isUpdated());
 
         PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(requireContext(), t.pushId.hashCode(),
                 intent, PendingIntent.FLAG_NO_CREATE);
+
         //check if alarm is exist or not
-        if (notifyPendingIntent == null) {
+        if (notifyPendingIntent == null || t.isUpdated()) {
 
             //alarm is not exist add it
+            if (t.isUpdated()) {
+                currentUserRef.child(t.pushId).child("IsUpdated").setValue(false);
+                Timber.i("checkAlarm: %s is exist in alarm manager and will updated..", t.name);
+            } else
+                Timber.i("checkAlarm: %s is not exist in alarm manager..", t.name);
 
-            Timber.i("checkAlarm: %s is not exist in alarm manager..", t.name);
-
-            intent.putExtra(TRIP_NAME, t.name);
-            intent.putExtra(TRIP_ID, t.pushId);
-            intent.putExtra(TRIP_HASH_CODE, t.pushId.hashCode());
-            intent.putExtra(TRIP_LOCATION_NAME, t.locationTo.Address);
-            intent.putExtra(TRIP_LOC_LONGITUDE, t.locationTo.longitude);
-            intent.putExtra(TRIP_LOC_LATITUDE, t.locationTo.latitude);
-
+            intent.putExtra(TRIP, Parcelables.toByteArray(t));
 
             notifyPendingIntent = PendingIntent.getBroadcast
                     (requireContext(), t.pushId.hashCode(), intent,
@@ -251,21 +273,26 @@ public class UpcomingFragment extends Fragment {
 
             if (t.repeating.equals("No Repeated")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmMgr.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, t.timeInMilliSeconds, notifyPendingIntent);
+                    alarmMgr.setAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            t.dateInMilliSeconds + t.timeInMilliSeconds,
+                            notifyPendingIntent);
                 } else {
-                    alarmMgr.setExact(AlarmManager.RTC_WAKEUP, t.timeInMilliSeconds, notifyPendingIntent);
+                    alarmMgr.setExact(
+                            AlarmManager.RTC_WAKEUP,
+                            t.dateInMilliSeconds + t.timeInMilliSeconds,
+                            notifyPendingIntent);
                 }
             } else {
 
                 alarmMgr.setRepeating(
                         AlarmManager.RTC_WAKEUP,
-                        t.timeInMilliSeconds,
+                        t.dateInMilliSeconds + t.timeInMilliSeconds,
                         getRepeatInterval(t.repeating),
                         notifyPendingIntent);
             }
         } else
             Timber.i("checkAlarm: %s is exist in alarm manager..", t.name);
-
 
     }
 
@@ -297,45 +324,58 @@ public class UpcomingFragment extends Fragment {
     @SuppressLint("QueryPermissionsNeeded")
     public void startNavigation(Trip trip) {
 
+        navigationTripId = trip.pushId;
+
         //open on google maps
         Uri uri = Uri.parse("google.navigation:q=" + trip.locationTo.latitude + "," + trip.locationTo.longitude);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, uri);
+        mapIntent = new Intent(Intent.ACTION_VIEW, uri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(requireContext().getPackageManager()) != null) {
             mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
 
-            //set new Status : DONE
-            changeTripStatus(trip);
-
             //cancel trigger remainder
             cancelRemainder(trip.pushId);
 
-            //start Trip in maps
-            this.startActivity(mapIntent);
+            //set new Status
+            changeTripStatus(trip);
 
             currentUserRef.child(trip.pushId).get().addOnCompleteListener(task -> {
                 //start floating service
                 if (Objects.requireNonNull(task.getResult()).hasChild("notes")) {
-                    Intent noteIntent = new Intent(requireContext(), FloatingViewService.class);
-                    noteIntent.putExtra(TRIP_ID, trip.pushId);
-                    requireContext().getApplicationContext().startService(noteIntent);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (!Settings.canDrawOverlays(requireContext())) {
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:" + requireContext().getPackageName()));
+                            overlayActivityResultLauncher.launch(intent);
+                            return;
+                        }
+                    }
+                    startFloatingService();
+                    //start Trip in maps
+                    this.startActivity(mapIntent);
+                    //finish activity (App)
+                    requireActivity().finishAndRemoveTask();
                 }
             });
 
-            //finish activity (App)
-            requireActivity().finishAndRemoveTask();
 
         } else {
             Toast.makeText(getContext(), "please install google maps!!!", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void startFloatingService() {
+        Intent noteIntent = new Intent(requireContext(), FloatingViewService.class);
+        noteIntent.putExtra(TRIP_ID, navigationTripId);
+        requireContext().startService(noteIntent);
+    }
+
     private void changeTripStatus(Trip trip) {
         if (trip != null) {
             if (!trip.repeating.equalsIgnoreCase("No Repeated"))
-                currentUserRef.child(trip.pushId).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + getRepeatInterval(trip.repeating));
+                currentUserRef.child(trip.pushId).child("dateInMilliSeconds").setValue(trip.dateInMilliSeconds + getRepeatInterval(trip.repeating));
             else
                 currentUserRef.child(trip.pushId).child("status").setValue(TRIP_STATUS.DONE.name());
         }
@@ -343,15 +383,17 @@ public class UpcomingFragment extends Fragment {
 
     private void cancelRemainder(String pushId) {
 
-        Intent intent = new Intent();
+        //set Alarm
+        AlarmManager alarmMgr = (AlarmManager) requireContext().getSystemService(ALARM_SERVICE);
 
-        AlarmManager alarmManager =
-                (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent =
-                PendingIntent.getBroadcast(requireContext(), pushId.hashCode(), intent,
-                        PendingIntent.FLAG_NO_CREATE);
-        if (pendingIntent != null && alarmManager != null) {
-            alarmManager.cancel(pendingIntent);
+        final Intent intent = new Intent(requireContext(), AlarmReceiver.class);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), pushId.hashCode(),
+                intent, PendingIntent.FLAG_NO_CREATE);
+
+        if (alarmMgr != null) {
+            alarmMgr.cancel(pendingIntent);
+            Timber.i("Alarm manger cancel trip");
         }
     }
 

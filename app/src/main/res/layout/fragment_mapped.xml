@@ -1,26 +1,35 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.MappedFragment">
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listView"
-        android:layout_width="411dp"
-        android:layout_height="278dp"
-        android:layout_marginBottom="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="LinearLayoutManager"
         mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
         mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintHorizontal_bias="0.0"
         mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintTop_toTopOf="parent" />
+        mapbox:layout_constraintTop_toTopOf="parent"
+        mapbox:layout_constraintVertical_weight="1"
+        android:background="@color/gray_orange"/>
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="37.1792"
-        mapbox:mapbox_cameraTargetLng="-3.5953"
-        mapbox:mapbox_cameraZoom="2" />
+        android:layout_height="0dp"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toBottomOf="@+id/listView"
+        mapbox:layout_constraintVertical_weight="2"
+        mapbox:mapbox_cameraTargetLat="26.854556089838848"
+        mapbox:mapbox_cameraTargetLng="29.590263949198086"
+        mapbox:mapbox_cameraZoom="4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

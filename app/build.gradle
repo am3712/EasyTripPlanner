@@ -22,15 +22,16 @@ android {
         viewBinding true
     }
     buildTypes {
-        release {
+/*        release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+        }*/
 
         // ProGuard optimizes the bytecode, removes unused code instructions,
         // and obfuscates the remaining classes, fields, and methods with short names.
-        /* debug {
-             minifyEnabled true
+
+         debug {
+             minifyEnabled false
              useProguard false
              proguardFiles getDefaultProguardFile('proguard-android.txt'),
                      'proguard-rules.pro'
@@ -40,7 +41,7 @@ android {
              shrinkResources true
              proguardFiles getDefaultProguardFile('proguard-android.txt'),
                      'proguard-rules.pro'
-         }*/
+         }
 
     }
 

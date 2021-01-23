@@ -7,16 +7,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.MapTripAdapter;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.utility.Common;
+import com.example.easytripplanner.utility.MapCameraListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +35,9 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
@@ -44,6 +49,7 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,53 +68,48 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 
 
 public class MappedFragment extends Fragment {
-    // private ArrayList<String> arrayList;
-    String[] countryList = {"India", "China", "australia", "Portugle", "America", "NewZealand"};
-
     private static final String ROUTE_LAYER_ID = "route-layer-id";
     private static final String ROUTE_SOURCE_ID = "route-source-id";
     private static final String ICON_LAYER_ID = "icon-layer-id";
     private static final String ICON_SOURCE_ID = "icon-source-id";
-    private static final String RED_PIN_ICON_ID = "red-pin-icon-id";
+    private static final String MARKER_ICON_ID = "red-pin-icon-id";
     private MapView mapView;
-
+    private MapTripAdapter mapTripAdapter;
     private Point origin;
     private Point destination;
     private final List<TripRoute> tripRoutes;
+    private final List<String> tripNames;
     MapboxDirections client;
-    String[] colors;
-    private int counter;
     DirectionsRoute currentRoute;
+    MapCameraListener mapCameraListener;
     int loop;
 
     public MappedFragment() {
+        tripNames = new ArrayList<>();
         tripRoutes = new ArrayList<>();
-        colors = new String[]{"#E30613", "#333333", "#138184", "#BBC1C7", "#39B54A",
-                "#F78A07", "#5C7FE3", "#45B7FC", "#AECB53", "#E9BF5B", "#CB6999"};
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initCameraListener();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Mapbox.getInstance(getContext(), getString(R.string.access_token));
+        Mapbox.getInstance(requireContext(), getString(R.string.access_token));
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_mapped, container, false);
         // This contains the MapView in XML and needs to be called after the access token is configured.
         // Setup the MapView
-        ListView listView = view.findViewById(R.id.listView);
+        RecyclerView listView = view.findViewById(R.id.listView);
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.map_list_view, R.id.textViewMap, countryList);
-        listView.setAdapter(arrayAdapter);
-
+        mapTripAdapter = new MapTripAdapter(requireContext(), tripNames, mapCameraListener);
+        listView.setAdapter(mapTripAdapter);
         return view;
     }
 
@@ -122,10 +123,10 @@ public class MappedFragment extends Fragment {
     /**
      * Add the route and marker sources to the map
      */
-    private void initSource(@NonNull Style loadedMapStyle) {
-        loadedMapStyle.addSource(new GeoJsonSource(ROUTE_SOURCE_ID));
+    private synchronized void initSource(@NonNull Style loadedMapStyle, int index) {
+        loadedMapStyle.addSource(new GeoJsonSource(ROUTE_SOURCE_ID + index));
 
-        GeoJsonSource iconGeoJsonSource = new GeoJsonSource(ICON_SOURCE_ID, FeatureCollection.fromFeatures(new Feature[]{
+        GeoJsonSource iconGeoJsonSource = new GeoJsonSource(ICON_SOURCE_ID + index, FeatureCollection.fromFeatures(new Feature[]{
                 Feature.fromGeometry(Point.fromLngLat(origin.longitude(), origin.latitude())),
                 Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude()))}));
         loadedMapStyle.addSource(iconGeoJsonSource);
@@ -135,8 +136,8 @@ public class MappedFragment extends Fragment {
      * Add the route and marker icon layers to the map
      */
     @SuppressLint({"UseCompatLoadingForDrawables", "ResourceAsColor"})
-    private void initLayers(@NonNull Style loadedMapStyle, String color) {
-        LineLayer routeLayer = new LineLayer(ROUTE_LAYER_ID, ROUTE_SOURCE_ID);
+    private synchronized void initLayers(@NonNull Style loadedMapStyle, int index, String color) {
+        LineLayer routeLayer = new LineLayer(ROUTE_LAYER_ID + index, ROUTE_SOURCE_ID + index);
 
 // Add the LineLayer to the map. This layer will display the directions route.
         routeLayer.setProperties(
@@ -147,14 +148,18 @@ public class MappedFragment extends Fragment {
         );
         loadedMapStyle.addLayer(routeLayer);
 
-        Drawable drawable = getResources().getDrawable(R.drawable.baseline_location_on_24, getResources().newTheme());
+
+        Drawable drawable = getResources()
+                .getDrawable(R.drawable.location_on_maps, getResources().newTheme());
+
+        drawable.setTint(Color.parseColor(color));
 
         // Add the red marker icon image to the map
-        loadedMapStyle.addImage(RED_PIN_ICON_ID, BitmapUtils.getBitmapFromDrawable(drawable));
+        loadedMapStyle.addImage(MARKER_ICON_ID + index, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(drawable)));
 
         // Add the red marker icon SymbolLayer to the map
-        loadedMapStyle.addLayer(new SymbolLayer(ICON_LAYER_ID, ICON_SOURCE_ID).withProperties(
-                iconImage(RED_PIN_ICON_ID),
+        loadedMapStyle.addLayer(new SymbolLayer(ICON_LAYER_ID + index, ICON_SOURCE_ID + index).withProperties(
+                iconImage(MARKER_ICON_ID + index),
                 iconIgnorePlacement(true),
                 iconAllowOverlap(true),
                 iconOffset(new Float[]{0f, -9f})));
@@ -168,9 +173,7 @@ public class MappedFragment extends Fragment {
      * @param origin      the starting point of the route
      * @param destination the desired finish point of the route
      */
-    private void getRoute(MapboxMap mapboxMap, Point origin, Point destination) {
-        Timber.i("getRoute : counter : %s", counter);
-
+    private synchronized void getRoute(MapboxMap mapboxMap, Point origin, Point destination, int index) {
         client = MapboxDirections.builder()
                 .origin(origin)
                 .destination(destination)
@@ -195,19 +198,16 @@ public class MappedFragment extends Fragment {
                 // Get the directions route
                 currentRoute = response.body().routes().get(0);
 
-                // Make a toast which displays the route's distance
-                Toast.makeText(requireContext(), "Distance: " + currentRoute.distance(), Toast.LENGTH_SHORT).show();
-
                 if (mapboxMap != null) {
                     mapboxMap.getStyle(style -> {
 
                         // Retrieve and update the source designated for showing the directions route
-                        GeoJsonSource source = style.getSourceAs(ROUTE_SOURCE_ID);
+                        GeoJsonSource source = style.getSourceAs(ROUTE_SOURCE_ID + index);
 
                         // Create a LineString with the directions route's geometry and
                         // reset the GeoJSON source for the route LineLayer source
                         if (source != null) {
-                            source.setGeoJson(LineString.fromPolyline(currentRoute.geometry(), PRECISION_6));
+                            source.setGeoJson(LineString.fromPolyline(Objects.requireNonNull(currentRoute.geometry()), PRECISION_6));
                         }
                     });
                 }
@@ -216,8 +216,9 @@ public class MappedFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<DirectionsResponse> call, @NonNull Throwable throwable) {
                 Timber.i("onFailure: Error: %s", throwable.getMessage());
-                Toast.makeText(getContext(), "Error: " + throwable.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+                if (getContext() != null)
+                    Toast.makeText(requireContext(), "Error: " + throwable.getMessage(),
+                            Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -253,11 +254,13 @@ public class MappedFragment extends Fragment {
         mapView.onSaveInstanceState(outState);
     }
 
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         // Cancel the Directions API request
-//        client.cancelCall();
+        if (client != null)
+            client.cancelCall();
         mapView.onDestroy();
     }
 
@@ -269,6 +272,7 @@ public class MappedFragment extends Fragment {
 
 
     private void initData() {
+
         String userId = FirebaseAuth.getInstance().getUid();
 
         if (userId == null)
@@ -292,9 +296,12 @@ public class MappedFragment extends Fragment {
                     Trip trip = dataSnapshot.getValue(Trip.class);
                     Timber.i("onDataChange: %s", trip);
                     if (trip != null && trip.pushId != null) {
-                        loop++;
                         tripRoutes.add(new TripRoute(Point.fromLngLat(trip.locationFrom.longitude, trip.locationFrom.latitude),
                                 Point.fromLngLat(trip.locationTo.longitude, trip.locationTo.latitude)));
+                        tripNames.add(trip.name);
+                        Timber.i("trips name : %s", tripNames);
+                        mapTripAdapter.notifyDataSetChanged();
+                        loop++;
                     }
                     if (loop >= snapshot.getChildrenCount() && loop != 0) {
                         showRoutes();
@@ -311,16 +318,28 @@ public class MappedFragment extends Fragment {
     }
 
     private void showRoutes() {
-        for (int i = 0; i < tripRoutes.size(); i++) {
-            int finalI = i;
-            mapView.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                origin = tripRoutes.get(finalI).getOrigin();
-                destination = tripRoutes.get(finalI).getDestination();
-                initSource(style);
-                initLayers(style, colors[finalI % 11]);
+        mapView.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+            for (int index = 0; index < tripRoutes.size(); index++) {
+                origin = tripRoutes.get(index).getOrigin();
+                destination = tripRoutes.get(index).getDestination();
+                initSource(style, index);
+                initLayers(style, index, Common.MAPS_TRIPS_COLORS[index % 11]);
                 // Get the directions route from the Mapbox Directions API
-                getRoute(mapboxMap, origin, destination);
-            }));
-        }
+                getRoute(mapboxMap, origin, destination, index);
+            }
+        }));
+    }
+
+    private void initCameraListener() {
+        mapCameraListener = position -> {
+            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                    .include(new LatLng(tripRoutes.get(position).getOrigin().latitude(), tripRoutes.get(position).getOrigin().longitude())) // Origin
+                    .include(new LatLng(tripRoutes.get(position).getDestination().latitude(), tripRoutes.get(position).getDestination().longitude())) // Destination
+                    .build();
+
+            mapView.getMapAsync(mapboxMap -> {
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150), 2000);
+            });
+        };
     }
 }

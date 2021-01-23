@@ -1,9 +1,11 @@
 package com.example.easytripplanner.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,13 +16,15 @@ import com.example.easytripplanner.utility.RemoveNote;
 
 import java.util.List;
 
-public class RecyleNoteAdapter extends RecyclerView.Adapter<NoteRecyclerView> {
+import timber.log.Timber;
+
+public class RecyclerNoteAdapter extends RecyclerView.Adapter<RecyclerNoteAdapter.NoteRecyclerView> {
     Context c;
     List<Note> mData;
-    private static final String TAG = "RecyleNoteAdapter";
+    private static final String TAG = "RecyclerNoteAdapter";
     private final RemoveNote removeNote;
 
-    public RecyleNoteAdapter(Context c, List<Note> mData, RemoveNote removeNote) {
+    public RecyclerNoteAdapter(Context c, List<Note> mData, RemoveNote removeNote) {
         this.c = c;
         this.mData = mData;
         this.removeNote = removeNote;
@@ -35,14 +39,27 @@ public class RecyleNoteAdapter extends RecyclerView.Adapter<NoteRecyclerView> {
 
     @Override
     public void onBindViewHolder(@NonNull NoteRecyclerView holder, int position) {
-        Log.i(TAG, "onBindViewHolder: item " + position + " : " + mData.get(position));
+        Timber.i("onBindViewHolder: item " + position + " : " + mData.get(position));
         holder.textView.setText(mData.get(position).text);
-        holder.removeBuuton.setOnClickListener(v -> removeNote.remove(mData.get(position).id));
+        holder.removeButton.setOnClickListener(v -> removeNote.remove(mData.get(position).id));
 
     }
 
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+
+    static class NoteRecyclerView extends RecyclerView.ViewHolder {
+        final Button removeButton;
+        final TextView textView;
+
+        public NoteRecyclerView(@NonNull View itemView) {
+            super(itemView);
+            textView = itemView.findViewById(R.id.textViewNote);
+            removeButton = itemView.findViewById(R.id.btnRemov);
+        }
+
     }
 }

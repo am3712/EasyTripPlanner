@@ -63,6 +63,8 @@ import java.util.Objects;
 
 import timber.log.Timber;
 
+import static com.example.easytripplanner.Fragments.UpcomingFragment.formatter;
+
 
 public class AddTripFragment extends Fragment {
 
@@ -88,10 +90,8 @@ public class AddTripFragment extends Fragment {
     @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm aa");
 
-    Trip mCurrentTrip;
+    Trip mTrip;
     Note mNote;
-    private long dateInMilliseconds;
-    private long timeInMilliseconds;
     private final DatabaseReference userRef;
 
     private static final String DATE_PICKER_TAG = "MATERIAL_DATE_PICKER";
@@ -127,10 +127,10 @@ public class AddTripFragment extends Fragment {
                                             point.latitude(),
                                             point.longitude());
                                     if (startPointClicked) {
-                                        mCurrentTrip.locationFrom = locationSrc;
+                                        mTrip.locationFrom = locationSrc;
                                         mStartPointEditText.setText(feature.text());
                                     } else {
-                                        mCurrentTrip.locationTo = locationSrc;
+                                        mTrip.locationTo = locationSrc;
                                         mEndPointEditText.setText(feature.text());
                                     }
                                 }
@@ -158,7 +158,7 @@ public class AddTripFragment extends Fragment {
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
         //Trip Object
-        mCurrentTrip = new Trip();
+        mTrip = new Trip();
 
         //Note Object
         mNote = new Note();
@@ -196,7 +196,7 @@ public class AddTripFragment extends Fragment {
         userRef.child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                mCurrentTrip = snapshot.getValue(Trip.class);
+                mTrip = snapshot.getValue(Trip.class);
                 fillData();
             }
 
@@ -214,22 +214,23 @@ public class AddTripFragment extends Fragment {
     private void fillData() {
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(mCurrentTrip.timeInMilliSeconds);
-        DATE_FORMAT.setTimeZone(calendar.getTimeZone());
-        TIME_FORMAT.setTimeZone(calendar.getTimeZone());
 
+        calendar.setTimeInMillis(mTrip.dateInMilliSeconds);
         String date = DATE_FORMAT.format(calendar.getTime());
+
+        calendar.setTimeInMillis(mTrip.timeInMilliSeconds);
         String time = TIME_FORMAT.format(calendar.getTime());
 
-        dateInMilliseconds = getMillisecondsFromString(date, DATE_FORMAT);
-        timeInMilliseconds = getMillisecondsFromString(time, TIME_FORMAT);
+        Timber.i("date: %s", date);
+        Timber.i("time: %s", time);
 
-        mTripName.setText(mCurrentTrip.name);
-        mStartPointEditText.setText(mCurrentTrip.locationFrom.Address);
-        mEndPointEditText.setText(mCurrentTrip.locationTo.Address);
+
+        mTripName.setText(mTrip.name);
+        mStartPointEditText.setText(mTrip.locationFrom.Address);
+        mEndPointEditText.setText(mTrip.locationTo.Address);
         mDateTextView.setText(date);
         mTimeTextView.setText(time);
-        mRepeatingSpinner.setSelection(repeatingOptions.indexOf(mCurrentTrip.repeating));
+        mRepeatingSpinner.setSelection(repeatingOptions.indexOf(mTrip.repeating));
     }
 
 
@@ -246,10 +247,17 @@ public class AddTripFragment extends Fragment {
             // now handle the positive button click from the
             // material design date picker
 
-            mCurrentTrip.type = (String) mTripTypeSpinner.getSelectedItem();
-            mCurrentTrip.repeating = (String) mRepeatingSpinner.getSelectedItem();
-            mCurrentTrip.status = UpcomingFragment.TRIP_STATUS.UPCOMING.name();
-            mCurrentTrip.timeInMilliSeconds = timeInMilliseconds + dateInMilliseconds;
+            mTrip.type = (String) mTripTypeSpinner.getSelectedItem();
+            mTrip.repeating = (String) mRepeatingSpinner.getSelectedItem();
+            mTrip.status = UpcomingFragment.TRIP_STATUS.UPCOMING.name();
+
+            Timber.i("selected Date: %s", mTrip.dateInMilliSeconds);
+            Timber.i("selected Time: %s", mTrip.timeInMilliSeconds);
+
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(mTrip.timeInMilliSeconds + mTrip.dateInMilliSeconds);
+            Timber.i("New Date: %s", formatter.format(calendar.getTimeInMillis()));
 
             if (!validInputTime())
                 return;
@@ -259,15 +267,16 @@ public class AddTripFragment extends Fragment {
 
             //insert trip to specific user
             if (saveMode == 0)
-                mCurrentTrip.pushId = userRef.push().getKey();
+                mTrip.pushId = userRef.push().getKey();
 
-            Timber.i("id : %s", mCurrentTrip.pushId);
+            Timber.i("id : %s", mTrip.pushId);
 
-            if (mCurrentTrip.pushId != null) {
-                userRef.child(mCurrentTrip.pushId).setValue(mCurrentTrip);
+            if (mTrip.pushId != null) {
+                userRef.child(mTrip.pushId).setValue(mTrip);
                 String message = (saveMode != 0) ? (saveMode == 1) ? getString(R.string.trip_edit_success)
                         : getString(R.string.trip_updated_success)
                         : getString(R.string.Trip_added_successfully);
+
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 Timber.i("initAddTrip: add trip successfully");
                 Navigation.findNavController(binding.getRoot()).navigate(AddTripFragmentDirections.actionAddTripFragmentToUpcomingFragment());
@@ -278,17 +287,17 @@ public class AddTripFragment extends Fragment {
     private boolean validInputTime() {
         String repeating = (String) mRepeatingSpinner.getSelectedItem();
         if (repeating.equals(repeatingOptions.get(0))) {
-            if (dateInMilliseconds < getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)) {
+            if (mTrip.dateInMilliSeconds < getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)) {
                 Toast.makeText(context, "Change Date Calender, you can not add past date!!", Toast.LENGTH_SHORT).show();
                 return false;
-            } else if (dateInMilliseconds >= getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT) &&
-                    timeInMilliseconds - 60000 < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
+            } else if (mTrip.dateInMilliSeconds >= getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT) &&
+                    mTrip.timeInMilliSeconds - 60000 < getMillisecondsFromString(TIME_FORMAT.format(Calendar.getInstance().getTime()), TIME_FORMAT)) {
                 Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
                 return false;
             }
             return true;
         } else {
-            mCurrentTrip.timeInMilliSeconds += UpcomingFragment.getRepeatInterval(repeating);
+            mTrip.timeInMilliSeconds += UpcomingFragment.getRepeatInterval(repeating);
             return true;
         }
     }
@@ -330,7 +339,7 @@ public class AddTripFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mCurrentTrip.name = s.toString();
+                mTrip.name = s.toString();
             }
         });
     }
@@ -366,8 +375,8 @@ public class AddTripFragment extends Fragment {
                         }
                         if (date != null) {
                             mTimeTextView.setText(new SimpleDateFormat("hh:mm aa").format(date));
-                            timeInMilliseconds = date.getTime();
-                            Timber.i("Time Picker : %s", timeInMilliseconds);
+                            mTrip.timeInMilliSeconds = date.getTime();
+                            Timber.i("Time Picker : %s", mTrip.timeInMilliSeconds);
                         }
                     },
                     now.get(Calendar.HOUR_OF_DAY),
@@ -380,7 +389,9 @@ public class AddTripFragment extends Fragment {
     private void initDatePicker() {
 
         //range of date
-        CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from((long) (System.currentTimeMillis()));
+        CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from((
+                getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)
+        ));
         MaterialDatePicker materialDatePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("SELECT TRIP DATE")
                 .setCalendarConstraints(new CalendarConstraints.Builder().setValidator(dateValidator).build())
@@ -388,8 +399,8 @@ public class AddTripFragment extends Fragment {
         mPickDateButton.setOnClickListener(v -> materialDatePicker.show(getParentFragmentManager(), DATE_PICKER_TAG));
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
-                    dateInMilliseconds = (long) materialDatePicker.getSelection();
-                    Timber.i("Date Picker : %s", dateInMilliseconds);
+                    mTrip.dateInMilliSeconds = (long) materialDatePicker.getSelection();
+                    Timber.i("Date Picker : %s", mTrip.dateInMilliSeconds);
                     mDateTextView.setText(materialDatePicker.getHeaderText());
                 });
 
@@ -424,11 +435,11 @@ public class AddTripFragment extends Fragment {
 
 
     private boolean validInput() {
-        if (mCurrentTrip.name == null || mCurrentTrip.name.isEmpty())
+        if (mTrip.name == null || mTrip.name.isEmpty())
             Toast.makeText(context, "Trip Name Is Empty!!", Toast.LENGTH_SHORT).show();
-        else if (mCurrentTrip.locationFrom == null)
+        else if (mTrip.locationFrom == null)
             Toast.makeText(context, "Start Point Not Specified!!", Toast.LENGTH_SHORT).show();
-        else if (mCurrentTrip.locationTo == null)
+        else if (mTrip.locationTo == null)
             Toast.makeText(context, "end Point Not Specified!!", Toast.LENGTH_SHORT).show();
         else if (mTimeTextView.getText().toString().isEmpty())
             Toast.makeText(context, "Time Not Specified!!", Toast.LENGTH_SHORT).show();
@@ -455,7 +466,7 @@ public class AddTripFragment extends Fragment {
         }
     }
 
-    private long getMillisecondsFromString(String s, SimpleDateFormat format) {
+    public static long getMillisecondsFromString(String s, SimpleDateFormat format) {
         try {
             return Objects.requireNonNull(format.parse(s)).getTime();
         } catch (ParseException e) {

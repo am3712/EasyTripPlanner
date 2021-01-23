@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytripplanner.R;
-import com.example.easytripplanner.adapters.RecyleNoteAdapter;
+import com.example.easytripplanner.adapters.RecyclerNoteAdapter;
 import com.example.easytripplanner.models.Note;
 import com.example.easytripplanner.utility.RemoveNote;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,7 +48,7 @@ public class AddNote extends Fragment {
     private RecyclerView recyclerView;
     private static final String TAG = "AddNote";
     DatabaseReference userRef;
-    private RecyleNoteAdapter recyleNoteAdapter;
+    private RecyclerNoteAdapter recyclerNoteAdapter;
     RemoveNote removeNote;
 
     public AddNote() {
@@ -90,8 +90,8 @@ public class AddNote extends Fragment {
         btnRemov = view.findViewById(R.id.btnRemov);
         recyclerView = view.findViewById(R.id.listview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyleNoteAdapter = new RecyleNoteAdapter(getContext(), arrayList,removeNote);
-        recyclerView.setAdapter(recyleNoteAdapter);
+        recyclerNoteAdapter = new RecyclerNoteAdapter(getContext(), arrayList,removeNote);
+        recyclerView.setAdapter(recyclerNoteAdapter);
 
         /*adapter = new ArrayAdapter<String>(getContext(),
                 R.layout.note_list_item, R.id.textViewNote, arrayList);
@@ -132,7 +132,7 @@ public class AddNote extends Fragment {
                 if (note != null) {
                     Timber.i("onChildAdded: note text : %s", note.text);
                     arrayList.add(note);
-                    recyleNoteAdapter.notifyDataSetChanged();
+                    recyclerNoteAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -154,7 +154,7 @@ public class AddNote extends Fragment {
                         }
                     }
                 }
-                recyleNoteAdapter.notifyDataSetChanged();
+                recyclerNoteAdapter.notifyDataSetChanged();
             }
 
             @Override

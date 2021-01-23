@@ -64,7 +64,7 @@
     </string-array>
 
 
-    <string name="access_token">pk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNrazU2YnFnbDA5NG0yb2x3dDE1cHhwODcifQ.MtT0dHV_I8G7YaqtDVzgyA</string>
+    <string name="access_token">sk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNrazdwbHZxazBnNnkycG54M2NqMmhnM3kifQ.nKpqp8IEXjLQzmPjZwmC0A</string>
     <string name="save_edit_btn">SAVE EDIT</string>
     <string name="save_update_btn">SAVE UPDATE</string>
     <string name="save_add_btn">ADD TRIP</string>
@@ -91,6 +91,7 @@
     <string name="logout">LOGOUT</string>
     <string name="no_upcoming_trips">No Upcoming Trips</string>
     <string name="checkbox">CheckBox</string>
+    <string name="add_note">Add Note</string>
 
 
 </resources>

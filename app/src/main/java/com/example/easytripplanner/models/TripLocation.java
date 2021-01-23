@@ -1,10 +1,11 @@
 package com.example.easytripplanner.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
-public class TripLocation {
+public class TripLocation implements Parcelable {
     public String Address;
     public double latitude;
     public double longitude;
@@ -37,4 +38,35 @@ public class TripLocation {
                 Address.equals(location.Address);
     }
 
+
+    protected TripLocation(Parcel in) {
+        Address = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(Address);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<TripLocation> CREATOR = new Parcelable.Creator<TripLocation>() {
+        @Override
+        public TripLocation createFromParcel(Parcel in) {
+            return new TripLocation(in);
+        }
+
+        @Override
+        public TripLocation[] newArray(int size) {
+            return new TripLocation[size];
+        }
+    };
 }

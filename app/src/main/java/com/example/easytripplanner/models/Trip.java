@@ -1,10 +1,11 @@
 package com.example.easytripplanner.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
-
-public class Trip implements Serializable, Comparable<Trip> {
+public class Trip implements Comparable<Trip>, Parcelable {
     public String name;
     public TripLocation locationFrom;
     public TripLocation locationTo;
@@ -13,13 +14,16 @@ public class Trip implements Serializable, Comparable<Trip> {
     public String repeating;
     public String pushId;
     public Long timeInMilliSeconds;
+    public Long dateInMilliSeconds;
     private String date;
+    private boolean isUpdated;
 
 
     public Trip() {
     }
 
-    public Trip(String name, TripLocation locationFrom, TripLocation locationTo, String status, String type, String repeating, String pushId, Long timeInMilliSeconds, String date) {
+    public Trip(String name, TripLocation locationFrom, TripLocation locationTo, String status, String type, String repeating,
+                String pushId, Long timeInMilliSeconds, Long dateInMilliSeconds, String date, boolean isUpdated) {
         this.name = name;
         this.locationFrom = locationFrom;
         this.locationTo = locationTo;
@@ -28,7 +32,9 @@ public class Trip implements Serializable, Comparable<Trip> {
         this.repeating = repeating;
         this.pushId = pushId;
         this.timeInMilliSeconds = timeInMilliSeconds;
+        this.dateInMilliSeconds = dateInMilliSeconds;
         this.date = date;
+        this.isUpdated = isUpdated;
     }
 
     @Override
@@ -42,6 +48,7 @@ public class Trip implements Serializable, Comparable<Trip> {
                 ", repeating='" + repeating + '\'' + "\n" +
                 ", pushId='" + pushId + '\'' + "\n" +
                 ", timeInMilliSeconds=" + timeInMilliSeconds +
+                ", dateInMilliSeconds=" + dateInMilliSeconds +
                 '}';
     }
 
@@ -57,4 +64,69 @@ public class Trip implements Serializable, Comparable<Trip> {
     public void setDate(String date) {
         this.date = date;
     }
+
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated = updated;
+    }
+
+    protected Trip(Parcel in) {
+        name = in.readString();
+        locationFrom = (TripLocation) in.readValue(TripLocation.class.getClassLoader());
+        locationTo = (TripLocation) in.readValue(TripLocation.class.getClassLoader());
+        status = in.readString();
+        type = in.readString();
+        repeating = in.readString();
+        pushId = in.readString();
+        timeInMilliSeconds = in.readByte() == 0x00 ? null : in.readLong();
+        dateInMilliSeconds = in.readByte() == 0x00 ? null : in.readLong();
+        date = in.readString();
+        isUpdated = in.readByte() != 0x00;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeValue(locationFrom);
+        dest.writeValue(locationTo);
+        dest.writeString(status);
+        dest.writeString(type);
+        dest.writeString(repeating);
+        dest.writeString(pushId);
+        if (timeInMilliSeconds == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(timeInMilliSeconds);
+        }
+        if (dateInMilliSeconds == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(dateInMilliSeconds);
+        }
+        dest.writeString(date);
+        dest.writeByte((byte) (isUpdated ? 0x01 : 0x00));
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Trip> CREATOR = new Parcelable.Creator<Trip>() {
+        @Override
+        public Trip createFromParcel(Parcel in) {
+            return new Trip(in);
+        }
+
+        @Override
+        public Trip[] newArray(int size) {
+            return new Trip[size];
+        }
+    };
 }

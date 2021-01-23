@@ -45,7 +45,8 @@ public class FloatingViewService extends Service {
     private String tripID;
     private List<Note> arrayList;
     private FloatAdapter floatAdapter;
-    private static final String TAG = "FloatingViewService";
+    private DatabaseReference reference;
+
 
     public FloatingViewService() {
     }
@@ -123,6 +124,7 @@ public class FloatingViewService extends Service {
         //Set the close button
         ImageView closeButtonCollapsed = (ImageView) mFloatingView.findViewById(R.id.close_btn);
         closeButtonCollapsed.setOnClickListener(view -> {
+            reference.child(tripID).child("notes").setValue(arrayList);
             //close the service and remove the from from the window
             stopSelf();
         });
@@ -195,8 +197,6 @@ public class FloatingViewService extends Service {
         expandedView.setAdapter(floatAdapter);
 
 
-
-
     }
 
     private void retrieveNotes() {
@@ -204,7 +204,7 @@ public class FloatingViewService extends Service {
 
         //reference to user trips
         assert firebaseUser != null;
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
         reference.child(tripID).child("notes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -224,7 +224,7 @@ public class FloatingViewService extends Service {
 
             }
         });
-        }
+    }
 
     /**
      * Detect if the floating view is collapsed or expanded.

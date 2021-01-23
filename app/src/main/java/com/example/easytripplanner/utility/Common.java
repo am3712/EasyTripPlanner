@@ -12,6 +12,9 @@ import timber.log.Timber;
 
 public abstract class Common {
 
+    public static final String[] MAPS_TRIPS_COLORS = new String[]{"#E30613", "#333333", "#138184", "#BBC1C7", "#39B54A",
+            "#F78A07", "#5C7FE3", "#45B7FC", "#AECB53", "#E9BF5B", "#CB6999"};
+
     public static boolean isValidEmail(String strPattern) {
 
         boolean b = Pattern.compile(

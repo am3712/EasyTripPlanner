@@ -91,7 +91,7 @@ public class HistoryFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
                 if (trip != null && trip.timeInMilliSeconds != null) {
-                    calendar.setTimeInMillis(trip.timeInMilliSeconds);
+                    calendar.setTimeInMillis(trip.dateInMilliSeconds + trip.timeInMilliSeconds);
                     trip.setDate(UpcomingFragment.formatter.format(calendar.getTime()));
                     trips.add(trip);
                     Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();

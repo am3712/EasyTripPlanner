@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -66,9 +67,9 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         public final TextView endPointView;
         public final TextView statusView;
         public final TextView dateView;
-        public final Button btnMore;
+        public final ImageButton btnMore;
         public final Button mStartBtn;
-        public final Button mNoteBtn;
+        public final ImageButton mNoteBtn;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -23,17 +23,15 @@ import com.example.easytripplanner.Fragments.UpcomingFragment;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.models.Trip;
 import com.example.easytripplanner.services.FloatingViewService;
+import com.example.easytripplanner.utility.Parcelables;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_HASH_CODE;
+import timber.log.Timber;
+
 import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_ID;
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOCATION_NAME;
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOC_LATITUDE;
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_LOC_LONGITUDE;
-import static com.example.easytripplanner.Fragments.UpcomingFragment.TRIP_NAME;
 import static com.example.easytripplanner.Fragments.UpcomingFragment.getRepeatInterval;
 import static com.example.easytripplanner.activities.MainActivity.PRIMARY_CHANNEL_ID;
 
@@ -42,12 +40,7 @@ public class MyDialog extends AppCompatActivity {
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
     public static String NOTIFICATION_STATUS = "Notification Status";
     private static final String GROUP_KEY = "com.android.example.EasyTripPlanner";
-    private String tripName;
-    private String tripLocAddress;
-    private double tripLocLat;
-    private double tripLocLong;
-    private int tripHashCode;
-    private String tripID;
+    private Trip trip;
     private Intent receiverIntent;
     private NotificationManager mNotificationManager;
     private boolean isNotificationFired;
@@ -56,9 +49,9 @@ public class MyDialog extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getIntentData();
         turnScreenOn();
         setTitle("");
-        getIntentData();
         displayAlert();
     }
 
@@ -66,16 +59,10 @@ public class MyDialog extends AppCompatActivity {
 
         mNotificationManager = (NotificationManager)
                 getSystemService(Context.NOTIFICATION_SERVICE);
-        this.receiverIntent = getIntent();
-        tripName = getIntent().getStringExtra(TRIP_NAME);
-        tripLocAddress = getIntent().getStringExtra(TRIP_LOCATION_NAME);
-
-
-        tripLocLat = getIntent().getDoubleExtra(TRIP_LOC_LATITUDE, 0);
-        tripLocLong = getIntent().getDoubleExtra(TRIP_LOC_LONGITUDE, 0);
-
-        tripHashCode = getIntent().getIntExtra(TRIP_HASH_CODE, 0);
-        tripID = getIntent().getStringExtra(TRIP_ID);
+        receiverIntent = getIntent();
+        trip = Parcelables.toParcelable(receiverIntent.getByteArrayExtra(UpcomingFragment.TRIP),
+                Trip.CREATOR);
+        Timber.i("Trip : %s", trip);
     }
 
     private void displayAlert() {
@@ -85,12 +72,12 @@ public class MyDialog extends AppCompatActivity {
             mediaPlayer.start();
         }
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.RoundShapeTheme)
-                .setTitle("Reminder: " + tripName)
-                .setMessage(("to : " + tripLocAddress))
+                .setTitle("Reminder: " + trip.name)
+                .setMessage(("to : " + trip.locationTo.Address))
                 .setPositiveButton("START", (dialog, which) -> checkOverlayPermissionAndStartNav())
                 .setNegativeButton("CANCEL", (dialog, which) -> {
                     changeTripStatus(UpcomingFragment.TRIP_STATUS.CANCELED.name());
-                    mNotificationManager.cancel(tripHashCode);
+                    mNotificationManager.cancel(trip.pushId.hashCode());
                     finishAndRemoveTask();
                 })
                 .setNeutralButton("SNOOZE", (dialog, which) -> {
@@ -122,21 +109,29 @@ public class MyDialog extends AppCompatActivity {
             currentUserRef = database.getReference("Users").child(userId);
         }
         if (currentUserRef != null) {
-            DatabaseReference finalCurrentUserRef = currentUserRef;
-            currentUserRef.child(tripID).get().addOnCompleteListener(task -> {
-                Trip trip = task.getResult().getValue(Trip.class);
-                if (trip != null && !trip.repeating.equalsIgnoreCase("No Repeated"))
-                    finalCurrentUserRef.child(tripID).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + getRepeatInterval(trip.repeating));
+            if (trip != null && trip.pushId != null) {
+                if (!trip.repeating.equalsIgnoreCase("No Repeated"))
+                    currentUserRef.child(trip.pushId).child("timeInMilliSeconds").setValue(trip.timeInMilliSeconds + getRepeatInterval(trip.repeating));
                 else
-                    finalCurrentUserRef.child(tripID).child("status").setValue(value);
-                if (task.getResult().hasChild("notes")) {
-                    Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
-                    noteIntent.putExtra(TRIP_ID, tripID);
-                    getApplicationContext().startService(noteIntent);
-                }
-            });
+                    currentUserRef.child(trip.pushId).child("status").setValue(value);
+
+                currentUserRef.child(trip.pushId).child("notes").get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && value.equals(UpcomingFragment.TRIP_STATUS.DONE.name())) {
+                        startFloatingService();
+                        finishAndRemoveTask();
+                    }
+                });
+
+            }
         }
 
+    }
+
+    private void startFloatingService() {
+        Intent noteIntent = new Intent(MyDialog.this, FloatingViewService.class);
+        Timber.i("Trip Id : %s", trip.pushId);
+        noteIntent.putExtra(TRIP_ID, trip.pushId);
+        MyDialog.this.startService(noteIntent);
     }
 
 
@@ -145,14 +140,14 @@ public class MyDialog extends AppCompatActivity {
      */
     private void deliverNotification() {
         PendingIntent contentPendingIntent = PendingIntent.getActivity
-                (this, tripHashCode, receiverIntent, PendingIntent
+                (this, trip.pushId.hashCode(), receiverIntent, PendingIntent
                         .FLAG_UPDATE_CURRENT);
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder
                 (this, PRIMARY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stand_up)
                 .setContentTitle(this.getString(R.string.app_name))
-                .setContentText(tripName + " !!!")
+                .setContentText(trip.name + " !!!")
                 .setContentIntent(contentPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -160,13 +155,13 @@ public class MyDialog extends AppCompatActivity {
                 .setGroup(GROUP_KEY);
 
         // Deliver the notification
-        mNotificationManager.notify(tripHashCode, builder.build());
+        mNotificationManager.notify(trip.pushId.hashCode(), builder.build());
     }
 
 
     @SuppressLint("QueryPermissionsNeeded")
     public void startNavigation() {
-        Uri uri = Uri.parse("google.navigation:q=" + tripLocLat + "," + tripLocLong);
+        Uri uri = Uri.parse("google.navigation:q=" + trip.locationTo.latitude + "," + trip.locationTo.longitude);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, uri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(this.getPackageManager()) != null) {
@@ -188,13 +183,12 @@ public class MyDialog extends AppCompatActivity {
             }
         }
         startAction();
-        finishAndRemoveTask();
     }
 
     private void startAction() {
-        changeTripStatus(UpcomingFragment.TRIP_STATUS.DONE.name());
         startNavigation();
-        mNotificationManager.cancel(tripHashCode);
+        mNotificationManager.cancel(trip.pushId.hashCode());
+        changeTripStatus(UpcomingFragment.TRIP_STATUS.DONE.name());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -203,14 +197,14 @@ public class MyDialog extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
+            startAction();
             if (!Settings.canDrawOverlays(this)) {
                 // You don't have permission
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
             } else {
-                startService(new Intent(MyDialog.this, FloatingViewService.class));
+                startFloatingService();
+                finishAndRemoveTask();
             }
-            startAction();
-            finishAndRemoveTask();
         }
     }
 
