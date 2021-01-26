@@ -14,7 +14,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -26,8 +28,11 @@ import com.example.easytripplanner.services.FloatingViewService;
 import com.example.easytripplanner.utility.Parcelables;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import timber.log.Timber;
 
@@ -37,7 +42,6 @@ import static com.example.easytripplanner.activities.MainActivity.PRIMARY_CHANNE
 
 public class MyDialog extends AppCompatActivity {
 
-    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
     public static String NOTIFICATION_STATUS = "Notification Status";
     private static final String GROUP_KEY = "com.android.example.EasyTripPlanner";
     private Trip trip;
@@ -45,14 +49,32 @@ public class MyDialog extends AppCompatActivity {
     private NotificationManager mNotificationManager;
     private boolean isNotificationFired;
     private MediaPlayer mediaPlayer;
+    private ActivityResultLauncher<Intent> overlayActivityResultLauncher;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initOverLayPermission();
         getIntentData();
         turnScreenOn();
         setTitle("");
         displayAlert();
+    }
+
+    private void initOverLayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            overlayActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (Settings.canDrawOverlays(this)) {
+                            startFloatingService();
+                            Timber.i("startFloatingService from overlayActivityResultLauncher");
+                        } else
+                            Toast.makeText(MyDialog.this, "Floating service permissions denied", Toast.LENGTH_SHORT).show();
+                        finishAndRemoveTask();
+                    });
+        }
+
     }
 
     private void getIntentData() {
@@ -74,7 +96,7 @@ public class MyDialog extends AppCompatActivity {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.RoundShapeTheme)
                 .setTitle("Reminder: " + trip.name)
                 .setMessage(("to : " + trip.locationTo.Address))
-                .setPositiveButton("START", (dialog, which) -> checkOverlayPermissionAndStartNav())
+                .setPositiveButton("START", (dialog, which) -> startTrip())
                 .setNegativeButton("CANCEL", (dialog, which) -> {
                     changeTripStatus(UpcomingFragment.TRIP_STATUS.CANCELED.name());
                     mNotificationManager.cancel(trip.pushId.hashCode());
@@ -115,10 +137,18 @@ public class MyDialog extends AppCompatActivity {
                 else
                     currentUserRef.child(trip.pushId).child("status").setValue(value);
 
-                currentUserRef.child(trip.pushId).child("notes").get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && value.equals(UpcomingFragment.TRIP_STATUS.DONE.name())) {
-                        startFloatingService();
-                        finishAndRemoveTask();
+                database.getReference("Notes").child(userId).child(trip.pushId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists() && value.equals(UpcomingFragment.TRIP_STATUS.DONE.name()))
+                            checkOverlayPermissionAndStartTrip();
+                        else
+                            finishAndRemoveTask();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
                     }
                 });
 
@@ -173,39 +203,24 @@ public class MyDialog extends AppCompatActivity {
         }
     }
 
-    public void checkOverlayPermissionAndStartNav() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
-                return;
-            }
-        }
-        startAction();
-    }
-
-    private void startAction() {
+    public void startTrip() {
         startNavigation();
         mNotificationManager.cancel(trip.pushId.hashCode());
         changeTripStatus(UpcomingFragment.TRIP_STATUS.DONE.name());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-            startAction();
+    private void checkOverlayPermissionAndStartTrip() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
-                // You don't have permission
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-            } else {
-                startFloatingService();
-                finishAndRemoveTask();
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                overlayActivityResultLauncher.launch(intent);
+                return;
             }
         }
+        startFloatingService();
+        Timber.i("startFloatingService from checkOverlayPermissionAndStartTrip");
+        finishAndRemoveTask();
     }
 
     private void turnScreenOn() {

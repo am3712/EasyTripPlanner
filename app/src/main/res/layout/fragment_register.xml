@@ -146,7 +146,7 @@
                     tools:ignore="MissingPrefix" />
 
                 <TextView
-                    android:id="@+id/regLoginBtn"
+                    android:id="@+id/loginNav"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"

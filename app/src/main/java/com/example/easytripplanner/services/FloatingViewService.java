@@ -101,20 +101,7 @@ public class FloatingViewService extends Service {
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mFloatingView, params);
 
-
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        dpHeight = displayMetrics.heightPixels;
-        dpWidth = displayMetrics.widthPixels;
-
-        ViewTreeObserver vto = mFloatingView.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mFloatingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                viewWidth = mFloatingView.getMeasuredWidth();
-                viewHeight = mFloatingView.getMeasuredHeight();
-            }
-        });
+        updateSize();
 
 
         //The root element of the expanded view layout
@@ -122,9 +109,11 @@ public class FloatingViewService extends Service {
 
 
         //Set the close button
-        ImageView closeButtonCollapsed = (ImageView) mFloatingView.findViewById(R.id.close_btn);
+        ImageView closeButtonCollapsed = mFloatingView.findViewById(R.id.close_btn);
         closeButtonCollapsed.setOnClickListener(view -> {
-            reference.child(tripID).child("notes").setValue(arrayList);
+            for (Note note : arrayList)
+                reference.child(note.id).setValue(note);
+
             //close the service and remove the from from the window
             stopSelf();
         });
@@ -180,6 +169,7 @@ public class FloatingViewService extends Service {
 
                     case MotionEvent.ACTION_UP:
                         if (!isMoving) {
+                            updateSize();
                             if (isViewCollapsed())
                                 expandedView.setVisibility(View.VISIBLE);
                             else
@@ -202,11 +192,14 @@ public class FloatingViewService extends Service {
     private void retrieveNotes() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        //reference to user trips
         assert firebaseUser != null;
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        String userId = firebaseUser.getUid();
 
-        reference.child(tripID).child("notes").addListenerForSingleValueEvent(new ValueEventListener() {
+        //reference to user trips
+        reference = FirebaseDatabase.getInstance().getReference("Notes").child(userId).child(tripID);
+
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -240,5 +233,21 @@ public class FloatingViewService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
+    }
+
+    private void updateSize() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        dpHeight = displayMetrics.heightPixels;
+        dpWidth = displayMetrics.widthPixels;
+
+        ViewTreeObserver vto = mFloatingView.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mFloatingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                viewWidth = mFloatingView.getMeasuredWidth();
+                viewHeight = mFloatingView.getMeasuredHeight();
+            }
+        });
     }
 }

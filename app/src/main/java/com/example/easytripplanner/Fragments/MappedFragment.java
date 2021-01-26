@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,9 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.MapboxDirections;
-import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
@@ -39,10 +36,8 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
-import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
@@ -51,19 +46,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import timber.log.Timber;
 
-import static com.mapbox.core.constants.Constants.PRECISION_6;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 
 
@@ -141,8 +130,8 @@ public class MappedFragment extends Fragment {
 
 // Add the LineLayer to the map. This layer will display the directions route.
         routeLayer.setProperties(
-                lineCap(Property.LINE_CAP_ROUND),
-                lineJoin(Property.LINE_JOIN_ROUND),
+/*                lineCap(Property.LINE_CAP_ROUND),
+                lineJoin(Property.LINE_JOIN_ROUND),*/
                 lineWidth(5f),
                 lineColor(Color.parseColor(color))
         );
@@ -164,65 +153,6 @@ public class MappedFragment extends Fragment {
                 iconAllowOverlap(true),
                 iconOffset(new Float[]{0f, -9f})));
     }
-
-    /**
-     * Make a request to the Mapbox Directions API. Once successful, pass the route to the
-     * route layer.
-     *
-     * @param mapboxMap   the Mapbox map object that the route will be drawn on
-     * @param origin      the starting point of the route
-     * @param destination the desired finish point of the route
-     */
-    private synchronized void getRoute(MapboxMap mapboxMap, Point origin, Point destination, int index) {
-        client = MapboxDirections.builder()
-                .origin(origin)
-                .destination(destination)
-                .overview(DirectionsCriteria.OVERVIEW_FULL)
-                .profile(DirectionsCriteria.PROFILE_DRIVING)
-                .accessToken(getString(R.string.access_token))
-                .build();
-
-        client.enqueueCall(new Callback<DirectionsResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<DirectionsResponse> call, @NonNull Response<DirectionsResponse> response) {
-                // You can get the generic HTTP info about the response
-                Timber.i("Response code: %s", response.code());
-                if (response.body() == null) {
-                    Timber.i("No routes found, make sure you set the right user and access token.");
-                    return;
-                } else if (response.body().routes().size() < 1) {
-                    Timber.i("No routes found");
-                    return;
-                }
-
-                // Get the directions route
-                currentRoute = response.body().routes().get(0);
-
-                if (mapboxMap != null) {
-                    mapboxMap.getStyle(style -> {
-
-                        // Retrieve and update the source designated for showing the directions route
-                        GeoJsonSource source = style.getSourceAs(ROUTE_SOURCE_ID + index);
-
-                        // Create a LineString with the directions route's geometry and
-                        // reset the GeoJSON source for the route LineLayer source
-                        if (source != null) {
-                            source.setGeoJson(LineString.fromPolyline(Objects.requireNonNull(currentRoute.geometry()), PRECISION_6));
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<DirectionsResponse> call, @NonNull Throwable throwable) {
-                Timber.i("onFailure: Error: %s", throwable.getMessage());
-                if (getContext() != null)
-                    Toast.makeText(requireContext(), "Error: " + throwable.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 
     @Override
     public void onResume() {
@@ -324,8 +254,15 @@ public class MappedFragment extends Fragment {
                 destination = tripRoutes.get(index).getDestination();
                 initSource(style, index);
                 initLayers(style, index, Common.MAPS_TRIPS_COLORS[index % 11]);
-                // Get the directions route from the Mapbox Directions API
-                getRoute(mapboxMap, origin, destination, index);
+
+                // Retrieve and update the source designated for showing the directions route
+                GeoJsonSource source = style.getSourceAs(ROUTE_SOURCE_ID + index);
+
+                // Create a LineString with the directions route's geometry and
+                // reset the GeoJSON source for the route LineLayer source
+                if (source != null) {
+                    source.setGeoJson(LineString.fromLngLats(tripRoutes.get(index).getPoints()));
+                }
             }
         }));
     }

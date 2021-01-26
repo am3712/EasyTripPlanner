@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,7 +15,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.easytripplanner.R;
-import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -58,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             if (destination.getId() == R.id.loginFragment) {
                 toolbar.setVisibility(View.GONE);
                 bottomNav.setVisibility(View.GONE);
-            } else if (destination.getId() == R.id.addTripFragment||destination.getId() == R.id.addNoteFragment) {
+            } else if (destination.getId() == R.id.addTripFragment || destination.getId() == R.id.addNotesFragment) {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.GONE);
             } else if (destination.getId() == R.id.registerFragment) {

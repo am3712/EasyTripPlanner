@@ -49,8 +49,8 @@ public class RegisterFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         signUpAction();
 
-        binding.regLoginBtn.setOnClickListener(v -> {
-
+        binding.loginNav.setOnClickListener(v -> {
+            Navigation.findNavController(binding.getRoot()).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
         });
     }
 

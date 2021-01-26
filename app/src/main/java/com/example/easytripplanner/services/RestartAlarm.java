@@ -25,7 +25,6 @@ import static com.example.easytripplanner.Fragments.UpcomingFragment.getRepeatIn
 
 public class RestartAlarm extends BroadcastReceiver {
     private Context context;
-    ValueEventListener listener;
 
     public RestartAlarm() {
 
@@ -41,8 +40,6 @@ public class RestartAlarm extends BroadcastReceiver {
     }
 
     private void init() {
-
-
         String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null)
             return;

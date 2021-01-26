@@ -85,7 +85,7 @@
     <string name="trip_updated_success">Trip Updated Success</string>
     <string name="Trip_added_successfully">Trip Added Successfully</string>
     <string name="add_trip_title">ADD NEW TRIP</string>
-    <string name="add_note_title">ADD NOTE </string>
+    <string name="add_notes_title">ADD NOTES </string>
     <string name="login_title">LOGIN</string>
     <string name="upcoming_title">UPCOMING TRIPS</string>
     <string name="logout">LOGOUT</string>

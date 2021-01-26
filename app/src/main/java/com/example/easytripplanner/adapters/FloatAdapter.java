@@ -43,8 +43,10 @@ public class FloatAdapter extends RecyclerView.Adapter<FloatAdapter.FloatHolder>
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 holder.textFloat.setPaintFlags(holder.textFloat.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                mData.get(position).checked = true;
             } else {
                 holder.textFloat.setPaintFlags(holder.textFloat.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                mData.get(position).checked = false;
             }
         });
     }

@@ -15,6 +15,13 @@ import com.example.easytripplanner.R;
 import com.example.easytripplanner.databinding.FragmentLoginBinding;
 import com.example.easytripplanner.utility.Common;
 import com.example.easytripplanner.utility.NetworkMonitorUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import org.jetbrains.annotations.NotNull;
+
+import timber.log.Timber;
+
 /*import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -22,16 +29,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;*/
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.Executor;
-
-import timber.log.Timber;
 
 //import com.example.easytripplanner.databinding.FragmentLoginBinding;
 
@@ -152,8 +149,7 @@ public class LoginFragment extends Fragment {
                         , getResources().getString(R.string.validation_password));
 
             } else {
-                if (NetworkMonitorUtil.checkNetwork(getContext())) {
-                    Timber.i("loginProcess: NETWORK STATUS: %s", NetworkMonitorUtil.networkStatus);
+                if (NetworkMonitorUtil.checkNetwork(requireContext())) {
                     login();
                 } else {
                     Common.alertErrorOrValidationDialog(
@@ -231,13 +227,8 @@ public class LoginFragment extends Fragment {
 
     private void updateUI(FirebaseUser currentUser) {
         Timber.i("updateUI: %s", currentUser);
-        if (currentUser != null) {
+        if (currentUser != null)
             Navigation.findNavController(binding.getRoot()).navigate(LoginFragmentDirections.actionLoginFragmentToUpcomingFragment());
-/*            Log.i(TAG, "updateUI: currentUser");
-            controller.popBackStack();
-            controller.navigate(R.id.upcomingFragment);*/
-
-        } //controller.navigate(R.id.upcomingFragment);
     }
 
 }

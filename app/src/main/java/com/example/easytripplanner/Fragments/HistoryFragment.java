@@ -90,7 +90,7 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
-                if (trip != null && trip.timeInMilliSeconds != null) {
+                if (trip != null && trip.timeInMilliSeconds != null && trip.dateInMilliSeconds != null) {
                     calendar.setTimeInMillis(trip.dateInMilliSeconds + trip.timeInMilliSeconds);
                     trip.setDate(UpcomingFragment.formatter.format(calendar.getTime()));
                     trips.add(trip);
