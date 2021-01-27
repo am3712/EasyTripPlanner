@@ -21,12 +21,9 @@
             android:id="@+id/tripNameInput"
             android:layout_width="0dp"
             android:layout_height="@dimen/_35sdp"
-            android:layout_marginStart="@dimen/_16sdp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="@dimen/_16sdp"
-            android:autofillHints=""
-            android:background="@drawable/btnframe"
-            android:ems="10"
+            android:layout_marginHorizontal="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:background="@drawable/edit_text_frame"
             android:hint="@string/trip_name"
             android:inputType="textPersonName"
             android:paddingStart="@dimen/_8sdp"
@@ -35,9 +32,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:targetApi="o"
-            tools:ignore="RtlSymmetry" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView2"
@@ -57,7 +52,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/btnframe"
+            android:background="@drawable/edit_text_frame"
             android:drawableStart="@drawable/ic_baseline_add_location_alt_24"
             android:paddingStart="@dimen/_5sdp"
             android:textColor="#0B0A0A"
@@ -83,7 +78,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/btnframe"
+            android:background="@drawable/edit_text_frame"
             android:drawableStart="@drawable/ic_baseline_add_location_alt_24"
             android:paddingStart="@dimen/_5sdp"
             android:textColor="#121212"
@@ -104,36 +99,44 @@
             app:layout_constraintStart_toStartOf="@+id/endPointSearchView"
             app:layout_constraintTop_toBottomOf="@+id/endPointSearchView" />
 
-        <ImageButton
-            android:id="@+id/calender_btn"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/calenderEditText"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_4sdp"
-            android:background="#FBFAFB"
-            android:contentDescription="@string/calender_image"
-            android:src="@drawable/ic_baseline_calendar_today_24"
-            app:layout_constraintStart_toStartOf="@+id/textView5"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edit_text_frame"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_baseline_calendar_today_24"
+            android:drawablePadding="@dimen/_2sdp"
+            android:focusable="false"
+            android:inputType="none"
+            android:paddingHorizontal="@dimen/_6sdp"
+            android:textSize="@dimen/_11ssp"
+            app:layout_constraintEnd_toStartOf="@+id/timeEditText"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="@+id/textView3"
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-        <TextView
-            android:id="@+id/dateTextView"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/timeEditText"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_4sdp"
-            android:textSize="@dimen/_12ssp"
-            app:layout_constraintBottom_toBottomOf="@+id/calender_btn"
-            app:layout_constraintStart_toEndOf="@+id/calender_btn"
-            app:layout_constraintTop_toTopOf="@+id/calender_btn" />
-
-        <ImageButton
-            android:id="@+id/timeBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#FBFAFB"
-            android:contentDescription="@string/time_image"
-            android:src="@drawable/ic_baseline_more_time_24"
-            app:layout_constraintStart_toStartOf="@+id/textView6"
-            app:layout_constraintTop_toTopOf="@+id/calender_btn" />
+            android:layout_marginStart="@dimen/_24sdp"
+            android:background="@drawable/edit_text_frame"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_baseline_more_time_24"
+            android:drawablePadding="@dimen/_2sdp"
+            android:focusable="false"
+            android:inputType="none"
+            android:paddingHorizontal="@dimen/_6sdp"
+            android:textSize="@dimen/_11ssp"
+            app:layout_constraintEnd_toEndOf="@+id/endPointSearchView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/calenderEditText"
+            app:layout_constraintTop_toTopOf="@+id/calenderEditText" />
 
         <TextView
             android:id="@+id/textView5"
@@ -145,7 +148,7 @@
             android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/endPointSearchView"
-            app:layout_constraintTop_toBottomOf="@+id/calender_btn" />
+            app:layout_constraintTop_toBottomOf="@+id/calenderEditText" />
 
         <Spinner
             android:id="@+id/repeating_spinner"
@@ -162,12 +165,11 @@
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="120dp"
             android:text="@string/trip_type"
             android:textColor="#3B5998"
             android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintStart_toStartOf="@+id/timeEditText"
             app:layout_constraintTop_toTopOf="@+id/textView5" />
 
         <Spinner
@@ -175,12 +177,10 @@
             style="@android:style/Widget.Holo.Light.Spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/_4sdp"
             android:backgroundTint="@color/black"
             android:entries="@array/trip_options"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/repeating_spinner"
+            app:layout_constraintStart_toStartOf="@+id/textView6"
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <Button
@@ -188,7 +188,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_24sdp"
-            android:layout_marginBottom="21dp"
+            android:layout_marginBottom="@dimen/_16sdp"
             android:background="@drawable/btnsignin"
             android:text="@string/save_add_btn"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -197,16 +197,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/repeating_spinner"
             app:layout_constraintVertical_bias="0.19" />
-
-        <TextView
-            android:id="@+id/timeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_4sdp"
-            android:textSize="@dimen/_12ssp"
-            app:layout_constraintBottom_toBottomOf="@+id/timeBtn"
-            app:layout_constraintStart_toEndOf="@+id/timeBtn"
-            app:layout_constraintTop_toTopOf="@+id/timeBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

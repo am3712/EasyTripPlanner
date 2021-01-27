@@ -3,7 +3,6 @@ package com.example.easytripplanner.Fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,9 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -38,6 +35,8 @@ import com.example.easytripplanner.models.TripLocation;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -68,8 +67,8 @@ import static com.example.easytripplanner.Fragments.UpcomingFragment.formatter;
 
 public class AddTripFragment extends Fragment {
 
-    private ImageButton mPickDateButton;
-    private ImageButton mPickTimeButton;
+    private EditText mPickDateEditText;
+    private EditText mPickTimeEditText;
     private Button mSaveTripButton;
     private EditText mTripName;
     private EditText mStartPointEditText;
@@ -77,8 +76,6 @@ public class AddTripFragment extends Fragment {
     private Spinner mRepeatingSpinner;
     private Spinner mTripTypeSpinner;
     private ConstraintLayout myLayout;
-    private TextView mDateTextView;
-    private TextView mTimeTextView;
     private List<String> repeatingOptions;
 
 
@@ -228,8 +225,8 @@ public class AddTripFragment extends Fragment {
         mTripName.setText(mTrip.name);
         mStartPointEditText.setText(mTrip.locationFrom.Address);
         mEndPointEditText.setText(mTrip.locationTo.Address);
-        mDateTextView.setText(date);
-        mTimeTextView.setText(time);
+        mPickDateEditText.setText(date);
+        mPickTimeEditText.setText(time);
         mRepeatingSpinner.setSelection(repeatingOptions.indexOf(mTrip.repeating));
     }
 
@@ -346,25 +343,23 @@ public class AddTripFragment extends Fragment {
 
     private void initComponents() {
         mTripName = binding.tripNameInput;
-        mPickDateButton = binding.calenderBtn;
-        mPickTimeButton = binding.timeBtn;
+        mPickDateEditText = binding.calenderEditText;
+        mPickTimeEditText = binding.timeEditText;
         mSaveTripButton = binding.addTripBtn;
         mStartPointEditText = binding.startPointSearchView;
         mEndPointEditText = binding.endPointSearchView;
         mRepeatingSpinner = binding.repeatingSpinner;
         mTripTypeSpinner = binding.tripType;
         myLayout = binding.myLayout;
-        mDateTextView = binding.dateTextView;
-        mTimeTextView = binding.timeTextView;
         context = getActivity();
         setComponentsAction();
     }
 
     @SuppressLint("SimpleDateFormat")
     private void initTimePicker() {
-        mPickTimeButton.setOnClickListener(v -> {
+        mPickTimeEditText.setOnClickListener(v -> {
             Calendar now = Calendar.getInstance();
-            new TimePickerDialog(
+/*            new TimePickerDialog(
                     context,
                     (view11, hour, minute) -> {
                         Date date = null;
@@ -374,7 +369,7 @@ public class AddTripFragment extends Fragment {
                             e.printStackTrace();
                         }
                         if (date != null) {
-                            mTimeTextView.setText(new SimpleDateFormat("hh:mm aa").format(date));
+                            mPickTimeEditText.setText(new SimpleDateFormat("hh:mm aa").format(date));
                             mTrip.timeInMilliSeconds = date.getTime();
                             Timber.i("Time Picker : %s", mTrip.timeInMilliSeconds);
                         }
@@ -382,7 +377,33 @@ public class AddTripFragment extends Fragment {
                     now.get(Calendar.HOUR_OF_DAY),
                     now.get(Calendar.MINUTE),
                     false
-            ).show();
+            ).show();*/
+
+            MaterialTimePicker picker =
+                    new MaterialTimePicker.Builder()
+                            .setTimeFormat(TimeFormat.CLOCK_12H)
+                            .setHour(now.get(Calendar.HOUR_OF_DAY))
+                            .setMinute(now.get(Calendar.MINUTE))
+                            .setTitleText("Select time")
+                            .setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
+                            .build();
+
+            picker.addOnPositiveButtonClickListener(v1 -> {
+                Date date = null;
+                try {
+                    date = new SimpleDateFormat("HH:mm").parse(picker.getHour() + ":" + picker.getMinute());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (date != null) {
+                    mPickTimeEditText.setText(new SimpleDateFormat("hh:mm aa").format(date));
+                    mTrip.timeInMilliSeconds = date.getTime();
+                    Timber.i("Time Picker : %s", mTrip.timeInMilliSeconds);
+                    Timber.i("Time Picker : %s", TIME_FORMAT.format(mTrip.timeInMilliSeconds));
+                }
+            });
+
+            picker.show(getChildFragmentManager(), "MaterialTimePicker");
         });
     }
 
@@ -392,16 +413,16 @@ public class AddTripFragment extends Fragment {
         CalendarConstraints.DateValidator dateValidator = DateValidatorPointForward.from((
                 getMillisecondsFromString(DATE_FORMAT.format(Calendar.getInstance().getTime()), DATE_FORMAT)
         ));
-        MaterialDatePicker materialDatePicker = MaterialDatePicker.Builder.datePicker()
+        MaterialDatePicker<Long> materialDatePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("SELECT TRIP DATE")
                 .setCalendarConstraints(new CalendarConstraints.Builder().setValidator(dateValidator).build())
                 .build();
-        mPickDateButton.setOnClickListener(v -> materialDatePicker.show(getParentFragmentManager(), DATE_PICKER_TAG));
+        mPickDateEditText.setOnClickListener(v -> materialDatePicker.show(getParentFragmentManager(), DATE_PICKER_TAG));
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
                     mTrip.dateInMilliSeconds = (long) materialDatePicker.getSelection();
                     Timber.i("Date Picker : %s", mTrip.dateInMilliSeconds);
-                    mDateTextView.setText(materialDatePicker.getHeaderText());
+                    mPickDateEditText.setText(materialDatePicker.getHeaderText());
                 });
 
     }
@@ -441,9 +462,9 @@ public class AddTripFragment extends Fragment {
             Toast.makeText(context, "Start Point Not Specified!!", Toast.LENGTH_SHORT).show();
         else if (mTrip.locationTo == null)
             Toast.makeText(context, "end Point Not Specified!!", Toast.LENGTH_SHORT).show();
-        else if (mTimeTextView.getText().toString().isEmpty())
+        else if (mPickTimeEditText.getText().toString().isEmpty())
             Toast.makeText(context, "Time Not Specified!!", Toast.LENGTH_SHORT).show();
-        else if (mDateTextView.getText().toString().isEmpty())
+        else if (mPickDateEditText.getText().toString().isEmpty())
             Toast.makeText(context, "Date Not Specified!!", Toast.LENGTH_SHORT).show();
         else
             return true;

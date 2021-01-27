@@ -22,26 +22,10 @@ android {
         viewBinding true
     }
     buildTypes {
-/*        release {
+        release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }*/
-
-        // ProGuard optimizes the bytecode, removes unused code instructions,
-        // and obfuscates the remaining classes, fields, and methods with short names.
-
-         debug {
-             minifyEnabled false
-             useProguard false
-             proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                     'proguard-rules.pro'
-         }
-         release {
-             minifyEnabled true
-             shrinkResources true
-             proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                     'proguard-rules.pro'
-         }
+        }
 
     }
 
@@ -93,10 +77,6 @@ dependencies {
 
     //mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v9:0.12.0'
-    //buttons
-    implementation 'me.spark:submitbutton:1.0.1'
-
-    implementation 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:2.0.24'
 
     def nav_version = "2.3.2"
 
