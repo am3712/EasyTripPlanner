@@ -100,4 +100,9 @@
             android:name="ID"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/aboutFragment2"
+        android:name="com.example.easytripplanner.Fragments.AboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
 </navigation>

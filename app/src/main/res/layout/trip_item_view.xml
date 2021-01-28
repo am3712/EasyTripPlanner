@@ -118,7 +118,7 @@
             android:layout_marginEnd="@dimen/_8sdp"
             android:background="@android:color/transparent"
             android:padding="@dimen/_4sdp"
-            android:src="@drawable/ic_baseline_post_add_32"
+            android:src="@drawable/baseline_event_note_24"
             app:layout_constraintBottom_toBottomOf="@+id/statusView"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintTop_toTopOf="@+id/statusView"

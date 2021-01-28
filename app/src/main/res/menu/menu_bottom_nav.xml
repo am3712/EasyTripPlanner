@@ -14,5 +14,9 @@
         android:id="@+id/mappedFragment"
         android:icon="@drawable/baseline_map_24"
         android:title="@string/mapped_trips" />
+    <item
+        android:id="@+id/aboutFragment"
+        android:icon="@drawable/ic_baseline_info_24"
+        android:title="@string/about_as" />
 
 </menu>
