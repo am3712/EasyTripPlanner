@@ -7,4 +7,13 @@ start and end Geo-points, accompanied with the date and time of the trip and
 notes. The application should remind the user with his trips on the time specified
 by the user. In addition, the application should navigate the user to his
 destination. After that, the application should keep track with the upcoming and
-past trips. 
+past trips.
+
+
+# Developer
+
+1-Abdulrahman Mustafa Salah
+
+2-Aya Mohamed Mohamed Abo Eid 
+
+3-Mariam Moamen Abdelsalam Abdellatif
