@@ -51,6 +51,11 @@ public class AddNotesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        removeNote = noteID -> {
+            userNotesRef.child(noteID).removeValue();
+            Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
+        };
     }
 
 
@@ -85,7 +90,7 @@ public class AddNotesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        String userId = FirebaseAuth.getInstance().getUid();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         if (userId == null)
             return;
 
@@ -94,12 +99,9 @@ public class AddNotesFragment extends Fragment {
             Timber.i("onViewCreated: Trip id :%s", tripId);
         }
 
+        Timber.i("onViewCreated: User Id: %s", userId);
         userNotesRef = FirebaseDatabase.getInstance().getReference("Notes").child(userId).child(tripId);
 
-        removeNote = noteID -> {
-            userNotesRef.child(noteID).removeValue();
-            Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
-        };
 
         initTripLis();
     }

@@ -63,7 +63,6 @@ public class UpcomingFragment extends Fragment {
 
     private Intent mapIntent;
 
-    private String userId;
     private final ActivityResultLauncher<Intent> overlayActivityResultLauncher;
 
 
@@ -127,7 +126,7 @@ public class UpcomingFragment extends Fragment {
     }
 
     public void initQueryAndListener() {
-        userId = FirebaseAuth.getInstance().getUid();
+        String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null)
             return;
 
@@ -218,7 +217,7 @@ public class UpcomingFragment extends Fragment {
                 currentUserRef.child(trip.pushId).removeValue();
 
                 //remove trip notes
-                FirebaseDatabase.getInstance().getReference("Notes").child(userId).child(trip.pushId).removeValue();
+                currentUserNotesRef.child(trip.pushId).removeValue();
 
                 Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
             }
