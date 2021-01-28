@@ -43,6 +43,8 @@ public class HistoryFragment extends Fragment {
     private Query queryReference;
     private TripListener mTripListener;
 
+    private String userId;
+
     public HistoryFragment() {
 
     }
@@ -67,7 +69,7 @@ public class HistoryFragment extends Fragment {
     }
 
     private void initQueryAndListener() {
-        String userId = FirebaseAuth.getInstance().getUid();
+        userId = FirebaseAuth.getInstance().getUid();
 
         if (userId == null)
             return;
@@ -143,8 +145,9 @@ public class HistoryFragment extends Fragment {
 
             @Override
             public void delete(Trip trip) {
-                currentUserRef.child(trip.pushId).removeValue((error, ref) ->
-                        Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show());
+                currentUserRef.child(trip.pushId).removeValue();
+                FirebaseDatabase.getInstance().getReference("Notes").child(userId).child(trip.pushId).removeValue();
+                Toast.makeText(getContext(), "deleting success", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -160,7 +163,9 @@ public class HistoryFragment extends Fragment {
             public void showNote(String id) {
 
             }
-        };
+        }
+
+        ;
     }
 
     @Override

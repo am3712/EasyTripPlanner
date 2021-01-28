@@ -120,11 +120,12 @@ public class FloatingViewService extends Service {
 
 
         mFloatingView.findViewById(R.id.collapsed_iv).setOnClickListener(v -> {
-            updateSize();
             if (isViewCollapsed())
                 expandedView.setVisibility(View.VISIBLE);
             else
                 expandedView.setVisibility(View.GONE);
+            mFloatingView.invalidate();
+            updateSize();
         });
 
         //Drag and move floating view using user's touch action.

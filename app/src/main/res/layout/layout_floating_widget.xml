@@ -42,10 +42,10 @@
         <!--View while view is expanded-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/expanded_container"
-            android:layout_width="@dimen/_220sdp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:background="@color/white"
+            android:orientation="vertical"
             android:visibility="gone" />
 
     </LinearLayout>

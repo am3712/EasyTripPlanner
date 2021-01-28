@@ -21,7 +21,6 @@ import timber.log.Timber;
 public class RecyclerNoteAdapter extends RecyclerView.Adapter<RecyclerNoteAdapter.NoteRecyclerView> {
     Context c;
     List<Note> mData;
-    private static final String TAG = "RecyclerNoteAdapter";
     private final RemoveNote removeNote;
 
     public RecyclerNoteAdapter(Context c, List<Note> mData, RemoveNote removeNote) {
@@ -41,6 +40,7 @@ public class RecyclerNoteAdapter extends RecyclerView.Adapter<RecyclerNoteAdapte
     public void onBindViewHolder(@NonNull NoteRecyclerView holder, int position) {
         Timber.i("onBindViewHolder: item " + position + " : " + mData.get(position));
         holder.textView.setText(mData.get(position).text);
+
         holder.removeButton.setOnClickListener(v -> removeNote.remove(mData.get(position).id));
 
     }
