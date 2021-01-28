@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/_4sdp"
     android:layout_marginTop="@dimen/_4sdp"
-    android:backgroundTint="@color/colorPrimary"
+    android:backgroundTint="@color/gray_orange"
     card_view:cardCornerRadius="@dimen/_8sdp">
 
 

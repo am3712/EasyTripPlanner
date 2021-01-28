@@ -26,11 +26,11 @@
     <string name="no_internet">No internet connection\nGo to setting and connect to network.</string>
     <string name="login_failed">Login Failed</string>
     <string name="full_name">Full Name</string>
-    <string name="mobileno">MobileNo</string>
+    <string name="mobile_no">MobileNo</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="sign_up_space">Sign up</string>
     <string name="already_have_an_account">Already have an account?</string>
-    <string name="registeration_failed">Registration Failed</string>
+    <string name="registration_failed">Registration Failed</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="btn_Start">start</string>

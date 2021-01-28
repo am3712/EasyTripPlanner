@@ -60,37 +60,37 @@ public class RegisterFragment extends Fragment {
             if (binding.edFullName.getText().toString().trim().isEmpty()) {
                 Common.alertErrorOrValidationDialog(
                         getContext()
-                        , getString(R.string.registeration_failed)
+                        , getString(R.string.registration_failed)
                         , getResources().getString(R.string.validation_name));
             } else if (binding.edEmail.getText().toString().trim().isEmpty()) {
                 Common.alertErrorOrValidationDialog(
                         getContext()
-                        , getString(R.string.registeration_failed)
+                        , getString(R.string.registration_failed)
                         , getResources().getString(R.string.validation_email));
             } else if (Common.isValidEmail(binding.edEmail.getText().toString().trim())) {
                 Common.alertErrorOrValidationDialog(
                         getContext()
-                        , getString(R.string.registeration_failed)
+                        , getString(R.string.registration_failed)
                         , getResources().getString(R.string.validation_valid_email));
             } else if (binding.edPassword.getText().toString().trim().isEmpty()) {
                 Common.alertErrorOrValidationDialog(
                         getContext()
-                        , getString(R.string.registeration_failed)
+                        , getString(R.string.registration_failed)
                         , getResources().getString(R.string.validation_password));
             } else if (binding.edPassword.getText().toString().trim().length() < 8) {
                 Common.alertErrorOrValidationDialog(
                         getContext()
-                        , getString(R.string.registeration_failed)
+                        , getString(R.string.registration_failed)
                         , getResources().getString(R.string.validation_valid_password));
             } else if (binding.edCPassword.getText().toString().trim().isEmpty()) {
                 Common.alertErrorOrValidationDialog(
                         getContext()
-                        , getString(R.string.registeration_failed)
+                        , getString(R.string.registration_failed)
                         , getResources().getString(R.string.validation_current_password));
             } else if (!binding.edPassword.getText().toString().trim().equals(binding.edCPassword.getText().toString().trim())) {
                 Common.alertErrorOrValidationDialog(
                         getContext()
-                        , getString(R.string.registeration_failed)
+                        , getString(R.string.registration_failed)
                         , getResources().getString(R.string.validation_valid_current_password));
             } else {
                 if (NetworkMonitorUtil.checkNetwork(getContext())) {
@@ -98,7 +98,7 @@ public class RegisterFragment extends Fragment {
                 } else {
                     Common.alertErrorOrValidationDialog(
                             getContext()
-                            , getString(R.string.registeration_failed)
+                            , getString(R.string.registration_failed)
                             , getResources().getString(R.string.no_internet));
                 }
             }

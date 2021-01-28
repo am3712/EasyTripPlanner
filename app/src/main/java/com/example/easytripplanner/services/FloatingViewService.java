@@ -119,19 +119,28 @@ public class FloatingViewService extends Service {
         });
 
 
+        mFloatingView.findViewById(R.id.collapsed_iv).setOnClickListener(v -> {
+            updateSize();
+            if (isViewCollapsed())
+                expandedView.setVisibility(View.VISIBLE);
+            else
+                expandedView.setVisibility(View.GONE);
+        });
+
         //Drag and move floating view using user's touch action.
-        mFloatingView.findViewById(R.id.collapse_view).setOnTouchListener(new View.OnTouchListener() {
+        mFloatingView.findViewById(R.id.collapsed_iv).setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
             private int initialY;
             private float initialTouchX;
             private float initialTouchY;
-            private boolean isMoving;
+            private boolean shouldClick;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                v.performClick();
-                switch (event.getAction()) {
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
+                        shouldClick = true;
+
                         //remember the initial position.
                         initialX = params.x;
                         initialY = params.y;
@@ -140,7 +149,7 @@ public class FloatingViewService extends Service {
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
 
-                        return true;
+                        break;
 
                     case MotionEvent.ACTION_MOVE:
                         //Calculate the X and Y coordinates of the view.
@@ -164,21 +173,16 @@ public class FloatingViewService extends Service {
 
                         //Update the layout with new X & Y coordinate
                         mWindowManager.updateViewLayout(mFloatingView, params);
-                        isMoving = true;
-                        return true;
+
+                        shouldClick = false;
+                        break;
 
                     case MotionEvent.ACTION_UP:
-                        if (!isMoving) {
-                            updateSize();
-                            if (isViewCollapsed())
-                                expandedView.setVisibility(View.VISIBLE);
-                            else
-                                expandedView.setVisibility(View.GONE);
-                            return true;
-                        }
-                        isMoving = false;
+                        if (shouldClick)
+                            v.performClick();
+                        break;
                 }
-                return false;
+                return true;
             }
         });
 
