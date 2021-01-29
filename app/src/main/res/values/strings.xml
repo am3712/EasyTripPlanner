@@ -98,4 +98,5 @@
     <string name="developers_name">Abdulrahman Mustafa\nAya Mohamed\nMariam Moamen</string>
     <string name="developer">Developer</string>
     <string name="login_form">Login Form</string>
+    <string name="register">Register</string>
 </resources>

@@ -14,17 +14,17 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/app_name"
             android:textColor="#455A64"
-            android:textSize="24sp"
+            android:textSize="@dimen/_18ssp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textAbout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:lineSpacingExtra="@dimen/_2sdp"
             android:text="@string/app_info"
             android:textSize="@dimen/_15ssp" />
@@ -33,18 +33,17 @@
             android:id="@+id/textView8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/developer"
             android:textColor="#455A64"
-            android:textSize="24sp"
+            android:textSize="@dimen/_18ssp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textNames"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginVertical="@dimen/_8sdp"
             android:text="@string/developers_name"
             android:textSize="@dimen/_15ssp"
             android:textStyle="bold" />

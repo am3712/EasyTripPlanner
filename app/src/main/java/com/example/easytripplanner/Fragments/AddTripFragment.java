@@ -251,7 +251,7 @@ public class AddTripFragment extends Fragment {
             if (saveMode == 0)
                 mTrip.pushId = userRef.push().getKey();
             else
-                mTrip.setUpdated(true);
+                mTrip.isUpdated = true;
 
             Timber.i("id : %s", mTrip.pushId);
 

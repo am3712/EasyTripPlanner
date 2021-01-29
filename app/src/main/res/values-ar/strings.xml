@@ -62,4 +62,5 @@
     <string name="developers_name">عبدالرحمن مصطفى\nايه محمد\nمريم مؤمن\n</string>
     <string name="no_history_trips">لا يوجد رحلات منتهية او تم الغاءوها</string>
     <string name="login_form">تسجيل الدخول</string>
+    <string name="register">انشاء حساب</string>
 </resources>

@@ -254,16 +254,16 @@ public class UpcomingFragment extends Fragment {
 
         final Intent intent = new Intent(requireContext(), AlarmReceiver.class);
 
-        Timber.i("trip is updated: %s", t.isUpdated());
+        Timber.i("trip is updated: %s", t.isUpdated);
 
         PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(requireContext(), t.pushId.hashCode(),
                 intent, PendingIntent.FLAG_NO_CREATE);
 
         //check if alarm is exist or not
-        if (notifyPendingIntent == null || t.isUpdated()) {
+        if (notifyPendingIntent == null || t.isUpdated) {
 
             //alarm is not exist add it
-            if (t.isUpdated()) {
+            if (t.isUpdated) {
                 currentUserRef.child(t.pushId).child("IsUpdated").setValue(false);
                 Timber.i("checkAlarm: %s is exist in alarm manager and will updated..", t.name);
             } else

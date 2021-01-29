@@ -26,7 +26,7 @@
             android:background="@drawable/edit_text_frame"
             android:hint="@string/trip_name"
             android:inputType="textPersonName"
-            android:paddingStart="@dimen/_8sdp"
+            android:paddingHorizontal="@dimen/_8sdp"
             android:textAlignment="center"
             android:textColor="#0E0E0E"
             android:textSize="@dimen/_13ssp"
