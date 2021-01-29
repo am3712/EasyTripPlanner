@@ -15,15 +15,15 @@ public class Trip implements Comparable<Trip>, Parcelable {
     public String pushId;
     public Long timeInMilliSeconds;
     public Long dateInMilliSeconds;
+    public boolean isUpdated;
     private String date;
-    private boolean isUpdated;
 
 
     public Trip() {
     }
 
-    public Trip(String name, TripLocation locationFrom, TripLocation locationTo, String status, String type, String repeating,
-                String pushId, Long timeInMilliSeconds, Long dateInMilliSeconds, String date, boolean isUpdated) {
+    public Trip(String name, TripLocation locationFrom, TripLocation locationTo, String status, String type,
+                String repeating, String pushId, Long timeInMilliSeconds, Long dateInMilliSeconds, String date, boolean isUpdated) {
         this.name = name;
         this.locationFrom = locationFrom;
         this.locationTo = locationTo;
@@ -65,13 +65,6 @@ public class Trip implements Comparable<Trip>, Parcelable {
         this.date = date;
     }
 
-    public boolean isUpdated() {
-        return isUpdated;
-    }
-
-    public void setUpdated(boolean updated) {
-        isUpdated = updated;
-    }
 
     protected Trip(Parcel in) {
         name = in.readString();

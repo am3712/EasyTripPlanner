@@ -250,6 +250,8 @@ public class AddTripFragment extends Fragment {
             //insert trip to specific user
             if (saveMode == 0)
                 mTrip.pushId = userRef.push().getKey();
+            else
+                mTrip.setUpdated(true);
 
             Timber.i("id : %s", mTrip.pushId);
 
