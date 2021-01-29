@@ -25,6 +25,7 @@
 
         <CheckBox
             android:id="@+id/complete_checkbox"
+            android:buttonTint="@color/colorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>

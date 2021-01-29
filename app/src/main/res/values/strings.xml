@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Easy Trip Planner</string>
+    <string name="app_name" translatable="false">Easy Trip Planner</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="login">Login</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="sign_up">SIGN UP</string>
-    <string name="app_logo">App Logo</string>
+    <string name="app_logo" translatable="false">App Logo</string>
 
 
     <string name="validation_name">Please enter name.</string>
@@ -17,34 +17,34 @@
     <string name="validation_valid_email">Please enter valid email.</string>
     <string name="validation_valid_current_password">Password and confirm password must be same.</string>
     <string name="validation_valid_password">Please enter must be minimum eight character.</string>
-    <string name="validation_mobile">Please enter mobile no.</string>
-    <string name="validation_valid_mobile">Please enter valid mobile no.</string>
-    <string name="validation_comment">Please enter Comment</string>
-    <string name="validation_address">Please enter Address</string>
-    <string name="delivery_address">Delivery Address</string>
-    <string name="network_info">Network Info</string>
+    <string name="validation_mobile" translatable="false">Please enter mobile no.</string>
+    <string name="validation_valid_mobile" translatable="false">Please enter valid mobile no.</string>
+    <string name="validation_comment" translatable="false">Please enter Comment</string>
+    <string name="validation_address" translatable="false">Please enter Address</string>
+    <string name="delivery_address" translatable="false">Delivery Address</string>
+    <string name="network_info" translatable="false">Network Info</string>
     <string name="no_internet">No internet connection\nGo to setting and connect to network.</string>
     <string name="login_failed">Login Failed</string>
     <string name="full_name">Full Name</string>
-    <string name="mobile_no">MobileNo</string>
+    <string name="mobile_no" translatable="false">MobileNo</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="sign_up_space">Sign up</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="registration_failed">Registration Failed</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="btn_Start">start</string>
     <string name="past_list_of_trips">Past List of Trips</string>
     <string name="past_trips">past trips</string>
-    <string name="upcoming_trips">Upcoming Trips</string>
+    <string name="upcoming_trips">Upcoming</string>
 
     <string name="trip_name">Trip Name</string>
     <string name="start_point">Start Point :</string>
     <string name="new_trip">New Trip</string>
     <string name="end_point">End Point :</string>
     <string name="start_details">Start Details :</string>
-    <string name="calender_image">Calender Image</string>
-    <string name="time_image">Time Image</string>
+    <string name="calender_image" translatable="false">Calender Image</string>
+    <string name="time_image" translatable="false">Time Image</string>
     <string name="repeating">Repeating :</string>
     <string name="trip_type">Trip Type :</string>
     <string name="Add_Note">Add Note :</string>
@@ -64,19 +64,19 @@
     </string-array>
 
 
-    <string name="access_token">sk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNrazdwbHZxazBnNnkycG54M2NqMmhnM3kifQ.nKpqp8IEXjLQzmPjZwmC0A</string>
+    <string name="access_token" translatable="false">sk.eyJ1IjoiYW0zNzEyIiwiYSI6ImNrazdwbHZxazBnNnkycG54M2NqMmhnM3kifQ.nKpqp8IEXjLQzmPjZwmC0A</string>
     <string name="save_edit_btn">SAVE EDIT</string>
     <string name="save_update_btn">SAVE UPDATE</string>
     <string name="save_add_btn">ADD TRIP</string>
-    <string name="history">HISTORY</string>
+    <string name="history">History</string>
     <string name="registration">Registration</string>
-    <string name="floating_button">Floating button</string>
-    <string name="mapped_trips">MAPPED TRIPS</string>
+    <string name="floating_button" translatable="false">Floating button</string>
+    <string name="mapped_trips">Map</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
 
-    <string name="facebook_app_id">1016690535493094</string>
-    <string name="fb_login_protocol_scheme">fb1016690535493094</string>
+    <string name="facebook_app_id" translatable="false">1016690535493094</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb1016690535493094</string>
     <string name="cancel">Cancel</string>
     <string name="update">Update</string>
     <string name="edit_trip_title">EDIT TRIP</string>
@@ -90,8 +90,12 @@
     <string name="upcoming_title">UPCOMING TRIPS</string>
     <string name="logout">LOGOUT</string>
     <string name="no_upcoming_trips">No Upcoming Trips</string>
-    <string name="checkbox">CheckBox</string>
+    <string name="no_history_trips">Empty History</string>
+    <string name="checkbox" translatable="false">CheckBox</string>
     <string name="add_note">Add Note</string>
-
-
+    <string name="about_us">About us</string>
+    <string name="app_info">Android Mobile Application that helps the user to record his planned trips with geographical start and end points, accompanied by date and time of the trip and notes. The application reminds the user of his trips at the time specified by the user. In addition, the app transports the user to his destination on maps. After that, the app keeps track of upcoming and past trips.</string>
+    <string name="developers_name">Abdulrahman Mustafa\nAya Mohamed\nMariam Moamen</string>
+    <string name="developer">Developer</string>
+    <string name="login_form">Login Form</string>
 </resources>

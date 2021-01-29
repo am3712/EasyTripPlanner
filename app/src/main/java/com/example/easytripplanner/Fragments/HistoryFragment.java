@@ -35,7 +35,6 @@ import java.util.Objects;
 public class HistoryFragment extends Fragment {
 
     private FragmentHistoryBinding binding;
-    private static final String TAG = "HistoryFragment";
     private DatabaseReference currentUserRef;
 
     private ArrayList<Trip> trips;
@@ -64,7 +63,7 @@ public class HistoryFragment extends Fragment {
         binding = FragmentHistoryBinding.inflate(inflater, container, false);
         // Set the adapter
         TripRecyclerViewAdapter viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, false, mTripListener);
-        binding.getRoot().setAdapter(viewAdapter);
+        binding.recyclerView.setAdapter(viewAdapter);
         return binding.getRoot();
     }
 
@@ -93,10 +92,11 @@ public class HistoryFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Trip trip = snapshot.getValue(Trip.class);
                 if (trip != null && trip.timeInMilliSeconds != null && trip.dateInMilliSeconds != null) {
+                    binding.noData.setVisibility(View.GONE);
                     calendar.setTimeInMillis(trip.dateInMilliSeconds + trip.timeInMilliSeconds);
                     trip.setDate(UpcomingFragment.formatter.format(calendar.getTime()));
                     trips.add(trip);
-                    Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
+                    Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
                 }
             }
 
@@ -114,11 +114,13 @@ public class HistoryFragment extends Fragment {
                     for (Iterator<Trip> iterator = trips.iterator(); iterator.hasNext(); ) {
                         if (iterator.next().pushId.equals(id)) {
                             iterator.remove();
+                            if (trips.size() == 0)
+                                binding.noData.setVisibility(View.VISIBLE);
                             break;
                         }
                     }
                 }
-                Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
+                Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
             }
 
             @Override
@@ -179,7 +181,7 @@ public class HistoryFragment extends Fragment {
         super.onStop();
         queryReference.removeEventListener(listener);
         trips.clear();
-        Objects.requireNonNull(binding.getRoot().getAdapter()).notifyDataSetChanged();
+        Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override

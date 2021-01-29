@@ -1,11 +1,9 @@
 package com.example.easytripplanner.Fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,7 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -99,7 +96,6 @@ public class AddTripFragment extends Fragment {
     private int saveMode;
 
     private final ActivityResultLauncher<Intent> autoCompletePlaceActivityResultLauncher;
-    private final ActivityResultLauncher<String[]> requestPermissionLauncher;
 
 
     public AddTripFragment() {
@@ -133,17 +129,6 @@ public class AddTripFragment extends Fragment {
                                 }
                             }
                             myLayout.requestFocus();
-                        });
-
-
-        requestPermissionLauncher =
-                registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
-                        result -> {
-                            if (result.get(Manifest.permission.ACCESS_FINE_LOCATION)
-                                    && result.get(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                                Timber.i("AddTripFragment: requestPermissionLauncher");
-                                firePlaceAutocomplete();
-                            }
                         });
 
 
@@ -292,11 +277,10 @@ public class AddTripFragment extends Fragment {
                 Toast.makeText(context, "Change Day Time, you can not add past time!!", Toast.LENGTH_SHORT).show();
                 return false;
             }
-            return true;
         } else {
             mTrip.timeInMilliSeconds += UpcomingFragment.getRepeatInterval(repeating);
-            return true;
         }
+        return true;
     }
 
     private void setComponentsAction() {
@@ -309,13 +293,13 @@ public class AddTripFragment extends Fragment {
         mStartPointEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 startPointClicked = true;
-                firePlaceAutocomplete();
+                performAutoCompletePlaceAction();
             }
         });
         mEndPointEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 startPointClicked = false;
-                firePlaceAutocomplete();
+                performAutoCompletePlaceAction();
             }
         });
 
@@ -359,26 +343,6 @@ public class AddTripFragment extends Fragment {
     private void initTimePicker() {
         mPickTimeEditText.setOnClickListener(v -> {
             Calendar now = Calendar.getInstance();
-/*            new TimePickerDialog(
-                    context,
-                    (view11, hour, minute) -> {
-                        Date date = null;
-                        try {
-                            date = new SimpleDateFormat("HH:mm").parse(hour + ":" + minute);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        if (date != null) {
-                            mPickTimeEditText.setText(new SimpleDateFormat("hh:mm aa").format(date));
-                            mTrip.timeInMilliSeconds = date.getTime();
-                            Timber.i("Time Picker : %s", mTrip.timeInMilliSeconds);
-                        }
-                    },
-                    now.get(Calendar.HOUR_OF_DAY),
-                    now.get(Calendar.MINUTE),
-                    false
-            ).show();*/
-
             MaterialTimePicker picker =
                     new MaterialTimePicker.Builder()
                             .setTimeFormat(TimeFormat.CLOCK_12H)
@@ -420,28 +384,15 @@ public class AddTripFragment extends Fragment {
         mPickDateEditText.setOnClickListener(v -> materialDatePicker.show(getParentFragmentManager(), DATE_PICKER_TAG));
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
-                    mTrip.dateInMilliSeconds = (long) materialDatePicker.getSelection();
-                    Timber.i("Date Picker : %s", mTrip.dateInMilliSeconds);
-                    mPickDateEditText.setText(materialDatePicker.getHeaderText());
+                    if (materialDatePicker.getSelection() != null) {
+                        mTrip.dateInMilliSeconds = (long) materialDatePicker.getSelection();
+                        Timber.i("Date Picker : %s", mTrip.dateInMilliSeconds);
+                        mPickDateEditText.setText(materialDatePicker.getHeaderText());
+                    }
                 });
 
     }
 
-    private void firePlaceAutocomplete() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Timber.i("firePlaceAutocomplete: PERMISSION_GRANTED ");
-            performAutoCompletePlaceAction();
-        } else {
-            // You can directly ask for the permission.
-            Timber.i("firePlaceAutocomplete: PERMISSION_DENIED ");
-            requestPermissionLauncher.launch(
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION});
-        }
-
-
-    }
 
     private void performAutoCompletePlaceAction() {
         Intent intent = new PlaceAutocomplete.IntentBuilder()

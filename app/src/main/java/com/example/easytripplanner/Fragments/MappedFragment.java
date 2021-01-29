@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.easytripplanner.R;
 import com.example.easytripplanner.adapters.MapTripAdapter;
 import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.models.TripRoute;
 import com.example.easytripplanner.utility.Common;
 import com.example.easytripplanner.utility.MapCameraListener;
 import com.google.firebase.auth.FirebaseAuth;

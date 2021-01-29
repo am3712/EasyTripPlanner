@@ -1,4 +1,4 @@
-package com.example.easytripplanner.Fragments;
+package com.example.easytripplanner.models;
 
 import com.mapbox.geojson.Point;
 

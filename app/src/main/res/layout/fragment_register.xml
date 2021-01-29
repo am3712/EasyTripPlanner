@@ -10,155 +10,138 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FBFAFB">
+        android:background="#FBFAFB"
+        android:paddingHorizontal="@dimen/_8sdp">
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FBFAFB"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:fontFamily="@font/candal"
+            android:paddingVertical="@dimen/_32sdp"
+            android:text="@string/registration"
+            android:textColor="#455A64"
+            android:textSize="@dimen/_32ssp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingPrefix" />
 
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
-                android:fontFamily="@font/candal"
-                android:paddingTop="20dp"
-                android:paddingBottom="100dp"
-                android:text="@string/registration"
-                android:textColor="#455A64"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                tools:ignore="MissingPrefix" />
+        <EditText
+            android:id="@+id/edFullName"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_24sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:background="@drawable/edit_text_frame"
+            android:hint="@string/full_name"
+            android:imeOptions="actionNext"
+            android:inputType="textPersonName|textCapWords"
+            android:textAlignment="center"
+            android:textColor="#151515"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/edEmail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
-            <EditText
-                android:id="@+id/edFullName"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_35sdp"
-                android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:background="@drawable/edit_text_frame"
-                android:hint="@string/full_name"
-                android:imeOptions="actionNext"
-                android:inputType="textPersonName|textCapWords"
-                android:paddingLeft="@dimen/_10sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:textColor="#151515"
-                android:textSize="18sp" />
+        <EditText
+            android:id="@+id/edEmail"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edit_text_frame"
+            android:hint="@string/email"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            android:textAlignment="center"
+            android:textColor="#0E0E0E"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/edPassword"
+            app:layout_constraintEnd_toEndOf="@+id/edFullName"
+            app:layout_constraintStart_toStartOf="@+id/edFullName"
+            app:layout_constraintTop_toBottomOf="@+id/edFullName" />
 
-            <EditText
-                android:id="@+id/edEmail"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_35sdp"
-                android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:background="@drawable/edit_text_frame"
-                android:hint="@string/email"
-                android:imeOptions="actionNext"
-                android:inputType="textEmailAddress"
-                android:paddingLeft="@dimen/_10sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:textColor="#0E0E0E"
-                android:textSize="18sp" />
+        <EditText
+            android:id="@+id/edPassword"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edit_text_frame"
+            android:hint="@string/password"
+            android:imeOptions="actionNext"
+            android:inputType="textPassword"
+            android:textAlignment="center"
+            android:textColor="#0C0C0C"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/edCPassword"
+            app:layout_constraintEnd_toEndOf="@+id/edEmail"
+            app:layout_constraintStart_toStartOf="@+id/edEmail"
+            app:layout_constraintTop_toBottomOf="@+id/edEmail" />
 
-            <EditText
-                android:id="@+id/edPassword"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_35sdp"
-                android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:background="@drawable/edit_text_frame"
-                android:hint="@string/password"
-                android:imeOptions="actionNext"
-                android:inputType="textPassword"
-                android:paddingLeft="@dimen/_10sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:textColor="#0C0C0C"
-                android:textSize="18sp" />
+        <EditText
+            android:id="@+id/edCPassword"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edit_text_frame"
+            android:hint="@string/confirm_password"
+            android:imeOptions="actionGo"
+            android:inputType="textPassword"
+            android:textAlignment="center"
+            android:textColor="#0E0E0E"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/regSignUpBtn"
+            app:layout_constraintEnd_toEndOf="@+id/edPassword"
+            app:layout_constraintStart_toStartOf="@+id/edPassword"
+            app:layout_constraintTop_toBottomOf="@+id/edPassword" />
 
-            <EditText
-                android:id="@+id/edCPassword"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_35sdp"
-                android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:background="@drawable/edit_text_frame"
-                android:hint="@string/confirm_password"
-                android:imeOptions="actionGo"
-                android:inputType="textPassword"
-                android:paddingLeft="@dimen/_10sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:textColor="#0E0E0E"
-                android:textSize="18sp" />
+        <Button
+            android:id="@+id/regSignUpBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/btnsignin"
+            android:text="Register"
+            app:layout_constraintEnd_toEndOf="@+id/edCPassword"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edCPassword" />
 
-        <!--    <com.spark.submitbutton.SubmitButton
-                android:id="@+id/regSignUpBtn"
-                android:layout_width="@dimen/_147sdp"
-                android:layout_height="@dimen/_64sdp"
-                android:gravity="center"
-                android:text="Register"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:sub_btn_background="@color/colorPrimary"
-                app:sub_btn_duration="3000"
-                app:sub_btn_line_color="@color/colorPrimaryDark"
-                app:sub_btn_ripple_color="@color/colorPrimaryDark"
-                app:sub_btn_tick_color="@color/white"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="16dp" />-->
-            <Button
-                android:id="@+id/regSignUpBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_40sdp"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:background="@drawable/btnsignin"
-                android:text="Register" />
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/already_have_an_account"
+            android:textColor="#3B5998"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/loginNav"
+            app:layout_constraintEnd_toStartOf="@+id/loginNav"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/regSignUpBtn"
+            app:layout_constraintTop_toTopOf="@+id/loginNav"
+            tools:ignore="MissingPrefix" />
 
+        <TextView
+            android:id="@+id/loginNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_16sdp"
+            android:padding="@dimen/_8sdp"
+            android:text="@string/login"
+            android:textColor="#455A64"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/regSignUpBtn"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/textView9"
+            app:layout_constraintTop_toBottomOf="@+id/regSignUpBtn"
+            tools:ignore="MissingPrefix" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FBFAFB"
-                android:gravity="center_horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_2sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:text="@string/already_have_an_account"
-                    android:textColor="#3B5998"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    tools:ignore="MissingPrefix" />
-
-                <TextView
-                    android:id="@+id/loginNav"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:text="@string/login"
-                    android:textColor="#455A64"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    tools:ignore="MissingPrefix" />
-            </LinearLayout>
-        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

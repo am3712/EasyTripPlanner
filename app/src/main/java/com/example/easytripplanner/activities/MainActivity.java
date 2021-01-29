@@ -26,7 +26,11 @@ public class MainActivity extends AppCompatActivity {
     // Notification channel ID.
     public static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
-    private FirebaseAuth auth;
+
+    private NavController navController;
+    private AppBarConfiguration appBarConfiguration;
+    BottomNavigationView bottomNav;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,21 +41,33 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment =
                 (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         assert navHostFragment != null;
-        NavController navController = navHostFragment.getNavController();
+        navController = navHostFragment.getNavController();
 
         //Initialize Bottom Navigation View.
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav = findViewById(R.id.bottom_nav);
 
         //Pass the ID's of Different destinations
-        AppBarConfiguration appBarConfiguration =
-                new AppBarConfiguration.Builder(R.id.upcomingFragment, R.id.historyFragment, R.id.mappedFragment).build();
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        NavigationUI.setupWithNavController(
-                toolbar, navController, appBarConfiguration);
+        appBarConfiguration =
+                new AppBarConfiguration.Builder(R.id.upcomingFragment, R.id.historyFragment, R.id.mappedFragment, R.id.aboutUs).build();
+        toolbar = findViewById(R.id.toolbar);
 
 
         NavigationUI.setupWithNavController(bottomNav, navController);
 
+
+        // Create the notification channel.
+        createNotificationChannel();
+
+        setSupportActionBar(toolbar);
+
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (destination.getId() == R.id.loginFragment) {
                 toolbar.setVisibility(View.GONE);
@@ -62,11 +78,13 @@ public class MainActivity extends AppCompatActivity {
             } else if (destination.getId() == R.id.registerFragment) {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.GONE);
-                toolbar.getMenu().findItem(R.id.logout_menu_item).setVisible(false);
+                if (toolbar.getMenu().findItem(R.id.logout_menu_item) != null)
+                    toolbar.getMenu().findItem(R.id.logout_menu_item).setVisible(false);
             } else {
                 toolbar.setVisibility(View.VISIBLE);
                 bottomNav.setVisibility(View.VISIBLE);
-                toolbar.getMenu().findItem(R.id.logout_menu_item).setVisible(true);
+                if (toolbar.getMenu().findItem(R.id.logout_menu_item) != null)
+                    toolbar.getMenu().findItem(R.id.logout_menu_item).setVisible(true);
             }
         });
         toolbar.setOnMenuItemClickListener(item -> {
@@ -77,11 +95,7 @@ public class MainActivity extends AppCompatActivity {
             navController.navigate(R.id.loginFragment);
             return true;
         });
-
-        // Create the notification channel.
-        createNotificationChannel();
     }
-
 
     /**
      * Creates a Notification channel, for OREO and higher.
@@ -110,11 +124,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // MenuInflater inflater = getMenuInflater();
-        //inflater.inflate(R.menu.logout_menu, menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.logout_menu, menu);
         return true;
     }
-
 }
