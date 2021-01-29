@@ -94,15 +94,15 @@ public class MyDialog extends AppCompatActivity {
             mediaPlayer.start();
         }
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.RoundShapeTheme)
-                .setTitle("Reminder: " + trip.name)
-                .setMessage(("to : " + trip.locationTo.Address))
-                .setPositiveButton("START", (dialog, which) -> startTrip())
-                .setNegativeButton("CANCEL", (dialog, which) -> {
+                .setTitle(getString(R.string.remainder) + trip.name)
+                .setMessage((getString(R.string.to) + trip.locationTo.Address))
+                .setPositiveButton(R.string.start, (dialog, which) -> startTrip())
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
                     changeTripStatus(UpcomingFragment.TRIP_STATUS.CANCELED.name());
                     mNotificationManager.cancel(trip.pushId.hashCode());
                     finishAndRemoveTask();
                 })
-                .setNeutralButton("SNOOZE", (dialog, which) -> {
+                .setNeutralButton(R.string.snooze, (dialog, which) -> {
                     if (!isNotificationFired) {
                         receiverIntent.putExtra(NOTIFICATION_STATUS, true);
                         deliverNotification();
@@ -117,7 +117,6 @@ public class MyDialog extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
 
         alertDialog.setCanceledOnTouchOutside(false);
-
         alertDialog.show();
     }
 

@@ -63,4 +63,9 @@
     <string name="no_history_trips">لا يوجد رحلات منتهية او تم الغاءوها</string>
     <string name="login_form">تسجيل الدخول</string>
     <string name="register">انشاء حساب</string>
+
+    <string name="remainder">"تذكير : "</string>
+    <string name="start">بدا</string>
+    <string name="snooze">غفوة</string>
+    <string name="to">الى : </string>
 </resources>

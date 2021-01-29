@@ -99,4 +99,8 @@
     <string name="developer">Developer</string>
     <string name="login_form">Login Form</string>
     <string name="register">Register</string>
+    <string name="remainder">"Reminder: "</string>
+    <string name="start">Start</string>
+    <string name="snooze">Snooze</string>
+    <string name="to">to :</string>
 </resources>
