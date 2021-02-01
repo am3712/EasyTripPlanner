@@ -219,13 +219,9 @@ public class AddTripFragment extends Fragment {
     private void initAddTrip() {
         mSaveTripButton.setOnClickListener(v -> {
 
-            //TODO validate trip attributes (make sure no empty cells)
             if (!validInput())
                 return;
-
-            //TODO show progress Dialog here
-
-
+            
             // now handle the positive button click from the
             // material design date picker
 
