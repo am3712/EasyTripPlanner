@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.easytripplanner">
+    package="com.myfirstgoogleapp.easytripplanner">
+
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- To request foreground location access, declare one of these permissions. -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -23,23 +22,25 @@
     </queries>
 
     <application
-        android:name=".firebase.MyFirebaseApp"
+        android:name="com.myfirstgoogleapp.easytripplanner.firebase.MyFirebaseApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyTripPlanner"
         android:usesCleartextTraffic="true"
+        android:versionCode="01263"
+        android:versionName="0.1"
         tools:targetApi="m">
 
 
         <service
-            android:name=".services.FloatingViewService"
+            android:name="com.myfirstgoogleapp.easytripplanner.services.FloatingViewService"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name=".activities.MyDialog"
+            android:name="com.myfirstgoogleapp.easytripplanner.activities.MyDialog"
             android:launchMode="singleInstance"
             android:showOnLockScreen="true"
             android:theme="@style/Theme.Transparent"
@@ -47,7 +48,7 @@
 
 
         <receiver
-            android:name=".services.AlarmReceiver"
+            android:name="com.myfirstgoogleapp.easytripplanner.services.AlarmReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -57,7 +58,7 @@
 
 
         <receiver
-            android:name=".services.RestartAlarm"
+            android:name="com.myfirstgoogleapp.easytripplanner.services.RestartAlarm"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
@@ -67,7 +68,7 @@
         </receiver>
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.myfirstgoogleapp.easytripplanner.activities.MainActivity"
             android:configChanges="navigation|screenSize|keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

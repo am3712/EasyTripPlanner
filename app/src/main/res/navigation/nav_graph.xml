@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/upcomingFragment"
-        android:name="com.example.easytripplanner.Fragments.UpcomingFragment"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.UpcomingFragment"
         android:label="@string/upcoming_title"
         tools:layout="@layout/fragment_upcoming">
         <action
@@ -23,7 +23,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.easytripplanner.Fragments.LoginFragment"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.LoginFragment"
         android:label="@string/login_title"
         tools:layout="@layout/fragment_login">
         <action
@@ -39,7 +39,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.easytripplanner.Fragments.RegisterFragment"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.RegisterFragment"
         android:label="@string/sign_up"
         tools:layout="@layout/fragment_register">
         <action
@@ -51,12 +51,12 @@
     </fragment>
     <fragment
         android:id="@+id/mappedFragment"
-        android:name="com.example.easytripplanner.Fragments.MappedFragment"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.MappedFragment"
         android:label="@string/mapped_trips"
         tools:layout="@layout/fragment_mapped" />
     <fragment
         android:id="@+id/historyFragment"
-        android:name="com.example.easytripplanner.Fragments.HistoryFragment"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.HistoryFragment"
         android:label="@string/history"
         tools:layout="@layout/fragment_history">
         <action
@@ -67,7 +67,7 @@
     </fragment>
     <fragment
         android:id="@+id/addTripFragment"
-        android:name="com.example.easytripplanner.Fragments.AddTripFragment"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.AddTripFragment"
         android:label="{title}"
         tools:layout="@layout/fragment_add_trip">
         <action
@@ -92,7 +92,7 @@
 
     <fragment
         android:id="@+id/addNotesFragment"
-        android:name="com.example.easytripplanner.Fragments.AddNotesFragment"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.AddNotesFragment"
         android:label="@string/add_notes_title"
         tools:layout="@layout/fragment_add_trip">
 
@@ -100,4 +100,10 @@
             android:name="ID"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/aboutUs"
+        android:name="com.myfirstgoogleapp.easytripplanner.Fragments.AboutFragment"
+        android:label="@string/about_us"
+        tools:layout="@layout/fragment_about" />
 </navigation>

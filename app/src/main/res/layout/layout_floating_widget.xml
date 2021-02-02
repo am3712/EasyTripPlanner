@@ -44,8 +44,6 @@
             android:id="@+id/expanded_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="vertical"
             android:visibility="gone" />
 
     </LinearLayout>

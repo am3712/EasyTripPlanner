@@ -8,41 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:357928690447:android:728459b7cd44805862947a",
+        "mobilesdk_app_id": "1:357928690447:android:cde1065e551e7ecf62947a",
         "android_client_info": {
-          "package_name": "com.example.easytripplanner"
+          "package_name": "com.myfirstgoogleapp.easytripplanner"
         }
       },
       "oauth_client": [
         {
-          "client_id": "357928690447-7je79c9sl0ijntsiqdq3chfcdss838eo.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCt171cyQghPi_BrU0kJx0YZFn4AnS-OAs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "357928690447-7je79c9sl0ijntsiqdq3chfcdss838eo.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:357928690447:android:42f4656fd0782b2f62947a",
-        "android_client_info": {
-          "package_name": "com.example.tstfirebase"
-        }
-      },
-      "oauth_client": [
+          "client_id": "357928690447-ilrk3e6jim77brhttahp61h11dheh0a0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myfirstgoogleapp.easytripplanner",
+            "certificate_hash": "cfcf71f7771ff69a1b3285164992aa1ffd5a1d78"
+          }
+        },
         {
           "client_id": "357928690447-7je79c9sl0ijntsiqdq3chfcdss838eo.apps.googleusercontent.com",
           "client_type": 3
