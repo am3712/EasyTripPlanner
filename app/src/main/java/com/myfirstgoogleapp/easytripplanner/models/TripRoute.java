@@ -1,4 +1,4 @@
-package com.myfirstgoogleapp.easytripplanner.models;
+package com.example.easytripplanner.models;
 
 import com.mapbox.geojson.Point;
 

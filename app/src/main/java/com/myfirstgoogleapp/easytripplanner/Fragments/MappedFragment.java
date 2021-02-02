@@ -13,12 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.myfirstgoogleapp.easytripplanner.R;
-import com.myfirstgoogleapp.easytripplanner.adapters.MapTripAdapter;
-import com.myfirstgoogleapp.easytripplanner.models.Trip;
-import com.myfirstgoogleapp.easytripplanner.models.TripRoute;
-import com.myfirstgoogleapp.easytripplanner.utility.Common;
-import com.myfirstgoogleapp.easytripplanner.utility.MapCameraListener;
+import com.example.easytripplanner.R;
+import com.example.easytripplanner.adapters.MapTripAdapter;
+import com.example.easytripplanner.models.Trip;
+import com.example.easytripplanner.utility.Common;
+import com.example.easytripplanner.utility.MapCameraListener;
+import com.example.easytripplanner.models.TripRoute;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
