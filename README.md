@@ -13,6 +13,8 @@ past trips.
 ![Resgister](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/screenShots/1.jpg?raw=true)
 ![Resgister](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/screenShots/2.jpg?raw=true)
 ![Resgister](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/screenShots/3.jpg?raw=true)
+![Resgister](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/screenShots/4.jpg?raw=true)
+![Resgister](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/screenShots/5.jpg?raw=true)
 
 
 
