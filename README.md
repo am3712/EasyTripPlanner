@@ -24,6 +24,13 @@ past trips.
 ![Resgister](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/screenShots/12.jpg?raw=true)
 
 
+# Features:
+
+1- login and sign up (firebase Auth)
+2- Firebase Realtime Database
+3- Alarm Manager
+4- Notification
+
 
 # Developer
 
