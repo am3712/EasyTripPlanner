@@ -10,7 +10,7 @@ destination. After that, the application should keep track with the upcoming and
 past trips.
 
 
-![alt text](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/easy%20Trip%20Planner%20Images/1.png?raw=true)
+![Resgister](https://github.com/am3712/EasyTripPlanner/blob/Abdulrahman/screenShots/1.jpg?raw=true)
 
 
 
