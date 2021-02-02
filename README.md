@@ -27,8 +27,11 @@ past trips.
 # Features:
 
 1- login and sign up (firebase Auth)
+
 2- Firebase Realtime Database
+
 3- Alarm Manager
+
 4- Notification
 
 
