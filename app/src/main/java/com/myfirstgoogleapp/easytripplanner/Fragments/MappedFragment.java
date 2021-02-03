@@ -1,24 +1,24 @@
 package com.myfirstgoogleapp.easytripplanner.Fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.easytripplanner.R;
-import com.example.easytripplanner.adapters.MapTripAdapter;
-import com.example.easytripplanner.models.Trip;
-import com.example.easytripplanner.utility.Common;
-import com.example.easytripplanner.utility.MapCameraListener;
-import com.example.easytripplanner.models.TripRoute;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,7 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mapbox.api.directions.v5.MapboxDirections;
-import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
@@ -42,6 +41,15 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
+import com.myfirstgoogleapp.easytripplanner.R;
+import com.myfirstgoogleapp.easytripplanner.adapters.MapTripAdapter;
+import com.myfirstgoogleapp.easytripplanner.databinding.FragmentMappedBinding;
+import com.myfirstgoogleapp.easytripplanner.models.Trip;
+import com.myfirstgoogleapp.easytripplanner.models.TripRoute;
+import com.myfirstgoogleapp.easytripplanner.utility.Common;
+import com.myfirstgoogleapp.easytripplanner.utility.MapCameraListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,13 +78,25 @@ public class MappedFragment extends Fragment {
     private final List<TripRoute> tripRoutes;
     private final List<String> tripNames;
     MapboxDirections client;
-    DirectionsRoute currentRoute;
     MapCameraListener mapCameraListener;
     int loop;
+    Bundle savedInstanceState;
+
+    private FragmentMappedBinding binding;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher;
 
     public MappedFragment() {
         tripNames = new ArrayList<>();
         tripRoutes = new ArrayList<>();
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                linkMap();
+            } else {
+                Toast.makeText(requireContext(), "Permission Denied, can not Show Map!!", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
 
@@ -87,25 +107,42 @@ public class MappedFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         Mapbox.getInstance(requireContext(), getString(R.string.access_token));
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_mapped, container, false);
+        binding = FragmentMappedBinding.inflate(inflater, container, false);
         // This contains the MapView in XML and needs to be called after the access token is configured.
         // Setup the MapView
-        RecyclerView listView = view.findViewById(R.id.listView);
-        mapView = view.findViewById(R.id.mapView);
+        mapView = binding.mapView;
+        return binding.getRoot();
+    }
+
+    private void linkMap() {
         mapView.onCreate(savedInstanceState);
         mapTripAdapter = new MapTripAdapter(requireContext(), tripNames, mapCameraListener);
-        listView.setAdapter(mapTripAdapter);
-        return view;
+        binding.listView.setAdapter(mapTripAdapter);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.READ_PHONE_STATE) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                linkMap();
+            } else {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(
+                        Manifest.permission.READ_PHONE_STATE);
+            }
+        } else {
+            linkMap();
+        }
         initData();
     }
 
@@ -193,6 +230,7 @@ public class MappedFragment extends Fragment {
         if (client != null)
             client.cancelCall();
         mapView.onDestroy();
+        binding = null;
     }
 
     @Override

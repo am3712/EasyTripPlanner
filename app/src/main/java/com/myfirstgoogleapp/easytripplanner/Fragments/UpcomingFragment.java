@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,15 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.myfirstgoogleapp.easytripplanner.R;
-import com.myfirstgoogleapp.easytripplanner.adapters.TripRecyclerViewAdapter;
-import com.myfirstgoogleapp.easytripplanner.databinding.FragmentUpcomingBinding;
-import com.myfirstgoogleapp.easytripplanner.models.Trip;
-import com.myfirstgoogleapp.easytripplanner.services.AlarmReceiver;
-import com.myfirstgoogleapp.easytripplanner.services.FloatingViewService;
-import com.myfirstgoogleapp.easytripplanner.utility.Parcelables;
-import com.myfirstgoogleapp.easytripplanner.utility.TripListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +31,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.myfirstgoogleapp.easytripplanner.R;
+import com.myfirstgoogleapp.easytripplanner.adapters.TripRecyclerViewAdapter;
+import com.myfirstgoogleapp.easytripplanner.databinding.FragmentUpcomingBinding;
+import com.myfirstgoogleapp.easytripplanner.models.Trip;
+import com.myfirstgoogleapp.easytripplanner.services.AlarmReceiver;
+import com.myfirstgoogleapp.easytripplanner.services.FloatingViewService;
+import com.myfirstgoogleapp.easytripplanner.utility.Parcelables;
+import com.myfirstgoogleapp.easytripplanner.utility.TripListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -58,8 +60,15 @@ public class UpcomingFragment extends Fragment {
 
     public static final String TRIP = "TRIP";
     public static final String TRIP_ID = "Trip Id";
+    public static final String ALARM_ACTION = "com.myfirstgoogleapp.easytripplanner.START_ALARM";
+
     @SuppressLint("SimpleDateFormat")
     public static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm aa");
+
+    public final static String LIST_STATE_KEY = "recycler_list_state";
+    private Parcelable listState;
+    private RecyclerView.LayoutManager mLayoutManager;
+
 
     private Intent mapIntent;
 
@@ -102,10 +111,16 @@ public class UpcomingFragment extends Fragment {
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Retrieve list state and list/item positions
+        if (savedInstanceState != null)
+            listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+
 
         binding = FragmentUpcomingBinding.inflate(inflater, container, false);
         mAdapter = new TripRecyclerViewAdapter(getContext(), trips, true, menuItemListener);
         binding.recyclerView.setAdapter(mAdapter);
+
+        mLayoutManager = binding.recyclerView.getLayoutManager();
 
         binding.fbAddTrip.setOnClickListener(v ->
                 Navigation.findNavController(binding.getRoot())
@@ -118,7 +133,6 @@ public class UpcomingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Timber.i("onViewCreated: ");
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             Navigation.findNavController(view).popBackStack();
             Navigation.findNavController(view).navigate(R.id.loginFragment);
@@ -155,6 +169,8 @@ public class UpcomingFragment extends Fragment {
                     trips.add(trip);
                     Collections.sort(trips);
                     mAdapter.notifyDataSetChanged();
+                    if (listState != null)
+                        mLayoutManager.onRestoreInstanceState(listState);
                     checkAlarm(trip);
                 }
             }
@@ -254,6 +270,8 @@ public class UpcomingFragment extends Fragment {
 
         final Intent intent = new Intent(requireContext(), AlarmReceiver.class);
 
+        intent.setAction(ALARM_ACTION);
+
         Timber.i("trip is updated: %s", t.isUpdated);
 
         PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(requireContext(), t.pushId.hashCode(),
@@ -306,17 +324,6 @@ public class UpcomingFragment extends Fragment {
         UPCOMING
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        queryReference.addChildEventListener(mRetrieveTripsListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        clear();
-    }
 
     @Override
     public void onDestroyView() {
@@ -397,10 +404,12 @@ public class UpcomingFragment extends Fragment {
 
         final Intent intent = new Intent(requireContext(), AlarmReceiver.class);
 
+        intent.setAction(ALARM_ACTION);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), pushId.hashCode(),
                 intent, PendingIntent.FLAG_NO_CREATE);
 
-        if (alarmMgr != null) {
+        if (alarmMgr != null && pendingIntent != null) {
             alarmMgr.cancel(pendingIntent);
             Timber.i("Alarm manger cancel trip");
         }
@@ -425,4 +434,25 @@ public class UpcomingFragment extends Fragment {
                 throw new IllegalStateException("Unexpected value: " + repeating);
         }
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save list state
+        listState = mLayoutManager.onSaveInstanceState();
+        outState.putParcelable(LIST_STATE_KEY, listState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        queryReference.addChildEventListener(mRetrieveTripsListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        clear();
+    }
+
 }
