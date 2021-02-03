@@ -2,6 +2,7 @@ package com.myfirstgoogleapp.easytripplanner.Fragments;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.myfirstgoogleapp.easytripplanner.R;
-import com.myfirstgoogleapp.easytripplanner.adapters.TripRecyclerViewAdapter;
-import com.myfirstgoogleapp.easytripplanner.databinding.FragmentHistoryBinding;
-import com.myfirstgoogleapp.easytripplanner.models.Trip;
-import com.myfirstgoogleapp.easytripplanner.utility.TripListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +21,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.myfirstgoogleapp.easytripplanner.R;
+import com.myfirstgoogleapp.easytripplanner.adapters.TripRecyclerViewAdapter;
+import com.myfirstgoogleapp.easytripplanner.databinding.FragmentHistoryBinding;
+import com.myfirstgoogleapp.easytripplanner.models.Trip;
+import com.myfirstgoogleapp.easytripplanner.utility.TripListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Objects;
+
+import static com.myfirstgoogleapp.easytripplanner.Fragments.UpcomingFragment.LIST_STATE_KEY;
 
 public class HistoryFragment extends Fragment {
 
@@ -43,6 +47,9 @@ public class HistoryFragment extends Fragment {
     private TripListener mTripListener;
 
     private String userId;
+
+    private Parcelable listState;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     public HistoryFragment() {
 
@@ -60,10 +67,15 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // Retrieve list state and list/item positions
+        if (savedInstanceState != null)
+            listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+
         binding = FragmentHistoryBinding.inflate(inflater, container, false);
         // Set the adapter
         TripRecyclerViewAdapter viewAdapter = new TripRecyclerViewAdapter(getContext(), trips, false, mTripListener);
         binding.recyclerView.setAdapter(viewAdapter);
+        mLayoutManager = binding.recyclerView.getLayoutManager();
         return binding.getRoot();
     }
 
@@ -97,6 +109,8 @@ public class HistoryFragment extends Fragment {
                     trip.setDate(UpcomingFragment.formatter.format(calendar.getTime()));
                     trips.add(trip);
                     Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
+                    if (listState != null)
+                        mLayoutManager.onRestoreInstanceState(listState);
                 }
             }
 
@@ -171,6 +185,14 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save list state
+        listState = mLayoutManager.onSaveInstanceState();
+        outState.putParcelable(LIST_STATE_KEY, listState);
+    }
+
+    @Override
     public void onStart() {
         queryReference.addChildEventListener(listener);
         super.onStart();
@@ -183,6 +205,7 @@ public class HistoryFragment extends Fragment {
         trips.clear();
         Objects.requireNonNull(binding.recyclerView.getAdapter()).notifyDataSetChanged();
     }
+
 
     @Override
     public void onDestroyView() {

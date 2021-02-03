@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import static android.content.Context.ALARM_SERVICE;
+import static com.myfirstgoogleapp.easytripplanner.Fragments.UpcomingFragment.ALARM_ACTION;
 import static com.myfirstgoogleapp.easytripplanner.Fragments.UpcomingFragment.TRIP;
 import static com.myfirstgoogleapp.easytripplanner.Fragments.UpcomingFragment.getRepeatInterval;
 
@@ -77,6 +78,8 @@ public class RestartAlarm extends BroadcastReceiver {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(ALARM_SERVICE);
 
         final Intent intent = new Intent(context, AlarmReceiver.class);
+
+        intent.setAction(ALARM_ACTION);
 
         intent.putExtra(TRIP, Parcelables.toByteArray(t));
 
